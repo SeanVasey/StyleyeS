@@ -1,3 +1,9 @@
+<div align="center">
+
+![StyleyeS Banner](images/styleyes-banner.png)
+
+</div>
+
 # StyleyeS
 
 **Vivid Prompt Engineering for AI Image Generation**
