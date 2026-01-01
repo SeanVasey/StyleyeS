@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>StyleyeS v1.5 — Vivid Prompt Engineering</title>
+  <meta name="description" content="StyleyeS by VASEY/AI — Vivid prompt engineering for AI image generation.">
+  <meta name="theme-color" content="#0f1419">
+  
+  <!-- iOS PWA Support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="StyleyeS">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Favicons -->
+  <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png">
+  
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon-180.png">
+  
+  <!-- Splash Screens for iOS -->
+  <link rel="apple-touch-startup-image" href="icons/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1179x2556.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1284x2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1290x2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+  <div class="bg"><div class="bg-accent"></div></div>
+  
+  <div class="app">
+    <header>
+      <span class="brand">VASEY/AI PRESENTS</span>
+      <div class="logo-row">
+        <div class="logo">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="mainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff6b35"/>
+                <stop offset="50%" stop-color="#dc2f5a"/>
+                <stop offset="100%" stop-color="#9b4dca"/>
+              </linearGradient>
+            </defs>
+            <path d="M50 20C28 20 10 38 5 50C10 62 28 80 50 80C72 80 90 62 95 50C90 38 72 20 50 20Z" stroke="url(#mainGrad)" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+            <path d="M50 25C32 25 18 36 18 50C18 64 32 75 50 75C68 75 82 64 82 50C82 36 68 25 50 25Z" fill="none" stroke="url(#mainGrad)" stroke-width="3"/>
+            <path d="M50 35C42 35 38 42 38 50C38 58 42 65 50 65C58 65 62 58 62 50C62 42 58 35 50 35ZM50 56C47 56 44 53 44 50C44 47 47 44 50 44C53 44 56 47 56 50C56 53 53 56 50 56Z" fill="url(#mainGrad)"/>
+          </svg>
+        </div>
+        <div class="title-group">
+          <h1>StyleyeS</h1>
+          <span class="ver">v1.5</span>
+        </div>
+      </div>
+      <p class="tag">The vivid prompt engineering studio.</p>
+    </header>
+    
+    <main>
+      <div class="input-row">
+        <div class="input-section">
+          <div class="input-header">
+            <label>Input Mode</label>
+            <div class="mode-switch">
+              <button class="mode-btn active" id="modeText">Text</button>
+              <button class="mode-btn" id="modeImage">Image</button>
+            </div>
+          </div>
+          
+          <input type="text" id="subject" placeholder="A lone astronaut on Mars..." autocomplete="off">
+          
+          <div class="image-upload-zone" id="imageZone">
+            <button class="remove-img" id="removeImg">✕</button>
+            <img src="" class="zone-preview" id="imgPreview" alt="Preview">
+            <div class="zone-icon">📷</div>
+            <div class="zone-text">Drop reference image here</div>
+            <div class="zone-sub">or click to upload</div>
+            <input type="file" id="imgInput" accept="image/*" style="display:none">
+          </div>
+        </div>
+        
+        <div class="input-section">
+          <label for="model">Target Model</label>
+          <select id="model">
+            <option value="gpt15">GPT-Image 1.5</option>
+            <option value="midjourney">Midjourney</option>
+            <option value="nano">Nano Banana Pro</option>
+            <option value="flux">FLUX</option>
+            <option value="sd">Stable Diffusion</option>
+            <option value="qwen">Qwen</option>
+            <option value="leonardo">Leonardo</option>
+          </select>
+        </div>
+      </div>
+
+      <label class="section-label">Aspect Ratio</label>
+      <div class="ar-toolbar" id="arToolbar"></div>
+      
+      <div class="utility-bar">
+        <div class="util-group">
+          <button class="util-btn" id="btnHistory">📜 History</button>
+          <button class="util-btn" id="btnFavorites">⭐ Favorites</button>
+        </div>
+        <div class="util-group">
+          <button class="util-btn" id="btnExport">📤 Export</button>
+          <button class="util-btn" id="btnImport">📥 Import</button>
+        </div>
+      </div>
+
+      <div class="picker-container">
+        <div class="tab-group">
+          <button class="tab-btn active" id="tabStyles">🎨 Art Styles</button>
+          <button class="tab-btn" id="tabControls">💡 Lighting & WB</button>
+        </div>
+        
+        <div class="categories" id="categories"></div>
+        <div class="styles-grid" id="grid"></div>
+      </div>
+
+      <div class="stack-section">
+        <div class="stack-header">
+          <h3>🥞 Recipe Stack</h3>
+          <span class="stack-count" id="totalCount">0 / 8</span>
+        </div>
+        <div class="stack-list" id="stackList">
+          <span class="stack-empty">Tap styles or lighting to build your recipe</span>
+        </div>
+        
+        <div class="stack-controls-area">
+          <div class="weight-control">
+            <label for="controlWeight">Lighting</label>
+            <input type="range" id="controlWeight" min="1" max="10" value="6">
+            <span class="weight-value" id="controlWeightValue">6</span>
+          </div>
+          <div class="weight-control">
+            <label for="weight">Style</label>
+            <input type="range" id="weight" min="1" max="10" value="7">
+            <span class="weight-value" id="weightValue">7</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="output-section">
+        <div class="output-header"><h3>✨ Generated Prompt</h3></div>
+        <div class="prompt-output" id="promptOutput">Your vivid prompt will appear here...</div>
+        <div class="actions">
+          <button class="btn btn-primary" id="btnCopy">📋 Copy</button>
+          <button class="btn btn-secondary" id="btnClear">🗑️ Clear</button>
+        </div>
+      </div>
+    </main>
+    
+    <footer>StyleyeS v1.5 · <a href="https://vasey.ai">VASEY/AI</a></footer>
+  </div>
+  
+  <div class="toast" id="toast"></div>
+  
+  <div class="modal" id="historyModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>📜 Prompt History</h3>
+        <button class="modal-close" id="closeHistory">✕</button>
+      </div>
+      <div class="history-list" id="historyList">
+        <p class="history-empty">No history yet</p>
+      </div>
+    </div>
+  </div>
+  
+  <input type="file" id="importFile" accept=".json" style="display:none">
+
+  <!-- Modular Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/handlers.js"></script>
+  <script src="js/app.js"></script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('SW registered:', reg.scope))
+          .catch(err => console.warn('SW registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
