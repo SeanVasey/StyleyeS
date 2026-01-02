@@ -34,25 +34,34 @@ const StyleyeSState = {
     try {
       const saved = localStorage.getItem(StyleyeSConfig.STORAGE_KEY);
       if (!saved) return;
-      
+
       const data = JSON.parse(saved);
-      
-      // Restore arrays
-      this.favorites = data.favorites || [];
-      this.history = data.history || [];
-      this.stack = data.stack || [];
-      this.controlStack = data.controlStack || [];
-      this.currentAR = data.currentAR || StyleyeSConfig.DEFAULT_AR;
-      
-      // Restore weights to DOM if elements exist
-      if (data.weight) {
+
+      // Validate data structure to prevent injection attacks
+      if (!data || typeof data !== 'object') {
+        console.warn('Invalid state data structure');
+        return;
+      }
+
+      // Restore arrays with validation
+      this.favorites = Array.isArray(data.favorites) ? data.favorites.filter(id => typeof id === 'string') : [];
+      this.history = Array.isArray(data.history) ? data.history.filter(h => h && typeof h === 'object') : [];
+      this.stack = Array.isArray(data.stack) ? data.stack.filter(id => typeof id === 'string') : [];
+      this.controlStack = Array.isArray(data.controlStack) ? data.controlStack.filter(id => typeof id === 'string') : [];
+
+      // Validate aspect ratio
+      const validARs = StyleyeSConfig.aspectRatios.map(ar => ar.id);
+      this.currentAR = validARs.includes(data.currentAR) ? data.currentAR : StyleyeSConfig.DEFAULT_AR;
+
+      // Restore weights to DOM if elements exist (with validation)
+      if (data.weight && typeof data.weight === 'number' && data.weight >= 1 && data.weight <= 10) {
         const weightEl = document.getElementById('weight');
         const weightValueEl = document.getElementById('weightValue');
         if (weightEl) weightEl.value = data.weight;
         if (weightValueEl) weightValueEl.textContent = data.weight;
       }
-      
-      if (data.controlWeight) {
+
+      if (data.controlWeight && typeof data.controlWeight === 'number' && data.controlWeight >= 1 && data.controlWeight <= 10) {
         const controlWeightEl = document.getElementById('controlWeight');
         const controlWeightValueEl = document.getElementById('controlWeightValue');
         if (controlWeightEl) controlWeightEl.value = data.controlWeight;
@@ -60,6 +69,8 @@ const StyleyeSState = {
       }
     } catch (e) {
       console.warn('Failed to load StyleyeS state:', e);
+      // Clear potentially corrupted data
+      localStorage.removeItem(StyleyeSConfig.STORAGE_KEY);
     }
   },
   
@@ -70,14 +81,14 @@ const StyleyeSState = {
     try {
       const weightEl = document.getElementById('weight');
       const controlWeightEl = document.getElementById('controlWeight');
-      
+
       localStorage.setItem(StyleyeSConfig.STORAGE_KEY, JSON.stringify({
         favorites: this.favorites,
         history: this.history,
         stack: this.stack,
         controlStack: this.controlStack,
-        weight: weightEl ? parseInt(weightEl.value) : StyleyeSConfig.DEFAULT_STYLE_WEIGHT,
-        controlWeight: controlWeightEl ? parseInt(controlWeightEl.value) : StyleyeSConfig.DEFAULT_CONTROL_WEIGHT,
+        weight: weightEl ? parseInt(weightEl.value, 10) : StyleyeSConfig.DEFAULT_STYLE_WEIGHT,
+        controlWeight: controlWeightEl ? parseInt(controlWeightEl.value, 10) : StyleyeSConfig.DEFAULT_CONTROL_WEIGHT,
         currentAR: this.currentAR
       }));
     } catch (e) {
@@ -262,7 +273,7 @@ const StyleyeSState = {
   export() {
     const weightEl = document.getElementById('weight');
     const controlWeightEl = document.getElementById('controlWeight');
-    
+
     return {
       version: StyleyeSConfig.VERSION,
       favorites: this.favorites,
@@ -270,8 +281,8 @@ const StyleyeSState = {
       stack: this.stack,
       controlStack: this.controlStack,
       currentAR: this.currentAR,
-      weight: weightEl ? parseInt(weightEl.value) : StyleyeSConfig.DEFAULT_STYLE_WEIGHT,
-      controlWeight: controlWeightEl ? parseInt(controlWeightEl.value) : StyleyeSConfig.DEFAULT_CONTROL_WEIGHT
+      weight: weightEl ? parseInt(weightEl.value, 10) : StyleyeSConfig.DEFAULT_STYLE_WEIGHT,
+      controlWeight: controlWeightEl ? parseInt(controlWeightEl.value, 10) : StyleyeSConfig.DEFAULT_CONTROL_WEIGHT
     };
   },
   
@@ -280,27 +291,57 @@ const StyleyeSState = {
    * @param {Object} data - Imported data
    */
   import(data) {
-    if (data.favorites) this.favorites = data.favorites;
-    if (data.history) this.history = data.history;
-    if (data.stack) this.stack = data.stack;
-    if (data.controlStack) this.controlStack = data.controlStack;
-    if (data.currentAR) this.currentAR = data.currentAR;
-    
-    // Restore weights
-    if (data.weight) {
+    // Validate import data structure to prevent malicious imports
+    if (!data || typeof data !== 'object') {
+      throw new Error('Invalid import data structure');
+    }
+
+    // Validate and import arrays (type checking and filtering)
+    if (data.favorites && Array.isArray(data.favorites)) {
+      this.favorites = data.favorites.filter(id => typeof id === 'string');
+    }
+
+    if (data.history && Array.isArray(data.history)) {
+      this.history = data.history
+        .filter(h => h && typeof h === 'object' && typeof h.prompt === 'string')
+        .slice(0, StyleyeSConfig.MAX_HISTORY); // Enforce max history limit
+    }
+
+    if (data.stack && Array.isArray(data.stack)) {
+      this.stack = data.stack
+        .filter(id => typeof id === 'string')
+        .slice(0, StyleyeSConfig.MAX_STYLES); // Enforce max styles limit
+    }
+
+    if (data.controlStack && Array.isArray(data.controlStack)) {
+      this.controlStack = data.controlStack
+        .filter(id => typeof id === 'string')
+        .slice(0, StyleyeSConfig.MAX_CONTROLS); // Enforce max controls limit
+    }
+
+    // Validate aspect ratio against allowed values
+    if (data.currentAR) {
+      const validARs = StyleyeSConfig.aspectRatios.map(ar => ar.id);
+      if (validARs.includes(data.currentAR)) {
+        this.currentAR = data.currentAR;
+      }
+    }
+
+    // Restore weights with validation
+    if (data.weight && typeof data.weight === 'number' && data.weight >= 1 && data.weight <= 10) {
       const weightEl = document.getElementById('weight');
       const weightValueEl = document.getElementById('weightValue');
       if (weightEl) weightEl.value = data.weight;
       if (weightValueEl) weightValueEl.textContent = data.weight;
     }
-    
-    if (data.controlWeight) {
+
+    if (data.controlWeight && typeof data.controlWeight === 'number' && data.controlWeight >= 1 && data.controlWeight <= 10) {
       const controlWeightEl = document.getElementById('controlWeight');
       const controlWeightValueEl = document.getElementById('controlWeightValue');
       if (controlWeightEl) controlWeightEl.value = data.controlWeight;
       if (controlWeightValueEl) controlWeightValueEl.textContent = data.controlWeight;
     }
-    
+
     this.save();
   }
 };

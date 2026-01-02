@@ -4,7 +4,6 @@
  */
 
 const CACHE_NAME = 'styleyes-v1.5';
-const CACHE_VERSION = 1;
 
 // Assets to cache on install
 const STATIC_ASSETS = [
