@@ -361,14 +361,21 @@ const StyleyeSHandlers = {
       historyList.addEventListener('click', (e) => {
         const btn = e.target.closest('button');
         if (!btn) return;
-        
+
         const action = btn.dataset.action;
-        const index = parseInt(btn.dataset.index);
-        
+        const index = parseInt(btn.dataset.index, 10);
+
+        if (isNaN(index) || index < 0) return;
+
         if (action === 'copy') {
-          navigator.clipboard.writeText(StyleyeSState.history[index].prompt).then(() => {
-            StyleyeSUI.showToast('✅ Copied!');
-          });
+          const historyItem = StyleyeSState.history[index];
+          if (historyItem && historyItem.prompt) {
+            navigator.clipboard.writeText(historyItem.prompt).then(() => {
+              StyleyeSUI.showToast('✅ Copied!');
+            }).catch(() => {
+              StyleyeSUI.showToast('⚠️ Copy failed', 'warn');
+            });
+          }
         } else if (action === 'delete') {
           StyleyeSState.removeHistory(index);
           StyleyeSUI.renderHistory();
@@ -390,12 +397,18 @@ const StyleyeSHandlers = {
       btnExport.addEventListener('click', () => {
         const data = StyleyeSState.export();
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `styleyes-v${StyleyeSConfig.VERSION}-${Date.now()}.json`;
-        a.click();
-        URL.revokeObjectURL(a.href);
-        StyleyeSUI.showToast('✅ Exported!');
+        const url = URL.createObjectURL(blob);
+
+        try {
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `styleyes-v${StyleyeSConfig.VERSION}-${Date.now()}.json`;
+          a.click();
+          StyleyeSUI.showToast('✅ Exported!');
+        } finally {
+          // Always revoke the object URL to prevent memory leak
+          URL.revokeObjectURL(url);
+        }
       });
     }
     
@@ -409,18 +422,40 @@ const StyleyeSHandlers = {
       importFile.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        
+
+        // Validate file type
+        if (!file.type === 'application/json' && !file.name.endsWith('.json')) {
+          StyleyeSUI.showToast('⚠️ Please select a JSON file', 'warn');
+          e.target.value = '';
+          return;
+        }
+
+        // Validate file size (max 5MB for import)
+        const MAX_IMPORT_SIZE = 5 * 1024 * 1024;
+        if (file.size > MAX_IMPORT_SIZE) {
+          StyleyeSUI.showToast('⚠️ File too large. Max 5MB', 'warn');
+          e.target.value = '';
+          return;
+        }
+
         const reader = new FileReader();
+
+        reader.onerror = () => {
+          StyleyeSUI.showToast('⚠️ Failed to read file', 'warn');
+        };
+
         reader.onload = (ev) => {
           try {
             const data = JSON.parse(ev.target.result);
             StyleyeSState.import(data);
             StyleyeSUI.renderAll();
             StyleyeSUI.showToast('✅ Imported!');
-          } catch {
-            StyleyeSUI.showToast('⚠️ Invalid file', 'warn');
+          } catch (error) {
+            console.warn('Import error:', error);
+            StyleyeSUI.showToast('⚠️ Invalid file format', 'warn');
           }
         };
+
         reader.readAsText(file);
         e.target.value = '';
       });

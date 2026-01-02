@@ -391,18 +391,41 @@ const StyleyeSUI = {
    */
   handleImageSelect(file) {
     if (!file) return;
-    
-    if (!file.type.startsWith('image/')) {
-      this.showToast('⚠️ Please upload an image', 'warn');
+
+    // Validate file type (MIME type - more secure than extension)
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+    if (!allowedTypes.includes(file.type)) {
+      this.showToast('⚠️ Invalid file type. Allowed: JPG, PNG, GIF, WebP, SVG', 'warn');
       return;
     }
-    
+
+    // Validate file size (10MB limit to prevent DoS)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    if (file.size > MAX_FILE_SIZE) {
+      this.showToast('⚠️ File too large. Max size: 10MB', 'warn');
+      return;
+    }
+
     const { imgPreview, imageZone, removeImg } = this.elements;
-    const zoneIcon = document.querySelector('.zone-icon');
-    const zoneText = document.querySelector('.zone-text');
-    const zoneSub = document.querySelector('.zone-sub');
-    
+
+    // Cache zone elements to avoid multiple queries
+    if (!this.zoneElements) {
+      this.zoneElements = {
+        icon: document.querySelector('.zone-icon'),
+        text: document.querySelector('.zone-text'),
+        sub: document.querySelector('.zone-sub')
+      };
+    }
+
+    const { icon: zoneIcon, text: zoneText, sub: zoneSub } = this.zoneElements;
+
     const reader = new FileReader();
+
+    // Add error handler for FileReader
+    reader.onerror = () => {
+      this.showToast('⚠️ Failed to read file', 'warn');
+    };
+
     reader.onload = (e) => {
       if (imgPreview) {
         imgPreview.src = e.target.result;
@@ -413,10 +436,11 @@ const StyleyeSUI = {
       if (zoneIcon) zoneIcon.style.display = 'none';
       if (zoneText) zoneText.style.display = 'none';
       if (zoneSub) zoneSub.style.display = 'none';
-      
+
       StyleyeSState.hasImage = true;
       this.updateOutput();
     };
+
     reader.readAsDataURL(file);
   },
   
@@ -426,12 +450,20 @@ const StyleyeSUI = {
    */
   removeImage(e) {
     if (e) e.stopPropagation();
-    
+
     const { imgInput, imgPreview, imageZone, removeImg } = this.elements;
-    const zoneIcon = document.querySelector('.zone-icon');
-    const zoneText = document.querySelector('.zone-text');
-    const zoneSub = document.querySelector('.zone-sub');
-    
+
+    // Cache zone elements to avoid multiple queries
+    if (!this.zoneElements) {
+      this.zoneElements = {
+        icon: document.querySelector('.zone-icon'),
+        text: document.querySelector('.zone-text'),
+        sub: document.querySelector('.zone-sub')
+      };
+    }
+
+    const { icon: zoneIcon, text: zoneText, sub: zoneSub } = this.zoneElements;
+
     if (imgInput) imgInput.value = '';
     if (imgPreview) {
       imgPreview.src = '';
@@ -442,7 +474,7 @@ const StyleyeSUI = {
     if (zoneIcon) zoneIcon.style.display = 'block';
     if (zoneText) zoneText.style.display = 'block';
     if (zoneSub) zoneSub.style.display = 'block';
-    
+
     StyleyeSState.hasImage = false;
     this.updateOutput();
   },
@@ -464,8 +496,20 @@ const StyleyeSUI = {
    * @returns {string} Escaped string
    */
   escapeHtml(str) {
+    if (typeof str !== 'string') return '';
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  },
+
+  /**
+   * Sanitize attribute values to prevent XSS in data attributes
+   * @param {string} value - Attribute value to sanitize
+   * @returns {string} Sanitized value
+   */
+  sanitizeAttr(value) {
+    if (typeof value !== 'string') return '';
+    // Remove quotes and angle brackets to prevent breaking out of attributes
+    return value.replace(/["'<>]/g, '');
   }
 };
