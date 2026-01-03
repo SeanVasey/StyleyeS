@@ -6,6 +6,9 @@
   <title>StyleyeS v1.5 — Vivid Prompt Engineering</title>
   <meta name="description" content="StyleyeS by VASEY/AI — Vivid prompt engineering for AI image generation.">
   <meta name="theme-color" content="#0f1419">
+
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self';">
   
   <!-- iOS PWA Support -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -33,10 +36,12 @@
   <link rel="apple-touch-startup-image" href="icons/splash-1284x2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
   <link rel="apple-touch-startup-image" href="icons/splash-1290x2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
   
-  <!-- Fonts -->
+  <!-- Fonts (Google Fonts with CORS and referrer policy protection) -->
+  <!-- Note: SRI is not feasible for Google Fonts CSS as content is dynamically generated per user-agent -->
+  <!-- Security is enforced via CSP font-src directive above -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
   
   <!-- Styles -->
   <link rel="stylesheet" href="css/variables.css">
@@ -194,16 +199,5 @@
   <script src="js/ui.js"></script>
   <script src="js/handlers.js"></script>
   <script src="js/app.js"></script>
-  
-  <!-- Service Worker Registration -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('SW registered:', reg.scope))
-          .catch(err => console.warn('SW registration failed:', err));
-      });
-    }
-  </script>
 </body>
 </html>
