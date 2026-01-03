@@ -423,8 +423,8 @@ const StyleyeSHandlers = {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Validate file type
-        if (!file.type === 'application/json' && !file.name.endsWith('.json')) {
+        // Validate file type (MIME type or extension)
+        if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
           StyleyeSUI.showToast('⚠️ Please select a JSON file', 'warn');
           e.target.value = '';
           return;
