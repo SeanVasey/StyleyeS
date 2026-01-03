@@ -9,7 +9,7 @@
 Craft rich, descriptive prompts for AI image generators with curated art styles, lighting controls, and intelligent prompt optimization.
 
 [![GitHub](https://img.shields.io/badge/GitHub-StyleyeS-FF6B35?style=for-the-badge&logo=github)](https://github.com/SeanVasey/StyleyeS)
-[![License](https://img.shields.io/badge/License-MIT-DC2F5A?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-DC2F5A?style=for-the-badge)](LICENSE)
 [![PWA](https://img.shields.io/badge/PWA-Ready-9B4DCA?style=for-the-badge)](manifest.json)
 
 [Features](#-features) • [Getting Started](#-getting-started) • [Usage](#-usage) • [Project Structure](#-project-structure) • [Contributing](#-contributing)
@@ -394,7 +394,7 @@ Edit `js/config.js` and add to the `models` object:
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+Apache 2.0 License - see [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
