@@ -46,8 +46,9 @@ if (packageVersion) {
   const readmeSource = readFile('README.md');
 
   const configVersion = extractVersion(/VERSION:\s*'([^']+)'/, configSource, 'js/config.js');
-  const indexVersion = extractVersion(/StyleyeS v([\d.]+)/, indexSource, 'index.html');
-  const readmeVersion = extractVersion(/StyleyeS v([\d.]+)/, readmeSource, 'README.md');
+  const VERSION_REGEX = /StyleyeS v([\d.]+)/;
+  const indexVersion = extractVersion(VERSION_REGEX, indexSource, 'index.html');
+  const readmeVersion = extractVersion(VERSION_REGEX, readmeSource, 'README.md');
 
   if (configVersion && configVersion !== packageVersion) {
     errors.push(`Config version (${configVersion}) does not match package.json (${packageVersion}).`);
