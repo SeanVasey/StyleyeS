@@ -28,14 +28,14 @@
   }
 
   .model-dropdown-trigger {
-    max-width: 180px;
+    max-width: none;
+    width: 100%;
     font-size: 0.875rem;
     padding: 0.5rem 0.75rem;
   }
 
   .aspect-ratio-slider-container {
-    max-width: 200px;
-    padding: 0.5rem 0.75rem;
+    padding: 0.75rem 1rem 1.25rem;
     gap: 0.5rem;
   }
 

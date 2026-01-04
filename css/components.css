@@ -271,6 +271,7 @@
 .model-dropdown {
   position: relative;
   z-index: 100;
+  width: 100%;
 }
 
 .model-dropdown-trigger {
@@ -297,7 +298,7 @@
 .model-icon {
   width: 1.25rem;
   height: 1.25rem;
-  color: var(--c1);
+  color: var(--t1);
   display: flex;
   align-items: center;
 }
@@ -323,8 +324,9 @@
   top: calc(100% + 0.5rem);
   left: 0;
   right: 0;
-  min-width: 320px;
-  max-width: 420px;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
   max-height: 70vh;
   overflow-y: auto;
   background: rgba(30, 30, 35, 0.95);
@@ -402,7 +404,7 @@
 .model-card-icon {
   width: 1.5rem;
   height: 1.5rem;
-  color: var(--c1);
+  color: var(--t1);
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -484,17 +486,18 @@
 .aspect-ratio-container {
   display: flex;
   justify-content: center;
+  margin-bottom: 1.25rem;
 }
 
 .aspect-ratio-slider-container {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: 1rem;
+  padding: 1.1rem 1.25rem 1.5rem;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 1rem;
-  max-width: 280px;
-  width: 100%;
+  max-width: 520px;
+  width: min(92vw, 520px);
 }
 
 .aspect-ratio-header {
