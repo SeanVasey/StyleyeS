@@ -102,14 +102,80 @@ const StyleyeSUI = {
   },
   
   /**
+   * Generate preview gradient CSS from colors array
+   * @param {Array} colors - Array of color hex codes
+   * @param {string} effect - Effect type for gradient style
+   * @returns {string} CSS gradient string
+   */
+  generatePreviewGradient(colors, effect) {
+    if (!colors || colors.length === 0) return 'transparent';
+    if (colors.length === 1) return colors[0];
+
+    // Different gradient styles based on effect type
+    switch (effect) {
+      case 'neon':
+      case 'glow':
+        return `radial-gradient(ellipse at center, ${colors.join(', ')})`;
+      case 'horizon':
+      case 'sunset':
+      case 'layers':
+        return `linear-gradient(to bottom, ${colors.join(', ')})`;
+      case 'diagonal':
+      case 'dynamic':
+        return `linear-gradient(135deg, ${colors.join(', ')})`;
+      case 'rays':
+        return `conic-gradient(from 0deg, ${colors.join(', ')}, ${colors[0]})`;
+      case 'split':
+      case 'blend':
+        return `linear-gradient(90deg, ${colors.join(', ')})`;
+      default:
+        return `linear-gradient(145deg, ${colors.join(', ')})`;
+    }
+  },
+
+  /**
+   * Generate pattern overlay based on pattern type
+   * @param {string} pattern - Pattern type
+   * @returns {string} CSS for pattern overlay
+   */
+  generatePatternCSS(pattern) {
+    switch (pattern) {
+      case 'dots':
+      case 'stipple':
+        return 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)';
+      case 'grid':
+        return 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)';
+      case 'noise':
+        return 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'0.4\'/%3E%3C/svg%3E")';
+      case 'waves':
+        return 'repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 6px)';
+      case 'strokes':
+        return 'repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(255,255,255,0.15) 2px, rgba(255,255,255,0.15) 4px)';
+      case 'geometric':
+      case 'triangles':
+        return 'linear-gradient(135deg, rgba(255,255,255,0.1) 25%, transparent 25%), linear-gradient(225deg, rgba(255,255,255,0.1) 25%, transparent 25%)';
+      case 'scan':
+        return 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.05) 2px, rgba(255,255,255,0.05) 4px)';
+      case 'circles':
+        return 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 50%)';
+      case 'vignette':
+        return 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.5) 100%)';
+      case 'shimmer':
+        return 'linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.3) 50%, transparent 80%)';
+      default:
+        return 'none';
+    }
+  },
+
+  /**
    * Render styles/controls grid
    */
   renderGrid() {
     const { grid } = this.elements;
     if (!grid) return;
-    
+
     let items, stackIds;
-    
+
     if (StyleyeSState.pickerMode === 'styles') {
       const cat = StyleyeSState.activeCategory;
       if (cat === 'favorites') {
@@ -122,16 +188,16 @@ const StyleyeSUI = {
       items = StyleyeSData.getControlsByCategory(StyleyeSState.controlActiveCategory);
       stackIds = StyleyeSState.controlStack;
     }
-    
+
     if (items.length === 0) {
       grid.innerHTML = '<p style="color:var(--t3);grid-column:1/-1;text-align:center;padding:2rem;">No items found.</p>';
       return;
     }
-    
+
     grid.innerHTML = items.map(item => {
       const isFav = StyleyeSState.favorites.includes(item.id);
       const isSelected = stackIds.includes(item.id);
-      
+
       const favBtn = StyleyeSState.pickerMode === 'styles' ? `
         <button class="card-fav ${isFav ? 'active' : ''}" data-fav="${item.id}" aria-label="Toggle favorite">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
@@ -139,12 +205,33 @@ const StyleyeSUI = {
           </svg>
         </button>
       ` : '';
-      
+
+      // Generate visual preview from item.preview data
+      const preview = item.preview || { colors: ['#2a2a3e', '#3a3a4e'], effect: 'default', pattern: 'none' };
+      const gradient = this.generatePreviewGradient(preview.colors, preview.effect);
+      const pattern = this.generatePatternCSS(preview.pattern);
+      const effectClass = preview.effect ? `effect-${preview.effect}` : '';
+
+      // Generate sample tags for hover tooltip
+      const sampleTags = item.tags ? item.tags.slice(0, 3).join(', ') : '';
+
       return `
-        <div class="card-item ${isSelected ? 'selected' : ''}" data-id="${item.id}">
+        <div class="card-item ${isSelected ? 'selected' : ''} ${effectClass}" data-id="${item.id}" data-effect="${preview.effect || 'default'}">
+          <div class="card-preview" style="background: ${gradient};">
+            <div class="card-preview-pattern" style="background: ${pattern};"></div>
+            <div class="card-preview-shine"></div>
+          </div>
+          <div class="card-preview-hover">
+            <div class="preview-sample" style="background: ${gradient};">
+              <div class="preview-sample-pattern" style="background: ${pattern};"></div>
+            </div>
+            <div class="preview-tags">${this.escapeHtml(sampleTags)}</div>
+          </div>
           ${favBtn}
-          <div class="card-name">${item.name}</div>
-          <div class="card-sub">${item.category}</div>
+          <div class="card-content">
+            <div class="card-name">${item.name}</div>
+            <div class="card-sub">${item.category}</div>
+          </div>
         </div>
       `;
     }).join('');
