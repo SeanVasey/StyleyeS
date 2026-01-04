@@ -16,6 +16,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Increased model dropdown and aspect ratio selector widths for more comfortable mobile layouts.
 - Shifted model icons to a lighter tone for improved contrast on dark backgrounds.
 
+## [1.8.1] - 2026-01-04
+### Added
+- Externalized model icons to `/icons/models/` directory for better maintainability.
+- Added XML declarations and documentation comments to all SVG icon files.
+- Implemented asynchronous icon loading with caching for optimal performance.
+- Created `ETHICS.md` documenting AI ethics and responsible use guidelines.
+- Created `PRIVACY.md` with comprehensive data handling policies.
+- Expanded `SECURITY.md` with detailed security practices and guidelines.
+
+### Changed
+- Updated model configurations to use `iconPath` instead of inline `icon` SVG strings.
+- Refactored UI module to load external SVG icons with graceful fallbacks.
+- Version bump to 1.8.1 across config.js and ui.js.
+
+### Improved
+- Better separation of concerns: icons now maintained as standalone files.
+- Reduced JavaScript bundle size by moving SVG content to external files.
+- Added inline changelog documentation to config.js and ui.js headers.
+
 ## [1.8.0] - 2026-01-04
 ### Added
 - Rich model dropdown with SOTA and Standard model cards, icons, descriptions, and capability badges.
