@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>StyleyeS v1.5 — Vivid Prompt Engineering</title>
+  <title>StyleyeS v1.8.0 — Vivid Prompt Engineering</title>
   <meta name="description" content="StyleyeS by VASEY/AI — Vivid prompt engineering for AI image generation.">
   <meta name="theme-color" content="#0f1419">
 
@@ -49,6 +49,7 @@
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
   <div class="bg"><div class="bg-accent"></div></div>
@@ -73,7 +74,7 @@
         </div>
         <div class="title-group">
           <h1>StyleyeS</h1>
-          <span class="ver">v1.5</span>
+          <span class="ver">v1.8.0</span>
         </div>
       </div>
       <p class="tag">The vivid prompt engineering studio.</p>
@@ -103,21 +104,62 @@
         </div>
         
         <div class="input-section">
-          <label for="model">Target Model</label>
-          <select id="model">
-            <option value="gpt15">GPT-Image 1.5</option>
-            <option value="midjourney">Midjourney</option>
-            <option value="nano">Nano Banana Pro</option>
-            <option value="flux">FLUX</option>
-            <option value="sd">Stable Diffusion</option>
-            <option value="qwen">Qwen</option>
-            <option value="leonardo">Leonardo</option>
-          </select>
+          <label id="modelLabel">Target Model</label>
+          <div class="model-dropdown" id="modelDropdown">
+            <button
+              class="model-dropdown-trigger"
+              id="modelDropdownTrigger"
+              type="button"
+              aria-expanded="false"
+              aria-controls="modelDropdownPanel"
+              aria-labelledby="modelLabel modelDropdownName"
+            >
+              <span class="model-icon" id="modelDropdownIcon" aria-hidden="true"></span>
+              <span class="model-name" id="modelDropdownName"></span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </button>
+            <div class="model-dropdown-panel" id="modelDropdownPanel" role="listbox" aria-label="Model selection"></div>
+          </div>
         </div>
       </div>
 
       <label class="section-label">Aspect Ratio</label>
-      <div class="ar-toolbar" id="arToolbar"></div>
+      <div class="aspect-ratio-container">
+        <div class="aspect-ratio-slider-container" id="aspectRatioSlider">
+          <div class="aspect-ratio-header">
+            <span class="aspect-ratio-title">Image Size</span>
+            <button class="aspect-ratio-reset" id="aspectRatioReset" type="button" hidden>Reset</button>
+            <div class="aspect-ratio-preview" id="aspectRatioPreview"></div>
+          </div>
+          <div class="aspect-ratio-categories">
+            <button class="category-btn" data-category="portrait" type="button">Portrait</button>
+            <button class="category-btn" data-category="square" type="button">Square</button>
+            <button class="category-btn" data-category="landscape" type="button">Landscape</button>
+          </div>
+          <div class="aspect-ratio-slider-track">
+            <div class="slider-track-bg">
+              <div class="zone portrait"></div>
+              <div class="zone square"></div>
+              <div class="zone landscape"></div>
+            </div>
+            <div class="slider-fill" id="aspectRatioFill"></div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="0.5"
+              value="50"
+              class="slider-input"
+              id="aspectRatioRange"
+              aria-label="Aspect ratio"
+            >
+            <div class="slider-thumb" id="aspectRatioThumb"></div>
+          </div>
+          <div class="aspect-ratio-label" id="aspectRatioLabel">1:1</div>
+        </div>
+      </div>
       
       <div class="utility-bar">
         <div class="util-group">
@@ -173,7 +215,7 @@
       </div>
     </main>
     
-    <footer>StyleyeS v1.5 · <a href="https://vasey.ai">VASEY/AI</a></footer>
+    <footer>StyleyeS v1.8.0 · <a href="https://vasey.ai">VASEY/AI</a></footer>
   </div>
   
   <div class="toast" id="toast"></div>

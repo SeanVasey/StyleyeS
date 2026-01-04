@@ -1,5 +1,5 @@
 /**
- * StyleyeS v1.5 — State Management
+ * StyleyeS v1.8 — State Management
  * Application state and persistence
  */
 
@@ -9,6 +9,7 @@ const StyleyeSState = {
   pickerMode: 'styles',
   hasImage: false,
   currentAR: StyleyeSConfig.DEFAULT_AR,
+  currentModel: StyleyeSConfig.DEFAULT_MODEL,
   
   // Selection Stacks
   stack: [],
@@ -53,6 +54,10 @@ const StyleyeSState = {
       const validARs = StyleyeSConfig.aspectRatios.map(ar => ar.id);
       this.currentAR = validARs.includes(data.currentAR) ? data.currentAR : StyleyeSConfig.DEFAULT_AR;
 
+      // Validate model
+      const validModels = StyleyeSConfig.models.map(model => model.id);
+      this.currentModel = validModels.includes(data.currentModel) ? data.currentModel : StyleyeSConfig.DEFAULT_MODEL;
+
       // Restore weights to DOM if elements exist (with validation)
       if (data.weight && typeof data.weight === 'number' && data.weight >= 1 && data.weight <= 10) {
         const weightEl = document.getElementById('weight');
@@ -89,7 +94,8 @@ const StyleyeSState = {
         controlStack: this.controlStack,
         weight: weightEl ? parseInt(weightEl.value, 10) : StyleyeSConfig.DEFAULT_STYLE_WEIGHT,
         controlWeight: controlWeightEl ? parseInt(controlWeightEl.value, 10) : StyleyeSConfig.DEFAULT_CONTROL_WEIGHT,
-        currentAR: this.currentAR
+        currentAR: this.currentAR,
+        currentModel: this.currentModel
       }));
     } catch (e) {
       console.warn('Failed to save StyleyeS state:', e);
@@ -103,6 +109,7 @@ const StyleyeSState = {
     this.stack = [];
     this.controlStack = [];
     this.currentAR = StyleyeSConfig.DEFAULT_AR;
+    this.currentModel = StyleyeSConfig.DEFAULT_MODEL;
     this.inputMode = 'text';
     this.hasImage = false;
     this.save();
@@ -265,6 +272,15 @@ const StyleyeSState = {
     this.currentAR = ar;
     this.save();
   },
+
+  /**
+   * Set current model
+   * @param {string} modelId - Model ID
+   */
+  setModel(modelId) {
+    this.currentModel = modelId;
+    this.save();
+  },
   
   /**
    * Export state for backup
@@ -281,6 +297,7 @@ const StyleyeSState = {
       stack: this.stack,
       controlStack: this.controlStack,
       currentAR: this.currentAR,
+      currentModel: this.currentModel,
       weight: weightEl ? parseInt(weightEl.value, 10) : StyleyeSConfig.DEFAULT_STYLE_WEIGHT,
       controlWeight: controlWeightEl ? parseInt(controlWeightEl.value, 10) : StyleyeSConfig.DEFAULT_CONTROL_WEIGHT
     };
@@ -317,6 +334,11 @@ const StyleyeSState = {
       this.controlStack = data.controlStack
         .filter(id => typeof id === 'string')
         .slice(0, StyleyeSConfig.MAX_CONTROLS); // Enforce max controls limit
+    }
+
+    if (data.currentModel && typeof data.currentModel === 'string') {
+      const validModels = StyleyeSConfig.models.map(model => model.id);
+      this.currentModel = validModels.includes(data.currentModel) ? data.currentModel : StyleyeSConfig.DEFAULT_MODEL;
     }
 
     // Validate aspect ratio against allowed values

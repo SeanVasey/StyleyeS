@@ -1,9 +1,9 @@
 /**
- * StyleyeS v1.5 — Service Worker
+ * StyleyeS v1.8 — Service Worker
  * Offline support and caching
  */
 
-const CACHE_NAME = 'styleyes-v1.5';
+const CACHE_NAME = 'styleyes-v1.8.0';
 
 // Assets to cache on install
 const STATIC_ASSETS = [
@@ -15,6 +15,7 @@ const STATIC_ASSETS = [
   '/css/components.css',
   '/css/layout.css',
   '/css/animations.css',
+  '/css/responsive.css',
   '/js/config.js',
   '/js/data.js',
   '/js/state.js',

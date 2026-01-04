@@ -1,11 +1,15 @@
 /**
- * StyleyeS v1.5 — UI Module
+ * StyleyeS v1.8 — UI Module
  * Rendering and DOM manipulation
  */
 
 const StyleyeSUI = {
   // DOM Element References (cached)
   elements: {},
+  aspectRatioState: {
+    sliderValue: 50,
+    isDragging: false
+  },
   
   /**
    * Cache DOM element references
@@ -14,7 +18,11 @@ const StyleyeSUI = {
     this.elements = {
       // Inputs
       subject: document.getElementById('subject'),
-      model: document.getElementById('model'),
+      modelDropdown: document.getElementById('modelDropdown'),
+      modelDropdownTrigger: document.getElementById('modelDropdownTrigger'),
+      modelDropdownPanel: document.getElementById('modelDropdownPanel'),
+      modelDropdownIcon: document.getElementById('modelDropdownIcon'),
+      modelDropdownName: document.getElementById('modelDropdownName'),
       imageZone: document.getElementById('imageZone'),
       imgInput: document.getElementById('imgInput'),
       imgPreview: document.getElementById('imgPreview'),
@@ -29,7 +37,13 @@ const StyleyeSUI = {
       tabControls: document.getElementById('tabControls'),
       
       // Containers
-      arToolbar: document.getElementById('arToolbar'),
+      aspectRatioSlider: document.getElementById('aspectRatioSlider'),
+      aspectRatioRange: document.getElementById('aspectRatioRange'),
+      aspectRatioLabel: document.getElementById('aspectRatioLabel'),
+      aspectRatioPreview: document.getElementById('aspectRatioPreview'),
+      aspectRatioReset: document.getElementById('aspectRatioReset'),
+      aspectRatioFill: document.getElementById('aspectRatioFill'),
+      aspectRatioThumb: document.getElementById('aspectRatioThumb'),
       categories: document.getElementById('categories'),
       grid: document.getElementById('grid'),
       stackList: document.getElementById('stackList'),
@@ -57,20 +71,268 @@ const StyleyeSUI = {
   },
   
   /**
-   * Render aspect ratio toolbar
+   * Render aspect ratio slider
    */
   renderAspectRatios() {
-    const { arToolbar } = this.elements;
-    if (!arToolbar) return;
-    
-    arToolbar.innerHTML = StyleyeSConfig.aspectRatios.map(ar => `
-      <div class="ar-btn ${StyleyeSState.currentAR === ar.id ? 'active' : ''}" data-ar="${ar.id}">
-        <div class="ar-icon-box">
-          <div class="ar-rect" style="width:${ar.width}px; height:${ar.height}px"></div>
+    const { aspectRatioSlider } = this.elements;
+    if (!aspectRatioSlider) return;
+
+    const sliderValue = StyleyeSConfig.sliderPositions[StyleyeSState.currentAR] ?? 50;
+    this.aspectRatioState.sliderValue = sliderValue;
+    this.aspectRatioState.isDragging = false;
+    this.updateAspectRatioUI();
+  },
+
+  /**
+   * Render model dropdown
+   */
+  renderModelDropdown() {
+    const { modelDropdownPanel } = this.elements;
+    if (!modelDropdownPanel) return;
+
+    const selectedId = StyleyeSState.currentModel || StyleyeSConfig.DEFAULT_MODEL;
+    const selectedModel = StyleyeSConfig.models.find(model => model.id === selectedId) || StyleyeSConfig.models[0];
+
+    this.updateModelDropdownTrigger(selectedModel);
+
+    const renderSection = (label, models) => `
+      <div class="model-category-label">${label}</div>
+      ${models.map(model => this.renderModelCard(model, model.id === selectedId)).join('')}
+    `;
+
+    const sotaModels = StyleyeSConfig.models.filter(model => model.category === 'sota');
+    const standardModels = StyleyeSConfig.models.filter(model => model.category === 'standard');
+
+    modelDropdownPanel.innerHTML = `
+      ${renderSection('SOTA Models', sotaModels)}
+      ${renderSection('Standard Models', standardModels)}
+    `;
+  },
+
+  /**
+   * Update model dropdown trigger UI
+   * @param {Object} model - Selected model data
+   */
+  updateModelDropdownTrigger(model) {
+    const { modelDropdownIcon, modelDropdownName } = this.elements;
+    if (modelDropdownIcon) {
+      modelDropdownIcon.innerHTML = model.icon;
+    }
+    if (modelDropdownName) {
+      modelDropdownName.textContent = model.name;
+    }
+  },
+
+  /**
+   * Render a model card
+   * @param {Object} model - Model data
+   * @param {boolean} isSelected - Selection state
+   * @returns {string} HTML string
+   */
+  renderModelCard(model, isSelected) {
+    const sanitizedId = this.sanitizeAttr(model.id);
+    const description = this.escapeHtml(model.description);
+    const features = model.capabilities.features || [];
+
+    return `
+      <button class="model-card ${isSelected ? 'selected' : ''}" type="button" data-model="${sanitizedId}" role="option" aria-selected="${isSelected}">
+        <div class="model-card-header">
+          <span class="model-card-icon" aria-hidden="true">${model.icon}</span>
+          <span class="model-card-name">${this.escapeHtml(model.name)}</span>
+          ${isSelected ? '<span class="checkmark" aria-hidden="true">✓</span>' : ''}
         </div>
-        <span class="ar-text">${ar.id}</span>
-      </div>
-    `).join('');
+        <p class="model-card-description">${description}</p>
+        <div class="model-card-capabilities">
+          <span class="capability-badge speed">${this.escapeHtml(model.capabilities.speed)}</span>
+          <span class="capability-badge quality">⚡${this.escapeHtml(String(model.capabilities.quality))}</span>
+          ${features.map(feature => `<span class="capability-badge feature">${this.escapeHtml(feature)}</span>`).join('')}
+        </div>
+      </button>
+    `;
+  },
+
+  /**
+   * Toggle model dropdown open state
+   */
+  toggleModelDropdown() {
+    const { modelDropdown, modelDropdownTrigger } = this.elements;
+    if (!modelDropdown || !modelDropdownTrigger) return;
+
+    const isOpen = modelDropdown.classList.toggle('open');
+    modelDropdownTrigger.setAttribute('aria-expanded', String(isOpen));
+  },
+
+  /**
+   * Close model dropdown
+   */
+  closeModelDropdown() {
+    const { modelDropdown, modelDropdownTrigger } = this.elements;
+    if (!modelDropdown || !modelDropdownTrigger) return;
+
+    modelDropdown.classList.remove('open');
+    modelDropdownTrigger.setAttribute('aria-expanded', 'false');
+  },
+
+  /**
+   * Select a model
+   * @param {string} modelId - Model ID
+   */
+  selectModel(modelId) {
+    const model = StyleyeSConfig.models.find(item => item.id === modelId);
+    if (!model) return;
+
+    StyleyeSState.setModel(modelId);
+    this.renderModelDropdown();
+    this.updateOutput();
+  },
+
+  /**
+   * Update aspect ratio slider UI
+   */
+  updateAspectRatioUI() {
+    const {
+      aspectRatioRange,
+      aspectRatioLabel,
+      aspectRatioPreview,
+      aspectRatioReset,
+      aspectRatioFill,
+      aspectRatioThumb
+    } = this.elements;
+
+    const sliderValue = this.aspectRatioState.sliderValue;
+    const currentRatio = this.getRatioFromSlider(sliderValue);
+    const nearest = this.getNearestAspectRatio(sliderValue);
+    const currentCategory = this.getCategoryFromSlider(sliderValue);
+    const shapeSize = this.getPreviewSize(currentRatio);
+
+    if (aspectRatioRange) {
+      aspectRatioRange.value = sliderValue;
+      aspectRatioRange.setAttribute('aria-valuetext', nearest.label);
+    }
+
+    if (aspectRatioLabel) {
+      aspectRatioLabel.textContent = nearest.label;
+    }
+
+    if (aspectRatioPreview) {
+      aspectRatioPreview.style.width = `${shapeSize.width}px`;
+      aspectRatioPreview.style.height = `${shapeSize.height}px`;
+    }
+
+    if (aspectRatioFill) {
+      if (sliderValue <= 50) {
+        aspectRatioFill.style.left = `${sliderValue}%`;
+        aspectRatioFill.style.right = '50%';
+      } else {
+        aspectRatioFill.style.left = '50%';
+        aspectRatioFill.style.right = `${100 - sliderValue}%`;
+      }
+    }
+
+    if (aspectRatioThumb) {
+      aspectRatioThumb.style.left = `${sliderValue}%`;
+      aspectRatioThumb.style.transform = `translateX(-50%) scale(${this.aspectRatioState.isDragging ? 1.2 : 1})`;
+    }
+
+    if (aspectRatioReset) {
+      aspectRatioReset.hidden = StyleyeSState.currentAR === StyleyeSConfig.DEFAULT_AR;
+    }
+
+    const categoryButtons = document.querySelectorAll('.aspect-ratio-categories .category-btn');
+    categoryButtons.forEach(button => {
+      const category = button.dataset.category;
+      if (!category) return;
+      button.classList.toggle('active', category === currentCategory);
+    });
+  },
+
+  /**
+   * Update slider value
+   * @param {number} value - Slider value
+   * @param {boolean} isDragging - Dragging state
+   */
+  setAspectRatioSliderValue(value, isDragging) {
+    this.aspectRatioState.sliderValue = value;
+    this.aspectRatioState.isDragging = isDragging;
+    this.updateAspectRatioUI();
+  },
+
+  /**
+   * Commit aspect ratio selection based on slider value
+   */
+  commitAspectRatioSelection() {
+    const nearest = this.getNearestAspectRatio(this.aspectRatioState.sliderValue);
+    if (!nearest) return;
+
+    this.aspectRatioState.sliderValue = StyleyeSConfig.sliderPositions[nearest.id] ?? 50;
+    this.aspectRatioState.isDragging = false;
+    StyleyeSState.setAspectRatio(nearest.id);
+    this.updateAspectRatioUI();
+    this.updateOutput();
+  },
+
+  /**
+   * Get current aspect ratio category from slider
+   * @param {number} sliderValue - Slider value
+   * @returns {string} Category
+   */
+  getCategoryFromSlider(sliderValue) {
+    if (sliderValue < 37.5) return 'portrait';
+    if (sliderValue > 62.5) return 'landscape';
+    return 'square';
+  },
+
+  /**
+   * Get interpolated ratio from slider value
+   * @param {number} sliderValue - Slider value
+   * @returns {number} Ratio
+   */
+  getRatioFromSlider(sliderValue) {
+    if (sliderValue <= 37.5) {
+      const t = sliderValue / 37.5;
+      return 0.5625 + (1 - 0.5625) * t;
+    }
+    if (sliderValue >= 62.5) {
+      const t = (sliderValue - 62.5) / 37.5;
+      return 1 + (2.333 - 1) * t;
+    }
+    return 1;
+  },
+
+  /**
+   * Get nearest aspect ratio by slider value
+   * @param {number} sliderValue - Slider value
+   * @returns {Object} Aspect ratio
+   */
+  getNearestAspectRatio(sliderValue) {
+    return StyleyeSConfig.aspectRatios.reduce((prev, curr) => {
+      const prevDistance = Math.abs((StyleyeSConfig.sliderPositions[prev.id] ?? 50) - sliderValue);
+      const currDistance = Math.abs((StyleyeSConfig.sliderPositions[curr.id] ?? 50) - sliderValue);
+      return currDistance < prevDistance ? curr : prev;
+    }, StyleyeSConfig.aspectRatios[0]);
+  },
+
+  /**
+   * Calculate preview size
+   * @param {number} ratio - Current ratio
+   * @returns {Object} width/height
+   */
+  getPreviewSize(ratio) {
+    const maxDimension = 60;
+    if (ratio >= 1) {
+      return { width: maxDimension, height: maxDimension / ratio };
+    }
+    return { width: maxDimension * ratio, height: maxDimension };
+  },
+
+  /**
+   * Get model display name
+   * @param {string} modelId - Model ID
+   * @returns {string} Model name
+   */
+  getModelName(modelId) {
+    const model = StyleyeSConfig.models.find(item => item.id === modelId);
+    return model ? model.name : modelId || 'Unknown';
   },
   
   /**
@@ -305,7 +567,7 @@ const StyleyeSUI = {
       <div class="history-item">
         <div class="history-meta">
           <span class="history-time">${new Date(h.timestamp).toLocaleString()}</span>
-          <span class="history-model">${h.model.toUpperCase()}</span>
+          <span class="history-model">${this.escapeHtml(this.getModelName(h.model))}</span>
         </div>
         <div class="history-prompt">${this.escapeHtml(h.prompt)}</div>
         <div class="history-actions">
@@ -320,11 +582,11 @@ const StyleyeSUI = {
    * Update prompt output
    */
   updateOutput() {
-    const { subject, model, weight, controlWeight, promptOutput } = this.elements;
+    const { subject, weight, controlWeight, promptOutput } = this.elements;
     if (!promptOutput) return;
     
     const subjectText = subject ? subject.value.trim() : '';
-    const modelId = model ? model.value : 'gpt15';
+    const modelId = StyleyeSState.currentModel || StyleyeSConfig.DEFAULT_MODEL;
     const styleWeight = weight ? parseInt(weight.value) : StyleyeSConfig.DEFAULT_STYLE_WEIGHT;
     const ctrlWeight = controlWeight ? parseInt(controlWeight.value) : StyleyeSConfig.DEFAULT_CONTROL_WEIGHT;
     
@@ -360,7 +622,7 @@ const StyleyeSUI = {
     const uniqueTags = [...new Set(tags)];
     
     // Get model config
-    const modelInfo = StyleyeSConfig.modelConfig[modelId] || StyleyeSConfig.modelConfig.gpt15;
+    const modelInfo = StyleyeSConfig.modelConfig[modelId] || StyleyeSConfig.modelConfig[StyleyeSConfig.DEFAULT_MODEL];
     
     // Build prompt
     let prompt = '';
@@ -378,8 +640,8 @@ const StyleyeSUI = {
     // Append aspect ratio
     if (modelInfo.arStyle === 'natural') {
       const arObj = StyleyeSConfig.aspectRatios.find(a => a.id === StyleyeSState.currentAR);
-      const arName = arObj ? arObj.name : StyleyeSState.currentAR;
-      prompt += modelInfo.arParam + arName;
+      const arLabel = arObj ? (arObj.name || arObj.label) : StyleyeSState.currentAR;
+      prompt += modelInfo.arParam + arLabel;
     } else {
       prompt += modelInfo.arParam + StyleyeSState.currentAR;
     }
@@ -571,6 +833,7 @@ const StyleyeSUI = {
    */
   renderAll() {
     this.renderAspectRatios();
+    this.renderModelDropdown();
     this.renderCategories();
     this.renderGrid();
     this.renderStack();

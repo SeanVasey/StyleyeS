@@ -1,5 +1,5 @@
 /**
- * StyleyeS v1.5 — Main Application
+ * StyleyeS v1.8 — Main Application
  * Initialization and orchestration
  */
 
@@ -71,7 +71,7 @@ const StyleyeS = {
       
       // Prevent overscroll/bounce
       document.body.addEventListener('touchmove', (e) => {
-        if (e.target.closest('.styles-grid, .categories, .ar-toolbar, .history-list, .stack-list')) {
+        if (e.target.closest('.styles-grid, .categories, .aspect-ratio-slider-container, .history-list, .stack-list')) {
           return;
         }
         if (document.body.scrollHeight <= window.innerHeight) {

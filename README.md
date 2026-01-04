@@ -2,7 +2,7 @@
 
 ![StyleyeS Cover](images/styleyes-cover.png)
 
-# StyleyeS v1.5
+# StyleyeS v1.8.0
 
 **Vivid prompt engineering for AI image generation**
 
@@ -20,33 +20,55 @@ Craft rich, descriptive prompts for AI image generators with curated art styles,
 
 ## ✨ Features
 
-- **🤖 Multi-Model Support** - Optimized prompts for GPT-Image 1.5, Midjourney, FLUX, Stable Diffusion, Leonardo AI, Qwen, and Nano Banana Pro
+- **🤖 Multi-Model Support** - Optimized prompts for Nano Banana Pro, Midjourney, Seedream 4.5, GPT-Image-1.5, FLUX.2 Pro, Qwen-Image, Stable Diffusion, and Leonardo
 - **🎨 60+ Curated Styles** - Professional art styles across 8 categories: Photo, Cinematic, Art, Digital, Mood, Texture, Color, Era
 - **💡 Lighting Controls** - White balance, anti-cast, and professional lighting setups (Softbox, Rembrandt, Rim Light, HMI, etc.)
 - **🥞 Recipe Stack System** - Combine up to 5 art styles and 3 lighting controls with adjustable intensity weights (1-10)
-- **📐 Aspect Ratio Picker** - Visual ratio selection: 21:9 Cinema, 16:9 Wide, 3:2 Photo, 1:1 Square, 2:3 Portrait, 4:5 Social, 9:16 Story
+- **📐 Dynamic Aspect Ratio Slider** - Three-segment toggle with live preview and snap-to-ratio control (default 1:1)
 - **🖼️ Dual Input Modes** - Text descriptions or image reference uploads
 - **📜 Prompt History** - Auto-save copied prompts with timestamps and quick recall
 - **⭐ Favorites System** - Star your favorite styles for instant access
 - **📤 Export/Import** - Backup and restore settings, favorites, and history as JSON
 - **🔄 Offline Support** - Full PWA functionality with service worker caching
 - **📱 iOS Optimized** - Native-feeling experience on iPhone/iPad with standalone mode
+- **📱 Landscape-Ready Layout** - Mobile landscape safeguards keep controls centered and single-line
 - **⚡ No Dependencies** - Pure vanilla JavaScript, no frameworks or build process
 - **🎯 Smart Prompt Generation** - Model-specific formatting and optimization
+
+## 🧱 Tech Stack
+
+- **Frontend:** Vanilla JavaScript, HTML5, CSS3
+- **UX/UI:** Custom component styling, responsive layout, CSS animations
+- **PWA:** Service worker + Web App Manifest
+- **Tooling:** Node.js for lightweight validation scripts
 
 ## 📁 Project Structure
 
 ```
 StyleyeS/
+├── .github/
+│   └── workflows/
+│       └── ci.yml           # Continuous integration workflow
+├── .editorconfig           # Editor formatting defaults
+├── .gitignore              # Git ignore rules
 ├── index.html              # Main application entry point
 ├── manifest.json           # PWA manifest for installable app
 ├── sw.js                   # Service worker for offline support
+├── package.json            # Validation tooling and metadata
 ├── css/
 │   ├── variables.css       # Design tokens & CSS custom properties
 │   ├── base.css            # Reset, typography, form elements
 │   ├── components.css      # UI components (cards, buttons, modals)
 │   ├── layout.css          # Page structure & responsive grid
+│   ├── responsive.css      # Mobile landscape overrides
 │   └── animations.css      # Keyframes & motion effects
+├── docs/
+│   └── MANIFEST.md          # Artifact inventory
+├── CHANGELOG.md            # Release history
+├── CODE_OF_CONDUCT.md      # Community guidelines
+├── LICENSE                 # Apache 2.0 license
+├── SECURITY.md             # Vulnerability reporting
+├── SECURITY_AUDIT.md       # Security audit notes
 ├── js/
 │   ├── config.js           # App configuration & model settings
 │   ├── data.js             # Style & control definitions (60+ styles)
@@ -59,6 +81,8 @@ StyleyeS/
 │   ├── icon-*.png          # PWA icons (72px - 512px)
 │   ├── icon-maskable-*.png # Maskable icons for Android
 │   └── apple-touch-icon-*.png # iOS home screen icons
+├── scripts/
+│   └── validate.js          # Repository validation checks
 └── images/
     ├── styleyes-banner.png # Repository banner image
     └── styleyes-cover.png  # Repository cover image
@@ -76,6 +100,10 @@ StyleyeS is a modern Progressive Web App that works seamlessly across desktop an
 git clone https://github.com/SeanVasey/StyleyeS.git
 cd StyleyeS
 
+# Run validation checks
+npm install
+npm test
+
 # Open in browser (macOS/Linux)
 open index.html
 
@@ -84,6 +112,25 @@ start index.html
 ```
 
 Or simply **double-click** `index.html` to launch instantly.
+
+### Commands
+
+```bash
+# Install validation tooling (no production dependencies)
+npm install
+
+# Run repository validation checks
+npm test
+
+# Open the app locally
+open index.html
+```
+
+> **Build:** No build step is required. StyleyeS ships as a static PWA.
+
+### Environment Variables
+
+StyleyeS does not require any environment variables to run.
 
 ### Progressive Web App Installation
 
@@ -119,8 +166,8 @@ No build process required - it's ready to deploy as-is!
 ### Basic Workflow
 
 1. **Enter a Subject** - Describe what you want to generate (e.g., "A lone astronaut on Mars")
-2. **Select Target Model** - Choose your AI image generator from the dropdown
-3. **Choose Aspect Ratio** - Pick the format for your image (Cinema, Portrait, Square, etc.)
+2. **Select Target Model** - Choose your AI image generator from the rich model cards
+3. **Choose Aspect Ratio** - Use the category toggle + slider to pick the format (portrait, square, landscape)
 4. **Build Your Recipe** - Tap art styles and lighting controls to add them to your stack
 5. **Adjust Weights** - Fine-tune style intensity (1-10) and lighting intensity (1-10)
 6. **Copy Prompt** - Click copy and paste into your AI tool
@@ -203,7 +250,11 @@ No build process required - it's ready to deploy as-is!
 
 ### Model-Specific Outputs
 
-**GPT-Image 1.5:**
+**Nano Banana Pro:**
+- CLI-style aspect ratio flags
+- Emphasizes high-detail and production quality
+
+**GPT-Image-1.5:**
 - Natural language format
 - Comma-separated descriptors
 - Emphasis on key elements
@@ -213,30 +264,29 @@ No build process required - it's ready to deploy as-is!
 - Includes `--ar` aspect ratio
 - Optimized for v5/v6
 
-**FLUX:**
+**FLUX.2 Pro:**
 - Raw style formatting
 - Direct concatenation
 - Minimal punctuation
+
+**Seedream 4.5:**
+- Natural language formatting
+- Reference fidelity and production-ready output focus
 
 **Stable Diffusion:**
 - Quality-focused keywords
 - Emphasis markers
 - Compatible with AUTOMATIC1111/ComfyUI
 
-**Leonardo AI:**
+**Leonardo:**
 - Image-to-image workflow support
 - Reference image integration
 - Preset-compatible formatting
 
-**Qwen:**
+**Qwen-Image:**
 - Clean descriptive prompts
 - Structured formatting
 - Natural phrasing
-
-**Nano Banana Pro:**
-- Detailed pro-quality output
-- Comprehensive descriptors
-- Production-ready prompts
 
 ### Advanced Features
 

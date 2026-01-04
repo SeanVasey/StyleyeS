@@ -1,5 +1,5 @@
 /**
- * StyleyeS v1.5 — Event Handlers
+ * StyleyeS v1.8 — Event Handlers
  * User interaction and event binding
  */
 
@@ -10,7 +10,8 @@ const StyleyeSHandlers = {
   bindAll() {
     this.bindModeSwitch();
     this.bindImageUpload();
-    this.bindAspectRatios();
+    this.bindAspectRatioSlider();
+    this.bindModelDropdown();
     this.bindPickerTabs();
     this.bindCategories();
     this.bindGrid();
@@ -82,22 +83,85 @@ const StyleyeSHandlers = {
   },
   
   /**
-   * Bind aspect ratio toolbar
+   * Bind aspect ratio slider
    */
-  bindAspectRatios() {
-    const { arToolbar } = StyleyeSUI.elements;
-    
-    if (arToolbar) {
-      arToolbar.addEventListener('click', (e) => {
-        const btn = e.target.closest('.ar-btn');
-        if (!btn) return;
-        
-        const ar = btn.dataset.ar;
-        StyleyeSState.setAspectRatio(ar);
-        StyleyeSUI.renderAspectRatios();
+  bindAspectRatioSlider() {
+    const { aspectRatioRange, aspectRatioReset } = StyleyeSUI.elements;
+
+    if (aspectRatioRange) {
+      aspectRatioRange.addEventListener('input', (e) => {
+        StyleyeSUI.setAspectRatioSliderValue(parseFloat(e.target.value), true);
+      });
+
+      aspectRatioRange.addEventListener('change', () => {
+        StyleyeSUI.commitAspectRatioSelection();
+      });
+    }
+
+    const categoryButtons = document.querySelectorAll('.aspect-ratio-categories .category-btn');
+    categoryButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const category = button.dataset.category;
+        if (!category) return;
+
+        if (category === 'portrait') {
+          StyleyeSUI.setAspectRatioSliderValue(12.5, false);
+          StyleyeSState.setAspectRatio('4:5');
+        } else if (category === 'landscape') {
+          StyleyeSUI.setAspectRatioSliderValue(75, false);
+          StyleyeSState.setAspectRatio('16:9');
+        } else {
+          StyleyeSUI.setAspectRatioSliderValue(50, false);
+          StyleyeSState.setAspectRatio('1:1');
+        }
+
+        StyleyeSUI.updateAspectRatioUI();
+        StyleyeSUI.updateOutput();
+      });
+    });
+
+    if (aspectRatioReset) {
+      aspectRatioReset.addEventListener('click', () => {
+        StyleyeSState.setAspectRatio(StyleyeSConfig.DEFAULT_AR);
+        StyleyeSUI.setAspectRatioSliderValue(50, false);
         StyleyeSUI.updateOutput();
       });
     }
+  },
+
+  /**
+   * Bind model dropdown
+   */
+  bindModelDropdown() {
+    const { modelDropdown, modelDropdownTrigger, modelDropdownPanel } = StyleyeSUI.elements;
+    if (!modelDropdown || !modelDropdownTrigger || !modelDropdownPanel) return;
+
+    modelDropdownTrigger.addEventListener('click', () => {
+      StyleyeSUI.toggleModelDropdown();
+    });
+
+    modelDropdownPanel.addEventListener('click', (e) => {
+      const card = e.target.closest('.model-card');
+      if (!card) return;
+
+      const modelId = card.dataset.model;
+      if (!modelId) return;
+
+      StyleyeSUI.selectModel(modelId);
+      StyleyeSUI.closeModelDropdown();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!modelDropdown.contains(e.target)) {
+        StyleyeSUI.closeModelDropdown();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        StyleyeSUI.closeModelDropdown();
+      }
+    });
   },
   
   /**
@@ -214,16 +278,11 @@ const StyleyeSHandlers = {
    * Bind input fields
    */
   bindInputs() {
-    const { subject, model, weight, weightValue, controlWeight, controlWeightValue } = StyleyeSUI.elements;
+    const { subject, weight, weightValue, controlWeight, controlWeightValue } = StyleyeSUI.elements;
     
     // Subject input
     if (subject) {
       subject.addEventListener('input', () => StyleyeSUI.updateOutput());
-    }
-    
-    // Model select
-    if (model) {
-      model.addEventListener('change', () => StyleyeSUI.updateOutput());
     }
     
     // Style weight slider
@@ -288,7 +347,7 @@ const StyleyeSHandlers = {
    * Handle copy action
    */
   handleCopy() {
-    const { promptOutput, model } = StyleyeSUI.elements;
+    const { promptOutput } = StyleyeSUI.elements;
     if (!promptOutput) return;
     
     const prompt = promptOutput.textContent;
@@ -298,7 +357,7 @@ const StyleyeSHandlers = {
       // Add to history
       StyleyeSState.addHistory({
         prompt,
-        model: model ? model.value : 'unknown'
+        model: StyleyeSState.currentModel || StyleyeSConfig.DEFAULT_MODEL
       });
       
       StyleyeSUI.showToast('✅ Copied!');
