@@ -1,6 +1,12 @@
 /**
- * StyleyeS v1.8 — UI Module
+ * StyleyeS v1.8.1 — UI Module
  * Rendering and DOM manipulation
+ *
+ * @version 1.8.1
+ * @updated 2026-01-04
+ * @changelog
+ *   - 1.8.1: Added external SVG icon loading with caching
+ *   - 1.8.0: Initial release with rich model dropdown
  */
 
 const StyleyeSUI = {
@@ -10,6 +16,62 @@ const StyleyeSUI = {
     sliderValue: 50,
     isDragging: false,
     lastSnappedId: null
+  },
+
+  // Icon cache for loaded SVG content
+  iconCache: {},
+
+  /**
+   * Load external SVG icon content
+   * @param {string} iconPath - Relative path to icon file
+   * @returns {Promise<string>} SVG content
+   */
+  async loadIcon(iconPath) {
+    if (!iconPath) return '';
+
+    const fullPath = StyleyeSConfig.ICON_BASE_PATH + iconPath;
+
+    // Return cached icon if available
+    if (this.iconCache[fullPath]) {
+      return this.iconCache[fullPath];
+    }
+
+    try {
+      const response = await fetch(fullPath);
+      if (!response.ok) {
+        console.warn(`Failed to load icon: ${fullPath}`);
+        return '';
+      }
+      const svgContent = await response.text();
+      // Cache the loaded icon
+      this.iconCache[fullPath] = svgContent;
+      return svgContent;
+    } catch (error) {
+      console.warn(`Error loading icon ${fullPath}:`, error);
+      return '';
+    }
+  },
+
+  /**
+   * Preload all model icons for better performance
+   * @returns {Promise<void>}
+   */
+  async preloadIcons() {
+    const iconPromises = StyleyeSConfig.models.map(model =>
+      this.loadIcon(model.iconPath)
+    );
+    await Promise.all(iconPromises);
+  },
+
+  /**
+   * Get cached icon or placeholder
+   * @param {string} iconPath - Relative path to icon file
+   * @returns {string} SVG content or placeholder
+   */
+  getIconSync(iconPath) {
+    if (!iconPath) return '';
+    const fullPath = StyleyeSConfig.ICON_BASE_PATH + iconPath;
+    return this.iconCache[fullPath] || '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor" opacity="0.3"/></svg>';
   },
   
   /**
@@ -119,7 +181,8 @@ const StyleyeSUI = {
   updateModelDropdownTrigger(model) {
     const { modelDropdownIcon, modelDropdownName } = this.elements;
     if (modelDropdownIcon) {
-      modelDropdownIcon.innerHTML = model.icon;
+      // Use cached icon or load asynchronously
+      modelDropdownIcon.innerHTML = this.getIconSync(model.iconPath);
     }
     if (modelDropdownName) {
       modelDropdownName.textContent = model.name;
@@ -136,11 +199,12 @@ const StyleyeSUI = {
     const sanitizedId = this.sanitizeAttr(model.id);
     const description = this.escapeHtml(model.description);
     const features = model.capabilities.features || [];
+    const iconContent = this.getIconSync(model.iconPath);
 
     return `
       <button class="model-card ${isSelected ? 'selected' : ''}" type="button" data-model="${sanitizedId}" role="option" aria-selected="${isSelected}">
         <div class="model-card-header">
-          <span class="model-card-icon" aria-hidden="true">${model.icon}</span>
+          <span class="model-card-icon" aria-hidden="true">${iconContent}</span>
           <span class="model-card-name">${this.escapeHtml(model.name)}</span>
           ${isSelected ? '<span class="checkmark" aria-hidden="true">✓</span>' : ''}
         </div>
@@ -984,8 +1048,12 @@ const StyleyeSUI = {
   
   /**
    * Render all UI components
+   * Preloads icons before rendering for optimal performance
    */
-  renderAll() {
+  async renderAll() {
+    // Preload icons first for smooth rendering
+    await this.preloadIcons();
+
     this.renderAspectRatios();
     this.renderModelDropdown();
     this.renderCategories();
