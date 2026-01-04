@@ -356,7 +356,7 @@ const StyleyeSUI = {
     if (snappedId !== this.aspectRatioState.lastSnappedId) {
       this.aspectRatioState.lastSnappedId = snappedId;
       if (navigator.vibrate) {
-        navigator.vibrate(StyleyeSConfig.AR_HAPTIC_DURATION_MS ?? 12);
+        navigator.vibrate(StyleyeSConfig.AR_HAPTIC_DURATION_MS);
       }
     }
   },
