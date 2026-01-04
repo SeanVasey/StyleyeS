@@ -109,6 +109,10 @@ main {
   margin-bottom: 1.25rem;
 }
 
+.input-section--wide {
+  grid-column: 1 / -1;
+}
+
 .input-header {
   display: flex;
   justify-content: space-between;

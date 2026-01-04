@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Improved aspect ratio preview styling with bolder orange outlines and fixed preview framing.
 - Stabilized input row layout across portrait and landscape orientations.
+- Increased model dropdown and aspect ratio selector widths for more comfortable mobile layouts.
+- Shifted model icons to a lighter tone for improved contrast on dark backgrounds.
 
 ## [1.8.0] - 2026-01-04
 ### Added
