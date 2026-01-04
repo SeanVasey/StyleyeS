@@ -338,7 +338,7 @@ const StyleyeSUI = {
    * @returns {{value: number, snappedId: (string|null)}}
    */
   applyAspectRatioMagnet(sliderValue) {
-    const magnetRange = StyleyeSConfig.AR_MAGNET_THRESHOLD ?? 2.5;
+    const magnetRange = StyleyeSConfig.AR_MAGNET_THRESHOLD;
     const nearest = this.getNearestAspectRatio(sliderValue);
     const nearestValue = StyleyeSConfig.sliderPositions[nearest.id] ?? sliderValue;
     const distance = Math.abs(nearestValue - sliderValue);
