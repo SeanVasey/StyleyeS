@@ -282,12 +282,19 @@ const StyleyeSUI = {
     const { aspectRatioNotches } = this.elements;
     if (!aspectRatioNotches) return;
 
-    const notches = StyleyeSConfig.aspectRatios.map(aspectRatio => {
-      const position = StyleyeSConfig.sliderPositions[aspectRatio.id] ?? 50;
-      return `<span class="slider-notch" data-ar="${this.escapeHtml(aspectRatio.id)}" style="left:${position}%"></span>`;
-    });
+    aspectRatioNotches.innerHTML = '';
+    const fragment = document.createDocumentFragment();
 
-    aspectRatioNotches.innerHTML = notches.join('');
+    for (const aspectRatio of StyleyeSConfig.aspectRatios) {
+      const position = StyleyeSConfig.sliderPositions[aspectRatio.id] ?? 50;
+      const notch = document.createElement('span');
+      notch.className = 'slider-notch';
+      notch.dataset.ar = aspectRatio.id;
+      notch.style.left = `${position}%`;
+      fragment.appendChild(notch);
+    }
+
+    aspectRatioNotches.appendChild(fragment);
   },
 
   /**
