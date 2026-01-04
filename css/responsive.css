@@ -5,10 +5,10 @@
 
 @media screen and (orientation: landscape) and (max-height: 500px) {
   .input-row {
-    display: flex;
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-content: center;
-    align-items: center;
+    align-items: start;
     gap: 1rem;
   }
 
@@ -49,8 +49,8 @@
   }
 
   .aspect-ratio-preview {
-    max-width: 40px;
-    max-height: 40px;
+    width: 48px;
+    height: 48px;
   }
 
   header {

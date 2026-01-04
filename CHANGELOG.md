@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Magnetic aspect ratio slider notches with haptic feedback and morphing preview transitions.
+- Enhanced model card selection motion for clearer active feedback.
+
+### Changed
+- Improved aspect ratio preview styling with bolder orange outlines and fixed preview framing.
+- Stabilized input row layout across portrait and landscape orientations.
 
 ## [1.8.0] - 2026-01-04
 ### Added
