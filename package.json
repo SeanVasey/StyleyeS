@@ -1,0 +1,12 @@
+{
+  "name": "styleyes",
+  "version": "1.8.0",
+  "description": "Vivid prompt engineering for AI image generation.",
+  "private": true,
+  "scripts": {
+    "test": "node scripts/validate.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,5 +1,5 @@
 /**
- * StyleyeS v1.5 — Data
+ * StyleyeS v1.8 — Data
  * Styles and Controls Definitions with Visual Previews
  */
 
