@@ -24,7 +24,7 @@ Craft rich, descriptive prompts for AI image generators with curated art styles,
 - **🎨 60+ Curated Styles** - Professional art styles across 8 categories: Photo, Cinematic, Art, Digital, Mood, Texture, Color, Era
 - **💡 Lighting Controls** - White balance, anti-cast, and professional lighting setups (Softbox, Rembrandt, Rim Light, HMI, etc.)
 - **🥞 Recipe Stack System** - Combine up to 5 art styles and 3 lighting controls with adjustable intensity weights (1-10)
-- **📐 Dynamic Aspect Ratio Slider** - Three-segment toggle with live preview and snap-to-ratio control (default 1:1)
+- **📐 Dynamic Aspect Ratio Slider** - Magnetized snap points with morphing previews, haptic ticks, and live ratio feedback
 - **🖼️ Dual Input Modes** - Text descriptions or image reference uploads
 - **📜 Prompt History** - Auto-save copied prompts with timestamps and quick recall
 - **⭐ Favorites System** - Star your favorite styles for instant access

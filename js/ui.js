@@ -8,7 +8,8 @@ const StyleyeSUI = {
   elements: {},
   aspectRatioState: {
     sliderValue: 50,
-    isDragging: false
+    isDragging: false,
+    lastSnappedId: null
   },
   
   /**
@@ -44,6 +45,7 @@ const StyleyeSUI = {
       aspectRatioReset: document.getElementById('aspectRatioReset'),
       aspectRatioFill: document.getElementById('aspectRatioFill'),
       aspectRatioThumb: document.getElementById('aspectRatioThumb'),
+      aspectRatioNotches: document.getElementById('aspectRatioNotches'),
       categories: document.getElementById('categories'),
       grid: document.getElementById('grid'),
       stackList: document.getElementById('stackList'),
@@ -80,6 +82,7 @@ const StyleyeSUI = {
     const sliderValue = StyleyeSConfig.sliderPositions[StyleyeSState.currentAR] ?? 50;
     this.aspectRatioState.sliderValue = sliderValue;
     this.aspectRatioState.isDragging = false;
+    this.renderAspectRatioNotches();
     this.updateAspectRatioUI();
   },
 
@@ -191,19 +194,25 @@ const StyleyeSUI = {
    */
   updateAspectRatioUI() {
     const {
+      aspectRatioSlider,
       aspectRatioRange,
       aspectRatioLabel,
       aspectRatioPreview,
       aspectRatioReset,
       aspectRatioFill,
-      aspectRatioThumb
+      aspectRatioThumb,
+      aspectRatioNotches
     } = this.elements;
 
     const sliderValue = this.aspectRatioState.sliderValue;
-    const currentRatio = this.getRatioFromSlider(sliderValue);
     const nearest = this.getNearestAspectRatio(sliderValue);
     const currentCategory = this.getCategoryFromSlider(sliderValue);
-    const shapeSize = this.getPreviewSize(currentRatio);
+    const previewSize = StyleyeSConfig.AR_PREVIEW_MAX_DIMENSION ?? 60;
+    const { lower, upper, progress } = this.getBoundingAspectRatios(sliderValue);
+
+    if (aspectRatioSlider) {
+      aspectRatioSlider.classList.toggle('is-dragging', this.aspectRatioState.isDragging);
+    }
 
     if (aspectRatioRange) {
       aspectRatioRange.value = sliderValue;
@@ -215,8 +224,9 @@ const StyleyeSUI = {
     }
 
     if (aspectRatioPreview) {
-      aspectRatioPreview.style.width = `${shapeSize.width}px`;
-      aspectRatioPreview.style.height = `${shapeSize.height}px`;
+      aspectRatioPreview.style.width = `${previewSize}px`;
+      aspectRatioPreview.style.height = `${previewSize}px`;
+      this.updateAspectRatioPreviewLayers(aspectRatioPreview, lower, upper, progress);
     }
 
     if (aspectRatioFill) {
@@ -238,6 +248,14 @@ const StyleyeSUI = {
       aspectRatioReset.hidden = StyleyeSState.currentAR === StyleyeSConfig.DEFAULT_AR;
     }
 
+    if (aspectRatioNotches) {
+      const notchElements = aspectRatioNotches.querySelectorAll('.slider-notch');
+      notchElements.forEach(notch => {
+        const notchId = notch.dataset.ar;
+        notch.classList.toggle('active', notchId === nearest.id);
+      });
+    }
+
     const categoryButtons = document.querySelectorAll('.aspect-ratio-categories .category-btn');
     categoryButtons.forEach(button => {
       const category = button.dataset.category;
@@ -255,6 +273,142 @@ const StyleyeSUI = {
     this.aspectRatioState.sliderValue = value;
     this.aspectRatioState.isDragging = isDragging;
     this.updateAspectRatioUI();
+  },
+
+  /**
+   * Render aspect ratio slider notches
+   */
+  renderAspectRatioNotches() {
+    const { aspectRatioNotches } = this.elements;
+    if (!aspectRatioNotches) return;
+
+    aspectRatioNotches.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+
+    for (const aspectRatio of StyleyeSConfig.aspectRatios) {
+      const position = StyleyeSConfig.sliderPositions[aspectRatio.id] ?? 50;
+      const notch = document.createElement('span');
+      notch.className = 'slider-notch';
+      notch.dataset.ar = aspectRatio.id;
+      notch.style.left = `${position}%`;
+      fragment.appendChild(notch);
+    }
+
+    aspectRatioNotches.appendChild(fragment);
+  },
+
+  /**
+   * Update aspect ratio preview layers for morph + fade effect
+   * @param {HTMLElement} preview
+   * @param {Object} lower
+   * @param {Object} upper
+   * @param {number} progress
+   */
+  updateAspectRatioPreviewLayers(preview, lower, upper, progress) {
+    const primaryLayer = preview.querySelector('.aspect-preview-primary');
+    const secondaryLayer = preview.querySelector('.aspect-preview-secondary');
+    if (!primaryLayer || !secondaryLayer) return;
+
+    const primaryOpacity = 1 - progress;
+    const secondaryOpacity = progress;
+
+    this.updateAspectRatioLayer(primaryLayer, lower, primaryOpacity);
+    this.updateAspectRatioLayer(secondaryLayer, upper, secondaryOpacity);
+  },
+
+  /**
+   * Update a single aspect ratio preview layer
+   * @param {HTMLElement} layer
+   * @param {Object} aspectRatio
+   * @param {number} opacity
+   */
+  updateAspectRatioLayer(layer, aspectRatio, opacity) {
+    if (!layer || !aspectRatio) return;
+
+    const shapeSize = this.getPreviewSize(aspectRatio.ratio);
+    layer.style.width = `${shapeSize.width}px`;
+    layer.style.height = `${shapeSize.height}px`;
+    layer.style.opacity = opacity.toFixed(2);
+    layer.classList.toggle('is-visible', opacity > 0.05);
+  },
+
+  /**
+   * Apply magnetic snapping to aspect ratio slider
+   * @param {number} sliderValue
+   * @returns {{value: number, snappedId: (string|null)}}
+   */
+  applyAspectRatioMagnet(sliderValue) {
+    const magnetRange = StyleyeSConfig.AR_MAGNET_THRESHOLD;
+    const nearest = this.getNearestAspectRatio(sliderValue);
+    const nearestValue = StyleyeSConfig.sliderPositions[nearest.id] ?? sliderValue;
+    const distance = Math.abs(nearestValue - sliderValue);
+    const isSnapped = distance <= magnetRange;
+
+    return {
+      value: isSnapped ? nearestValue : sliderValue,
+      snappedId: isSnapped ? nearest.id : null
+    };
+  },
+
+  /**
+   * Trigger haptic feedback when snapping
+   * @param {string|null} snappedId
+   */
+  triggerAspectRatioHaptics(snappedId) {
+    if (!snappedId) {
+      this.aspectRatioState.lastSnappedId = null;
+      return;
+    }
+
+    if (snappedId !== this.aspectRatioState.lastSnappedId) {
+      this.aspectRatioState.lastSnappedId = snappedId;
+      if (navigator.vibrate) {
+        navigator.vibrate(StyleyeSConfig.AR_HAPTIC_DURATION_MS);
+      }
+    }
+  },
+
+  /**
+   * Get bounding aspect ratios around a slider value
+   * @param {number} sliderValue
+   * @returns {{lower: Object, upper: Object, progress: number}}
+   */
+  getBoundingAspectRatios(sliderValue) {
+    const stops = this.getAspectRatioStops();
+    let lower = stops[0];
+    let upper = stops[stops.length - 1];
+
+    for (let i = 0; i < stops.length; i += 1) {
+      if (stops[i].position <= sliderValue) {
+        lower = stops[i];
+      }
+      if (stops[i].position >= sliderValue) {
+        upper = stops[i];
+        break;
+      }
+    }
+
+    const range = upper.position - lower.position || 1;
+    const progress = Math.min(Math.max((sliderValue - lower.position) / range, 0), 1);
+
+    return {
+      lower: lower.aspectRatio,
+      upper: upper.aspectRatio,
+      progress: lower.aspectRatio.id === upper.aspectRatio.id ? 0 : progress
+    };
+  },
+
+  /**
+   * Get aspect ratio stops with positions
+   * @returns {Array}
+   */
+  getAspectRatioStops() {
+    return StyleyeSConfig.aspectRatios
+      .map(aspectRatio => ({
+        aspectRatio,
+        position: StyleyeSConfig.sliderPositions[aspectRatio.id] ?? 50
+      }))
+      .sort((a, b) => a.position - b.position);
   },
 
   /**
@@ -318,7 +472,7 @@ const StyleyeSUI = {
    * @returns {Object} width/height
    */
   getPreviewSize(ratio) {
-    const maxDimension = 60; // TODO: Move to StyleyeSConfig as AR_PREVIEW_MAX_DIMENSION
+    const maxDimension = StyleyeSConfig.AR_PREVIEW_MAX_DIMENSION;
     if (ratio >= 1) {
       return { width: maxDimension, height: maxDimension / ratio };
     }

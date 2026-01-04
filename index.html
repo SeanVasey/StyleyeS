@@ -131,7 +131,10 @@
           <div class="aspect-ratio-header">
             <span class="aspect-ratio-title">Image Size</span>
             <button class="aspect-ratio-reset" id="aspectRatioReset" type="button" hidden>Reset</button>
-            <div class="aspect-ratio-preview" id="aspectRatioPreview"></div>
+            <div class="aspect-ratio-preview" id="aspectRatioPreview">
+              <span class="aspect-preview-layer aspect-preview-primary" aria-hidden="true"></span>
+              <span class="aspect-preview-layer aspect-preview-secondary" aria-hidden="true"></span>
+            </div>
           </div>
           <div class="aspect-ratio-categories">
             <button class="category-btn" data-category="portrait" type="button">Portrait</button>
@@ -144,6 +147,7 @@
               <div class="zone square"></div>
               <div class="zone landscape"></div>
             </div>
+            <div class="slider-notches" id="aspectRatioNotches" aria-hidden="true"></div>
             <div class="slider-fill" id="aspectRatioFill"></div>
             <input
               type="range"

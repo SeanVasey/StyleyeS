@@ -90,7 +90,10 @@ const StyleyeSHandlers = {
 
     if (aspectRatioRange) {
       aspectRatioRange.addEventListener('input', (e) => {
-        StyleyeSUI.setAspectRatioSliderValue(parseFloat(e.target.value), true);
+        const rawValue = parseFloat(e.target.value);
+        const { value, snappedId } = StyleyeSUI.applyAspectRatioMagnet(rawValue);
+        StyleyeSUI.triggerAspectRatioHaptics(snappedId);
+        StyleyeSUI.setAspectRatioSliderValue(value, true);
       });
 
       aspectRatioRange.addEventListener('change', () => {

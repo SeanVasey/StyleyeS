@@ -20,6 +20,11 @@ const StyleyeSConfig = {
   DEFAULT_MODEL: 'nano-banana-pro',
   DEFAULT_STYLE_WEIGHT: 7,
   DEFAULT_CONTROL_WEIGHT: 6,
+
+  // Aspect Ratio UI
+  AR_PREVIEW_MAX_DIMENSION: 64,
+  AR_MAGNET_THRESHOLD: 2.5,
+  AR_HAPTIC_DURATION_MS: 12,
   
   // Aspect Ratios
   aspectRatios: [
