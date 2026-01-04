@@ -318,7 +318,7 @@ const StyleyeSUI = {
    * @returns {Object} width/height
    */
   getPreviewSize(ratio) {
-    const maxDimension = 60;
+    const maxDimension = 60; // TODO: Move to StyleyeSConfig as AR_PREVIEW_MAX_DIMENSION
     if (ratio >= 1) {
       return { width: maxDimension, height: maxDimension / ratio };
     }
