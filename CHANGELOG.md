@@ -6,15 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.0.0] - 2026-01-05
 ### Added
 - Magnetic aspect ratio slider notches with haptic feedback and morphing preview transitions.
 - Enhanced model card selection motion for clearer active feedback.
+- 70+ curated art styles across 8 categories with visual preview gradients.
+- New v2.0 branded cover image and repository assets.
+- Version badge in README for quick version identification.
 
 ### Changed
+- **Major version bump** to v2.0.0 reflecting significant UI/UX improvements and polish.
 - Improved aspect ratio preview styling with bolder orange outlines and fixed preview framing.
 - Stabilized input row layout across portrait and landscape orientations.
 - Increased model dropdown and aspect ratio selector widths for more comfortable mobile layouts.
 - Shifted model icons to a lighter tone for improved contrast on dark backgrounds.
+- Updated all documentation and code comments to v2.0.0.
+- Unified version across all JS modules, service worker, and HTML.
+
+### Improved
+- Comprehensive documentation updates across README, inline comments, and module headers.
+- Better consistency between package.json, config.js, and UI version displays.
+- Enhanced code organization with standardized header comments including @version and @updated tags.
 
 ## [1.8.1] - 2026-01-04
 ### Added

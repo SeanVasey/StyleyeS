@@ -2,7 +2,7 @@
 
 ![StyleyeS Cover](images/styleyes-cover.png)
 
-# StyleyeS v1.8.0
+# StyleyeS v2.0.0
 
 **Vivid prompt engineering for AI image generation**
 
@@ -11,6 +11,7 @@ Craft rich, descriptive prompts for AI image generators with curated art styles,
 [![GitHub](https://img.shields.io/badge/GitHub-StyleyeS-FF6B35?style=for-the-badge&logo=github)](https://github.com/SeanVasey/StyleyeS)
 [![License](https://img.shields.io/badge/License-Apache%202.0-DC2F5A?style=for-the-badge)](LICENSE)
 [![PWA](https://img.shields.io/badge/PWA-Ready-9B4DCA?style=for-the-badge)](manifest.json)
+[![Version](https://img.shields.io/badge/Version-2.0.0-00D4AA?style=for-the-badge)](CHANGELOG.md)
 
 [Features](#-features) • [Getting Started](#-getting-started) • [Usage](#-usage) • [Project Structure](#-project-structure) • [Contributing](#-contributing)
 
@@ -21,7 +22,7 @@ Craft rich, descriptive prompts for AI image generators with curated art styles,
 ## ✨ Features
 
 - **🤖 Multi-Model Support** - Optimized prompts for Nano Banana Pro, Midjourney, Seedream 4.5, GPT-Image-1.5, FLUX.2 Pro, Qwen-Image, Stable Diffusion, and Leonardo
-- **🎨 60+ Curated Styles** - Professional art styles across 8 categories: Photo, Cinematic, Art, Digital, Mood, Texture, Color, Era
+- **🎨 70+ Curated Styles** - Professional art styles across 8 categories: Photo, Cinematic, Art, Digital, Mood, Texture, Color, Era
 - **💡 Lighting Controls** - White balance, anti-cast, and professional lighting setups (Softbox, Rembrandt, Rim Light, HMI, etc.)
 - **🥞 Recipe Stack System** - Combine up to 5 art styles and 3 lighting controls with adjustable intensity weights (1-10)
 - **📐 Dynamic Aspect Ratio Slider** - Magnetized snap points with morphing previews, haptic ticks, and live ratio feedback
@@ -71,7 +72,7 @@ StyleyeS/
 ├── SECURITY_AUDIT.md       # Security audit notes
 ├── js/
 │   ├── config.js           # App configuration & model settings
-│   ├── data.js             # Style & control definitions (60+ styles)
+│   ├── data.js             # Style & control definitions (70+ styles)
 │   ├── state.js            # State management & localStorage
 │   ├── ui.js               # DOM rendering & updates
 │   ├── handlers.js         # Event binding & user interactions
@@ -312,7 +313,7 @@ No build process required - it's ready to deploy as-is!
 StyleyeS uses a **modular vanilla JavaScript architecture** with clear separation of concerns:
 
 - **config.js** - Application configuration and model-specific settings
-- **data.js** - Static data definitions (60+ styles, lighting controls)
+- **data.js** - Static data definitions (70+ styles, lighting controls)
 - **state.js** - Centralized state management with localStorage persistence
 - **ui.js** - Pure DOM rendering functions
 - **handlers.js** - Event delegation and user interaction handling
