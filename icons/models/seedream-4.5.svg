@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   StyleyeS Model Icon: Seedream 4.5
-  Description: Three ascending bars representing growth and consistency
-  Version: 1.8.1
-  Last Updated: 2026-01-04
+  Description: Rising bar chart representing growth - white on transparent
+  Version: 2.0.1
+  Last Updated: 2026-01-05
 -->
 <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="15" y="50" width="15" height="40" fill="currentColor"/>
-  <rect x="40" y="35" width="15" height="55" fill="currentColor"/>
-  <rect x="65" y="20" width="15" height="70" fill="currentColor"/>
+  <rect x="15" y="50" width="15" height="40" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="40" y="35" width="15" height="55" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="65" y="20" width="15" height="70" fill="currentColor" fill-opacity="0.9"/>
 </svg>

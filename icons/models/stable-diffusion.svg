@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   StyleyeS Model Icon: Stable Diffusion
-  Description: Circle with dashed ring representing diffusion process
-  Version: 1.8.1
-  Last Updated: 2026-01-04
+  Description: Circle with dashed ring representing diffusion process - white on transparent
+  Version: 2.0.1
+  Last Updated: 2026-01-05
 -->
 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="12" cy="12" r="3" fill="currentColor"/>
-  <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"/>
+  <circle cx="12" cy="12" r="3" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-opacity="0.9" stroke-width="2" stroke-dasharray="4 4"/>
 </svg>
