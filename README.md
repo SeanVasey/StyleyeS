@@ -1,6 +1,6 @@
 <div align="center">
 
-![StyleyeS Cover](images/styleyes-cover.png)
+![StyleyeS Hero v2.0](images/styleyes-hero-v2.png)
 
 # StyleyeS v2.0.0
 
@@ -85,8 +85,7 @@ StyleyeS/
 ├── scripts/
 │   └── validate.js          # Repository validation checks
 └── images/
-    ├── styleyes-banner.png # Repository banner image
-    └── styleyes-cover.png  # Repository cover image
+    └── styleyes-hero-v2.png  # Repository hero image (v2.0)
 ```
 
 ## 🚀 Getting Started
