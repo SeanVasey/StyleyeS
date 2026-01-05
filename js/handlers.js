@@ -1,6 +1,9 @@
 /**
- * StyleyeS v1.8 — Event Handlers
+ * StyleyeS v2.0.0 — Event Handlers
  * User interaction and event binding
+ *
+ * @version 2.0.0
+ * @updated 2026-01-05
  */
 
 const StyleyeSHandlers = {

@@ -1,17 +1,18 @@
 /**
- * StyleyeS v1.8.1 — Configuration
+ * StyleyeS v2.0.0 — Configuration
  * Model configs, aspect ratios, and constants
  *
- * @version 1.8.1
- * @updated 2026-01-04
+ * @version 2.0.0
+ * @updated 2026-01-05
  * @changelog
+ *   - 2.0.0: Major release with enhanced branding, documentation, and polish
  *   - 1.8.1: Externalized model icons to /icons/models/ directory
  *   - 1.8.0: Initial release with rich model dropdown
  */
 
 const StyleyeSConfig = {
   // Application Version
-  VERSION: '1.8.1',
+  VERSION: '2.0.0',
 
   // Storage Keys
   STORAGE_KEY: 'styleyes_v1_state',
