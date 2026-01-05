@@ -13,11 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Icons now use `currentColor` with 0.9 fill-opacity for consistent theming.
 - Cleaned up legacy model icon files from `/icons/` root directory.
 - Updated icon version metadata to 2.0.1 with standardized XML declarations.
+- Removed references to missing optional PWA assets (splash screens, screenshots).
 
 ### Improved
 - Reduced icon file sizes with optimized SVG paths.
 - Better visual consistency across all model icons in the dropdown.
 - Enhanced icon compatibility with dark/light theme switching.
+- Streamlined manifest.json and index.html for cleaner deployment.
 
 ## [2.0.0] - 2026-01-05
 ### Added
