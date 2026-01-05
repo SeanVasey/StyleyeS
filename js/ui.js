@@ -1,10 +1,11 @@
 /**
- * StyleyeS v2.0.0 — UI Module
+ * StyleyeS v2.0.1 — UI Module
  * Rendering and DOM manipulation
  *
- * @version 2.0.0
+ * @version 2.0.1
  * @updated 2026-01-05
  * @changelog
+ *   - 2.0.1: Updated model icons to white-line design
  *   - 2.0.0: Major release with enhanced branding and documentation
  *   - 1.8.1: Added external SVG icon loading with caching
  *   - 1.8.0: Initial release with rich model dropdown

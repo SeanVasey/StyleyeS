@@ -1,10 +1,11 @@
 /**
- * StyleyeS v2.0.0 — Configuration
+ * StyleyeS v2.0.1 — Configuration
  * Model configs, aspect ratios, and constants
  *
- * @version 2.0.0
+ * @version 2.0.1
  * @updated 2026-01-05
  * @changelog
+ *   - 2.0.1: Updated model icons to white-line design, cleanup for Vercel deployment
  *   - 2.0.0: Major release with enhanced branding, documentation, and polish
  *   - 1.8.1: Externalized model icons to /icons/models/ directory
  *   - 1.8.0: Initial release with rich model dropdown
@@ -12,7 +13,7 @@
 
 const StyleyeSConfig = {
   // Application Version
-  VERSION: '2.0.0',
+  VERSION: '2.0.1',
 
   // Storage Keys
   STORAGE_KEY: 'styleyes_v1_state',
