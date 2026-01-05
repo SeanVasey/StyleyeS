@@ -81,7 +81,16 @@ StyleyeS/
 │   ├── favicon.svg         # Vector favicon
 │   ├── icon-*.png          # PWA icons (72px - 512px)
 │   ├── icon-maskable-*.png # Maskable icons for Android
-│   └── apple-touch-icon-*.png # iOS home screen icons
+│   ├── apple-touch-icon-*.png # iOS home screen icons
+│   └── models/             # Model-specific icons (white-line SVGs)
+│       ├── nano-banana-pro.svg
+│       ├── midjourney.svg
+│       ├── seedream-4.5.svg
+│       ├── gpt-image-1.5.svg
+│       ├── flux-2-pro.svg
+│       ├── qwen-image.svg
+│       ├── stable-diffusion.svg
+│       └── leonardo.svg
 ├── scripts/
 │   └── validate.js          # Repository validation checks
 └── images/

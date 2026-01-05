@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-01-05
+### Changed
+- Updated all 8 model icons to new white-line design on transparent backgrounds.
+- Icons now use `currentColor` with 0.9 fill-opacity for consistent theming.
+- Cleaned up legacy model icon files from `/icons/` root directory.
+- Updated icon version metadata to 2.0.1 with standardized XML declarations.
+
+### Improved
+- Reduced icon file sizes with optimized SVG paths.
+- Better visual consistency across all model icons in the dropdown.
+- Enhanced icon compatibility with dark/light theme switching.
+
 ## [2.0.0] - 2026-01-05
 ### Added
 - Magnetic aspect ratio slider notches with haptic feedback and morphing preview transitions.
