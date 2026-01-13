@@ -179,10 +179,18 @@
   max-height: 400px;
 }
 
+/* Zone icon - SVG camera icon */
 .zone-icon {
-  font-size: 1.5rem;
+  width: 2rem;
+  height: 2rem;
   margin-bottom: 0.5rem;
   color: var(--c1);
+  opacity: 0.8;
+}
+
+.zone-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 .remove-img {
@@ -200,8 +208,19 @@
   align-items: center;
   justify-content: center;
   z-index: var(--z-elevated);
-  font-size: 14px;
   transition: background 0.2s ease;
+  padding: 4px;
+}
+
+.remove-img .close-icon {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.remove-img .close-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 .remove-img:hover {
@@ -869,8 +888,17 @@
   gap: 0.5rem;
 }
 
-.category-title .emoji {
-  font-size: 1rem;
+/* Category icon styling (replaces emoji) */
+.category-title .category-icon {
+  display: inline-flex;
+  width: 1.1rem;
+  height: 1.1rem;
+  opacity: 0.9;
+}
+
+.category-title .category-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 .carousel-nav {
@@ -916,75 +944,80 @@
   }
 }
 
+/* ============================================
+   3D CAROUSEL TRACK
+   ============================================ */
+
 .carousel-track {
+  position: relative;
+  height: 140px;                          /* Accommodate card height + padding */
   display: flex;
-  gap: 0.875rem;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  padding: 0.5rem 0.25rem;
-  margin: 0 -0.25rem;
-
-  /* Hide scrollbar but keep functionality */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  align-items: center;
+  justify-content: center;
+  perspective: 800px;
+  perspective-origin: center center;
+  overflow: visible;                       /* Allow 3D overflow */
+  cursor: grab;
+  touch-action: pan-y;                     /* Allow vertical scroll, capture horizontal */
+  user-select: none;
+  -webkit-user-select: none;
+  margin: 0.5rem 0;
 }
 
-.carousel-track::-webkit-scrollbar {
-  display: none;
+.carousel-track:active {
+  cursor: grabbing;
 }
 
-/* Cards within carousel */
+/* Cards in 3D carousel - absolutely positioned */
 .carousel-track .card-item {
-  flex: 0 0 auto;
-  width: 140px;
-  scroll-snap-align: start;
+  position: absolute;
+  width: 140px;                            /* Keep existing width */
+  flex: none;
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: box-shadow 0.2s ease;        /* Only transition non-physics props */
 }
 
 @media (min-width: 500px) {
+  .carousel-track {
+    height: 160px;
+  }
   .carousel-track .card-item {
     width: 160px;
   }
 }
 
 @media (min-width: 768px) {
+  .carousel-track {
+    height: 180px;
+  }
   .carousel-track .card-item {
     width: 180px;
   }
 }
 
-/* Scroll fade indicators */
-.style-category-section::before,
-.style-category-section::after {
+/* Focus glow behind center card */
+.carousel-track::before {
   content: '';
   position: absolute;
-  top: 40px;
-  bottom: 0;
-  width: 30px;
+  width: 180px;
+  height: 120px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 107, 53, 0.15) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(20px);
   pointer-events: none;
-  z-index: 2;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  z-index: 0;
 }
 
-.style-category-section::before {
-  left: 0;
-  background: linear-gradient(90deg, var(--bg), transparent);
-}
-
+/* 3D Carousel - disable scroll-based fade indicators (not applicable) */
+.style-category-section::before,
 .style-category-section::after {
-  right: 0;
-  background: linear-gradient(270deg, var(--bg), transparent);
-}
-
-.style-category-section.scroll-left::before {
-  opacity: 1;
-}
-
-.style-category-section.scroll-right::after {
-  opacity: 1;
+  display: none;
 }
 
 /* Legacy grid styles for controls mode */
@@ -1966,4 +1999,154 @@
 .history-actions button:hover {
   color: var(--t1);
   border-color: var(--c1);
+}
+
+/* ============================================
+   ICON SYSTEM STYLES
+   Vector icons replacing emojis for professional UI
+   ============================================ */
+
+/* Base icon wrapper styles */
+.icon,
+.btn-icon,
+.section-icon,
+.cat-icon,
+.badge-icon,
+.close-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon svg,
+.btn-icon svg,
+.section-icon svg,
+.cat-icon svg,
+.badge-icon svg,
+.close-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Button icons - used in utility buttons, action buttons */
+.btn-icon {
+  width: 1em;
+  height: 1em;
+  opacity: 0.85;
+}
+
+.util-btn .btn-icon,
+.tab-btn .btn-icon {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+/* Section header icons - Recipe Stack, Generated Prompt, History */
+.section-icon {
+  width: 1.25em;
+  height: 1.25em;
+  opacity: 0.9;
+  margin-right: 0.25em;
+  vertical-align: -0.15em;
+}
+
+h3 .section-icon {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+/* Category button icons */
+.cat-icon {
+  width: 1em;
+  height: 1em;
+  opacity: 0.85;
+}
+
+.cat-btn.active .cat-icon {
+  opacity: 1;
+}
+
+/* Badge icons (quality indicator in model cards) */
+.badge-icon {
+  width: 0.9em;
+  height: 0.9em;
+  margin-right: 0.15em;
+}
+
+/* Close button icons (modals, remove buttons) */
+.close-icon {
+  width: 1em;
+  height: 1em;
+}
+
+.modal-close .close-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Row icons in recipe stack */
+.row-icon {
+  display: inline-flex;
+  width: 1.1rem;
+  height: 1.1rem;
+  opacity: 0.9;
+}
+
+.row-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.stack-row.type-style .row-icon {
+  color: var(--c2);
+}
+
+.stack-row.type-control .row-icon {
+  color: var(--c1);
+}
+
+/* Row remove button close icon */
+.row-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.25rem;
+}
+
+.row-remove svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* History action button icons */
+.history-actions .btn-icon {
+  width: 0.9em;
+  height: 0.9em;
+  vertical-align: -0.1em;
+}
+
+/* Toast icons (success/warning indicators rendered via CSS) */
+.toast::before {
+  content: '';
+  display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
+  margin-right: 0.5em;
+  background-size: contain;
+  background-repeat: no-repeat;
+  vertical-align: -0.15em;
+}
+
+/* Success toast - check icon */
+.toast[style*="--success"]::before,
+.toast:not([style*="--warn"])::before {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%234ade80' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+}
+
+/* Warning toast - warning icon */
+.toast[style*="--warn"]::before {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%23fbbf24' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/%3E%3Cline x1='12' y1='9' x2='12' y2='13'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E");
 }
