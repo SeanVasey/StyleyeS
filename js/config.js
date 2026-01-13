@@ -220,22 +220,22 @@ const StyleyeSConfig = {
     }
   },
 
-  // Category Emojis
-  categoryEmojis: {
-    'Photo': '📷',
-    'Cinematic': '🎬',
-    'Art': '🖼️',
-    'Digital': '💻',
-    'Mood': '🌙',
-    'Texture': '🧱',
-    'Color': '🎨',
-    'Era': '⏳'
+  // Category Icons (icon names from StyleyeSIcons)
+  categoryIcons: {
+    'Photo': 'camera',
+    'Cinematic': 'clapperboard',
+    'Art': 'frame',
+    'Digital': 'monitor',
+    'Mood': 'moon',
+    'Texture': 'texture',
+    'Color': 'palette',
+    'Era': 'hourglass'
   },
 
-  controlCategoryEmojis: {
-    'Lighting': '💡',
-    'White Balance': '⚪️',
-    'Anti-Cast': '🧼'
+  controlCategoryIcons: {
+    'Lighting': 'lightbulb',
+    'White Balance': 'sunCircle',
+    'Anti-Cast': 'droplet'
   }
 };
 
@@ -250,5 +250,5 @@ StyleyeSConfig.models.forEach(model => {
 });
 Object.freeze(StyleyeSConfig.models);
 Object.freeze(StyleyeSConfig.modelConfig);
-Object.freeze(StyleyeSConfig.categoryEmojis);
-Object.freeze(StyleyeSConfig.controlCategoryEmojis);
+Object.freeze(StyleyeSConfig.categoryIcons);
+Object.freeze(StyleyeSConfig.controlCategoryIcons);

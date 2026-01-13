@@ -93,9 +93,9 @@
           ></textarea>
           
           <div class="image-upload-zone" id="imageZone">
-            <button class="remove-img" id="removeImg">✕</button>
+            <button class="remove-img" id="removeImg"><span class="close-icon" data-icon="close"></span></button>
             <img src="" class="zone-preview" id="imgPreview" alt="Preview">
-            <div class="zone-icon">📷</div>
+            <div class="zone-icon" data-icon="camera"></div>
             <div class="zone-text">Drop reference image here</div>
             <div class="zone-sub">or click to upload</div>
             <input type="file" id="imgInput" accept="image/*" style="display:none">
@@ -166,19 +166,19 @@
       
       <div class="utility-bar">
         <div class="util-group">
-          <button class="util-btn" id="btnHistory">📜 History</button>
-          <button class="util-btn" id="btnFavorites">⭐ Favorites</button>
+          <button class="util-btn" id="btnHistory"><span class="btn-icon" data-icon="scroll"></span> History</button>
+          <button class="util-btn" id="btnFavorites"><span class="btn-icon" data-icon="star"></span> Favorites</button>
         </div>
         <div class="util-group">
-          <button class="util-btn" id="btnExport">📤 Export</button>
-          <button class="util-btn" id="btnImport">📥 Import</button>
+          <button class="util-btn" id="btnExport"><span class="btn-icon" data-icon="upload"></span> Export</button>
+          <button class="util-btn" id="btnImport"><span class="btn-icon" data-icon="download"></span> Import</button>
         </div>
       </div>
 
       <div class="picker-container">
         <div class="tab-group">
-          <button class="tab-btn active" id="tabStyles">🎨 Art Styles</button>
-          <button class="tab-btn" id="tabControls">💡 Lighting & WB</button>
+          <button class="tab-btn active" id="tabStyles"><span class="btn-icon" data-icon="palette"></span> Art Styles</button>
+          <button class="tab-btn" id="tabControls"><span class="btn-icon" data-icon="lightbulb"></span> Lighting & WB</button>
         </div>
         
         <div class="categories" id="categories"></div>
@@ -187,7 +187,7 @@
 
       <div class="stack-section">
         <div class="stack-header">
-          <h3>🥞 Recipe Stack</h3>
+          <h3><span class="section-icon" data-icon="layers"></span> Recipe Stack</h3>
           <span class="stack-count" id="totalCount">0 / 8</span>
         </div>
         <div class="stack-list" id="stackList">
@@ -209,11 +209,11 @@
       </div>
 
       <div class="output-section">
-        <div class="output-header"><h3>✨ Generated Prompt</h3></div>
+        <div class="output-header"><h3><span class="section-icon" data-icon="sparkles"></span> Generated Prompt</h3></div>
         <div class="prompt-output" id="promptOutput">Your vivid prompt will appear here...</div>
         <div class="actions">
-          <button class="btn btn-primary" id="btnCopy">📋 Copy</button>
-          <button class="btn btn-secondary" id="btnClear">🗑️ Clear</button>
+          <button class="btn btn-primary" id="btnCopy"><span class="btn-icon" data-icon="clipboard"></span> Copy</button>
+          <button class="btn btn-secondary" id="btnClear"><span class="btn-icon" data-icon="trash"></span> Clear</button>
         </div>
       </div>
     </main>
@@ -226,8 +226,8 @@
   <div class="modal" id="historyModal">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>📜 Prompt History</h3>
-        <button class="modal-close" id="closeHistory">✕</button>
+        <h3><span class="section-icon" data-icon="scroll"></span> Prompt History</h3>
+        <button class="modal-close" id="closeHistory"><span class="close-icon" data-icon="close"></span></button>
       </div>
       <div class="history-list" id="historyList">
         <p class="history-empty">No history yet</p>
@@ -239,6 +239,8 @@
 
   <!-- Modular Scripts -->
   <script src="js/config.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/carousel.js"></script>
   <script src="js/data.js"></script>
   <script src="js/state.js"></script>
   <script src="js/ui.js"></script>

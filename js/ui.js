@@ -214,7 +214,7 @@ const StyleyeSUI = {
         <p class="model-card-description">${description}</p>
         <div class="model-card-capabilities">
           <span class="capability-badge speed">${this.escapeHtml(model.capabilities.speed)}</span>
-          <span class="capability-badge quality">⚡${this.escapeHtml(String(model.capabilities.quality))}</span>
+          <span class="capability-badge quality">${StyleyeSIcons.inline('bolt', 'badge-icon')}${this.escapeHtml(String(model.capabilities.quality))}</span>
           ${features.map(feature => `<span class="capability-badge feature">${this.escapeHtml(feature)}</span>`).join('')}
         </div>
       </button>
@@ -562,25 +562,31 @@ const StyleyeSUI = {
   renderCategories() {
     const { categories } = this.elements;
     if (!categories) return;
-    
-    let cats, activeCat, emojiMap;
-    
+
+    let cats, activeCat, iconMap;
+
     if (StyleyeSState.pickerMode === 'styles') {
       cats = ['all', ...StyleyeSData.getStyleCategories()];
       activeCat = StyleyeSState.activeCategory;
-      emojiMap = StyleyeSConfig.categoryEmojis;
+      iconMap = StyleyeSConfig.categoryIcons;
     } else {
       cats = ['all', ...StyleyeSData.getControlCategories()];
       activeCat = StyleyeSState.controlActiveCategory;
-      emojiMap = StyleyeSConfig.controlCategoryEmojis;
+      iconMap = StyleyeSConfig.controlCategoryIcons;
     }
-    
+
     categories.innerHTML = cats.map(cat => {
-      const emoji = cat === 'all' 
-        ? (StyleyeSState.pickerMode === 'styles' ? '✨' : '🧩') 
-        : emojiMap[cat] || '';
+      let iconHtml;
+      if (cat === 'all') {
+        iconHtml = StyleyeSState.pickerMode === 'styles'
+          ? StyleyeSIcons.inline('sparkles', 'cat-icon')
+          : StyleyeSIcons.inline('puzzle', 'cat-icon');
+      } else {
+        const iconName = iconMap[cat] || '';
+        iconHtml = iconName ? StyleyeSIcons.inline(iconName, 'cat-icon') : '';
+      }
       const label = cat === 'all' ? 'All' : cat;
-      return `<button class="cat-btn ${cat === activeCat ? 'active' : ''}" data-cat="${cat}">${emoji} ${label}</button>`;
+      return `<button class="cat-btn ${cat === activeCat ? 'active' : ''}" data-cat="${cat}">${iconHtml} ${label}</button>`;
     }).join('');
   },
   
@@ -672,7 +678,7 @@ const StyleyeSUI = {
     if (!stylesContainer) return;
 
     const activeCat = StyleyeSState.activeCategory;
-    const emojiMap = StyleyeSConfig.categoryEmojis;
+    const iconMap = StyleyeSConfig.categoryIcons;
 
     let categories;
     if (activeCat === 'all') {
@@ -699,13 +705,14 @@ const StyleyeSUI = {
 
       if (styles.length === 0) return '';
 
-      const emoji = emojiMap[category] || '✨';
+      const iconName = iconMap[category] || 'sparkles';
+      const iconHtml = StyleyeSIcons.inline(iconName, 'category-icon');
       const sanitizedCat = this.sanitizeAttr(category);
 
       return `
         <section class="style-category-section" data-category="${sanitizedCat}">
           <div class="category-header">
-            <h3 class="category-title"><span class="emoji">${emoji}</span> ${this.escapeHtml(category)}</h3>
+            <h3 class="category-title">${iconHtml} ${this.escapeHtml(category)}</h3>
             <div class="carousel-nav">
               <button class="carousel-arrow prev" data-carousel-prev="${sanitizedCat}" aria-label="Previous" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -814,50 +821,123 @@ const StyleyeSUI = {
   },
 
   /**
-   * Initialize carousel scroll controls
+   * Initialize 3D carousel controls for all category sections
    */
   initCarouselControls() {
-    const carousels = document.querySelectorAll('.carousel-track');
+    const tracks = document.querySelectorAll('.carousel-track');
 
-    carousels.forEach(track => {
+    tracks.forEach(track => {
       const category = track.dataset.carousel;
+      const cards = track.querySelectorAll('.card-item');
       const section = track.closest('.style-category-section');
       const prevBtn = document.querySelector(`[data-carousel-prev="${category}"]`);
       const nextBtn = document.querySelector(`[data-carousel-next="${category}"]`);
-      const scrollAmount = 200;
 
-      // Arrow navigation
+      // Initialize physics state
+      const state = StyleyeSCarousel.init(category, cards.length);
+      if (!state) return;
+
+      // Update callback
+      const onUpdate = (s, isFinal) => {
+        this.updateCarouselCards(track, s);
+        if (isFinal) {
+          this.updateCarouselArrows(prevBtn, nextBtn, s);
+        }
+      };
+
+      // Initial render
+      this.updateCarouselCards(track, state);
+      this.updateCarouselArrows(prevBtn, nextBtn, state);
+
+      // Mouse events
+      track.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.card-fav')) return; // Don't drag on fav button
+        e.preventDefault();
+        StyleyeSCarousel.startDrag(state, e.clientX);
+        track.style.cursor = 'grabbing';
+      });
+
+      // Use bound handlers for document events to allow cleanup
+      const handleMouseMove = (e) => {
+        if (state.isDragging) {
+          StyleyeSCarousel.moveDrag(state, e.clientX, onUpdate);
+        }
+      };
+
+      const handleMouseUp = () => {
+        if (state.isDragging) {
+          StyleyeSCarousel.endDrag(state, onUpdate);
+          track.style.cursor = 'grab';
+        }
+      };
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+
+      // Touch events
+      track.addEventListener('touchstart', (e) => {
+        if (e.target.closest('.card-fav')) return;
+        StyleyeSCarousel.startDrag(state, e.touches[0].clientX);
+      }, { passive: true });
+
+      track.addEventListener('touchmove', (e) => {
+        if (state.isDragging) {
+          StyleyeSCarousel.moveDrag(state, e.touches[0].clientX, onUpdate);
+        }
+      }, { passive: true });
+
+      track.addEventListener('touchend', () => {
+        if (state.isDragging) {
+          StyleyeSCarousel.endDrag(state, onUpdate);
+        }
+      });
+
+      // Arrow buttons
       if (prevBtn) {
         prevBtn.addEventListener('click', () => {
-          track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+          StyleyeSCarousel.rotateBy(state, -1, onUpdate);
         });
       }
 
       if (nextBtn) {
         nextBtn.addEventListener('click', () => {
-          track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+          StyleyeSCarousel.rotateBy(state, 1, onUpdate);
         });
       }
-
-      // Update button states based on scroll position
-      const updateScrollState = () => {
-        const { scrollLeft, scrollWidth, clientWidth } = track;
-        const atStart = scrollLeft <= 10;
-        const atEnd = scrollLeft >= scrollWidth - clientWidth - 10;
-
-        if (prevBtn) prevBtn.disabled = atStart;
-        if (nextBtn) nextBtn.disabled = atEnd;
-
-        // Update fade indicators on section
-        if (section) {
-          section.classList.toggle('scroll-left', !atStart);
-          section.classList.toggle('scroll-right', !atEnd);
-        }
-      };
-
-      track.addEventListener('scroll', updateScrollState, { passive: true });
-      updateScrollState(); // Initial state
     });
+  },
+
+  /**
+   * Update card positions based on carousel state
+   * @param {HTMLElement} track - Carousel track element
+   * @param {Object} state - Carousel state object
+   */
+  updateCarouselCards(track, state) {
+    const cards = track.querySelectorAll('.card-item');
+
+    cards.forEach((card, index) => {
+      const itemAngle = index * state.anglePerItem;
+      const currentAngle = state.rotation + itemAngle;
+      const styles = StyleyeSCarousel.getStyleForAngle(currentAngle);
+
+      card.style.transform = styles.transform;
+      card.style.opacity = styles.opacity;
+      card.style.filter = styles.filter;
+      card.style.zIndex = styles.zIndex;
+      card.style.pointerEvents = styles.pointerEvents;
+    });
+  },
+
+  /**
+   * Update arrow button states
+   * @param {HTMLElement} prevBtn - Previous button element
+   * @param {HTMLElement} nextBtn - Next button element
+   * @param {Object} state - Carousel state object
+   */
+  updateCarouselArrows(prevBtn, nextBtn, state) {
+    // In a circular carousel, arrows are always enabled
+    if (prevBtn) prevBtn.disabled = false;
+    if (nextBtn) nextBtn.disabled = false;
   },
   
   /**
@@ -884,15 +964,15 @@ const StyleyeSUI = {
         html += `
           <div class="stack-row type-control">
             <div class="row-info">
-              <span class="row-icon">💡</span>
+              ${StyleyeSIcons.inline('lightbulb', 'row-icon')}
               <span class="row-name">${item.name}</span>
             </div>
-            <button class="row-remove" data-remove-ctrl="${id}" aria-label="Remove ${item.name}">×</button>
+            <button class="row-remove" data-remove-ctrl="${id}" aria-label="Remove ${item.name}">${StyleyeSIcons.get('close')}</button>
           </div>
         `;
       }
     });
-    
+
     // Render styles
     StyleyeSState.stack.forEach(id => {
       const item = StyleyeSData.getStyleById(id);
@@ -900,10 +980,10 @@ const StyleyeSUI = {
         html += `
           <div class="stack-row type-style">
             <div class="row-info">
-              <span class="row-icon">🎨</span>
+              ${StyleyeSIcons.inline('palette', 'row-icon')}
               <span class="row-name">${item.name}</span>
             </div>
-            <button class="row-remove" data-remove-style="${id}" aria-label="Remove ${item.name}">×</button>
+            <button class="row-remove" data-remove-style="${id}" aria-label="Remove ${item.name}">${StyleyeSIcons.get('close')}</button>
           </div>
         `;
       }
@@ -932,8 +1012,8 @@ const StyleyeSUI = {
         </div>
         <div class="history-prompt">${this.escapeHtml(h.prompt)}</div>
         <div class="history-actions">
-          <button data-action="copy" data-index="${i}">📋 Copy</button>
-          <button data-action="delete" data-index="${i}">🗑️ Delete</button>
+          <button data-action="copy" data-index="${i}">${StyleyeSIcons.inline('clipboard', 'btn-icon')} Copy</button>
+          <button data-action="delete" data-index="${i}">${StyleyeSIcons.inline('trash', 'btn-icon')} Delete</button>
         </div>
       </div>
     `).join('');
@@ -1105,14 +1185,14 @@ const StyleyeSUI = {
     // Validate file type (MIME type - more secure than extension)
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
     if (!allowedTypes.includes(file.type)) {
-      this.showToast('⚠️ Invalid file type. Allowed: JPG, PNG, GIF, WebP, SVG', 'warn');
+      this.showToast('Invalid file type. Allowed: JPG, PNG, GIF, WebP, SVG', 'warn');
       return;
     }
 
     // Validate file size (10MB limit to prevent DoS)
     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
     if (file.size > MAX_FILE_SIZE) {
-      this.showToast('⚠️ File too large. Max size: 10MB', 'warn');
+      this.showToast('File too large. Max size: 10MB', 'warn');
       return;
     }
 
@@ -1122,7 +1202,7 @@ const StyleyeSUI = {
 
     // Add error handler for FileReader
     reader.onerror = () => {
-      this.showToast('⚠️ Failed to read file', 'warn');
+      this.showToast('Failed to read file', 'warn');
     };
 
     reader.onload = (e) => {

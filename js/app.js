@@ -1,9 +1,12 @@
 /**
- * StyleyeS v2.0.0 — Main Application
+ * StyleyeS v2.1.0 — Main Application
  * Initialization and orchestration
  *
- * @version 2.0.0
- * @updated 2026-01-05
+ * @version 2.1.0
+ * @updated 2026-01-13
+ * @changelog
+ *   - 2.1.0: Icon system replacing emojis, 3D carousel
+ *   - 2.0.0: Major release with enhanced branding
  */
 
 const StyleyeS = {
@@ -18,7 +21,7 @@ const StyleyeS = {
       this.bootstrap();
     }
   },
-  
+
   /**
    * Bootstrap the application
    */
@@ -28,6 +31,9 @@ const StyleyeS = {
 
     // Register service worker
     this.registerServiceWorker();
+
+    // Initialize icons in static HTML elements
+    this.initIcons();
 
     // Cache DOM elements
     StyleyeSUI.cacheElements();
@@ -49,6 +55,19 @@ const StyleyeS = {
 
     // Mark as ready
     document.body.classList.add('app-ready');
+  },
+
+  /**
+   * Initialize SVG icons for all data-icon elements in static HTML
+   */
+  initIcons() {
+    const iconElements = document.querySelectorAll('[data-icon]');
+    iconElements.forEach(el => {
+      const iconName = el.dataset.icon;
+      if (iconName && StyleyeSIcons[iconName]) {
+        el.innerHTML = StyleyeSIcons[iconName];
+      }
+    });
   },
 
   /**

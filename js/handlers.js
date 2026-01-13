@@ -235,13 +235,13 @@ const StyleyeSHandlers = {
           if (StyleyeSState.pickerMode === 'styles') {
             const result = StyleyeSState.toggleStyle(id);
             if (!result.success) {
-              StyleyeSUI.showToast(`⚠️ ${result.message}`, 'warn');
+              StyleyeSUI.showToast(result.message, 'warn');
               return;
             }
           } else {
             const result = StyleyeSState.toggleControl(id);
             if (!result.success) {
-              StyleyeSUI.showToast(`⚠️ ${result.message}`, 'warn');
+              StyleyeSUI.showToast(result.message, 'warn');
               return;
             }
           }
@@ -365,10 +365,10 @@ const StyleyeSHandlers = {
         prompt,
         model: StyleyeSState.currentModel || StyleyeSConfig.DEFAULT_MODEL
       });
-      
-      StyleyeSUI.showToast('✅ Copied!');
+
+      StyleyeSUI.showToast('Copied to clipboard!');
     }).catch(() => {
-      StyleyeSUI.showToast('⚠️ Copy failed', 'warn');
+      StyleyeSUI.showToast('Copy failed', 'warn');
     });
   },
   
@@ -436,9 +436,9 @@ const StyleyeSHandlers = {
           const historyItem = StyleyeSState.history[index];
           if (historyItem && historyItem.prompt) {
             navigator.clipboard.writeText(historyItem.prompt).then(() => {
-              StyleyeSUI.showToast('✅ Copied!');
+              StyleyeSUI.showToast('Copied to clipboard!');
             }).catch(() => {
-              StyleyeSUI.showToast('⚠️ Copy failed', 'warn');
+              StyleyeSUI.showToast('Copy failed', 'warn');
             });
           }
         } else if (action === 'delete') {
@@ -469,7 +469,7 @@ const StyleyeSHandlers = {
           a.href = url;
           a.download = `styleyes-v${StyleyeSConfig.VERSION}-${Date.now()}.json`;
           a.click();
-          StyleyeSUI.showToast('✅ Exported!');
+          StyleyeSUI.showToast('Exported successfully!');
         } finally {
           // Always revoke the object URL to prevent memory leak
           URL.revokeObjectURL(url);
@@ -490,7 +490,7 @@ const StyleyeSHandlers = {
 
         // Validate file type (MIME type or extension)
         if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
-          StyleyeSUI.showToast('⚠️ Please select a JSON file', 'warn');
+          StyleyeSUI.showToast('Please select a JSON file', 'warn');
           e.target.value = '';
           return;
         }
@@ -498,7 +498,7 @@ const StyleyeSHandlers = {
         // Validate file size (max 5MB for import)
         const MAX_IMPORT_SIZE = 5 * 1024 * 1024;
         if (file.size > MAX_IMPORT_SIZE) {
-          StyleyeSUI.showToast('⚠️ File too large. Max 5MB', 'warn');
+          StyleyeSUI.showToast('File too large. Max 5MB', 'warn');
           e.target.value = '';
           return;
         }
@@ -506,7 +506,7 @@ const StyleyeSHandlers = {
         const reader = new FileReader();
 
         reader.onerror = () => {
-          StyleyeSUI.showToast('⚠️ Failed to read file', 'warn');
+          StyleyeSUI.showToast('Failed to read file', 'warn');
         };
 
         reader.onload = (ev) => {
@@ -514,10 +514,10 @@ const StyleyeSHandlers = {
             const data = JSON.parse(ev.target.result);
             StyleyeSState.import(data);
             StyleyeSUI.renderAll();
-            StyleyeSUI.showToast('✅ Imported!');
+            StyleyeSUI.showToast('Imported successfully!');
           } catch (error) {
             console.warn('Import error:', error);
-            StyleyeSUI.showToast('⚠️ Invalid file format', 'warn');
+            StyleyeSUI.showToast('Invalid file format', 'warn');
           }
         };
 
