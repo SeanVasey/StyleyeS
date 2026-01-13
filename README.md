@@ -2,7 +2,7 @@
 
 ![StyleyeS Hero v2.0](images/styleyes-hero-v2.png)
 
-# StyleyeS v2.0.1
+# StyleyeS v2.1.0
 
 **Vivid prompt engineering for AI image generation**
 
@@ -11,7 +11,7 @@ Craft rich, descriptive prompts for AI image generators with curated art styles,
 [![GitHub](https://img.shields.io/badge/GitHub-StyleyeS-FF6B35?style=for-the-badge&logo=github)](https://github.com/SeanVasey/StyleyeS)
 [![License](https://img.shields.io/badge/License-Apache%202.0-DC2F5A?style=for-the-badge)](LICENSE)
 [![PWA](https://img.shields.io/badge/PWA-Ready-9B4DCA?style=for-the-badge)](manifest.json)
-[![Version](https://img.shields.io/badge/Version-2.0.1-00D4AA?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-2.1.0-00D4AA?style=for-the-badge)](CHANGELOG.md)
 
 [Features](#-features) • [Getting Started](#-getting-started) • [Usage](#-usage) • [Project Structure](#-project-structure) • [Contributing](#-contributing)
 

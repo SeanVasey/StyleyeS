@@ -1,9 +1,9 @@
 /**
- * StyleyeS v2.0.0 — State Management
+ * StyleyeS v2.1.0 — State Management
  * Application state and persistence
  *
- * @version 2.0.0
- * @updated 2026-01-05
+ * @version 2.1.0
+ * @updated 2026-01-13
  */
 
 const StyleyeSState = {
