@@ -664,6 +664,10 @@ const StyleyeSUI = {
     const { stylesContainer } = this.elements;
     if (!stylesContainer) return;
 
+    // Cancel all active carousel animations before destroying DOM
+    // Prevents orphaned RAF callbacks and memory leaks
+    StyleyeSCarousel.destroyAll();
+
     if (StyleyeSState.pickerMode === 'styles') {
       this.renderCategoryCarousels();
     } else {
