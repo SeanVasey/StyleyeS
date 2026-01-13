@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>StyleyeS v2.0.1 — Vivid Prompt Engineering</title>
+  <title>StyleyeS v2.1.0 — Vivid Prompt Engineering</title>
   <meta name="description" content="StyleyeS by VASEY/AI — Vivid prompt engineering for AI image generation.">
   <meta name="theme-color" content="#0f1419">
 
@@ -67,7 +67,7 @@
         </div>
         <div class="title-group">
           <h1>StyleyeS</h1>
-          <span class="ver">v2.0.1</span>
+          <span class="ver">v2.1.0</span>
         </div>
       </div>
       <p class="tag">The vivid prompt engineering studio.</p>
@@ -84,7 +84,13 @@
             </div>
           </div>
           
-          <input type="text" id="subject" placeholder="A lone astronaut on Mars..." autocomplete="off">
+          <textarea
+            id="subject"
+            class="subject-input"
+            placeholder="A lone astronaut on Mars, surveying the rust-red landscape as dual moons rise above the horizon..."
+            autocomplete="off"
+            rows="3"
+          ></textarea>
           
           <div class="image-upload-zone" id="imageZone">
             <button class="remove-img" id="removeImg">✕</button>
@@ -176,7 +182,7 @@
         </div>
         
         <div class="categories" id="categories"></div>
-        <div class="styles-grid" id="grid"></div>
+        <div class="styles-container" id="stylesContainer"></div>
       </div>
 
       <div class="stack-section">
@@ -212,7 +218,7 @@
       </div>
     </main>
     
-    <footer>StyleyeS v2.0.1 · <a href="https://vasey.ai">VASEY/AI</a></footer>
+    <footer>StyleyeS v2.1.0 · <a href="https://vasey.ai">VASEY/AI</a></footer>
   </div>
   
   <div class="toast" id="toast"></div>
