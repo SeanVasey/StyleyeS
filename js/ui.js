@@ -1,10 +1,11 @@
 /**
- * StyleyeS v2.1.0 — UI Module
+ * StyleyeS v2.2.0 — UI Module
  * Rendering and DOM manipulation
  *
- * @version 2.1.0
+ * @version 2.2.0
  * @updated 2026-01-13
  * @changelog
+ *   - 2.2.0: Enhanced carousel with front-card focus indicator class
  *   - 2.1.0: Category carousels, multi-line input, aspect-ratio-preserving images
  *   - 2.0.1: Updated model icons to white-line design
  *   - 2.0.0: Major release with enhanced branding and documentation
@@ -931,6 +932,9 @@ const StyleyeSUI = {
       card.style.filter = styles.filter;
       card.style.zIndex = styles.zIndex;
       card.style.pointerEvents = styles.pointerEvents;
+
+      // Toggle carousel-front class based on position
+      card.classList.toggle('carousel-front', styles.isFront);
     });
   },
 
