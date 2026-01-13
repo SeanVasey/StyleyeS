@@ -1,10 +1,11 @@
 /**
- * StyleyeS v2.0.1 — UI Module
+ * StyleyeS v2.1.0 — UI Module
  * Rendering and DOM manipulation
  *
- * @version 2.0.1
- * @updated 2026-01-05
+ * @version 2.1.0
+ * @updated 2026-01-13
  * @changelog
+ *   - 2.1.0: Category carousels, multi-line input, aspect-ratio-preserving images
  *   - 2.0.1: Updated model icons to white-line design
  *   - 2.0.0: Major release with enhanced branding and documentation
  *   - 1.8.1: Added external SVG icon loading with caching
@@ -111,7 +112,7 @@ const StyleyeSUI = {
       aspectRatioThumb: document.getElementById('aspectRatioThumb'),
       aspectRatioNotches: document.getElementById('aspectRatioNotches'),
       categories: document.getElementById('categories'),
-      grid: document.getElementById('grid'),
+      stylesContainer: document.getElementById('stylesContainer'),
       stackList: document.getElementById('stackList'),
       totalCount: document.getElementById('totalCount'),
       
@@ -650,55 +651,149 @@ const StyleyeSUI = {
   },
 
   /**
-   * Render styles/controls grid
+   * Render styles/controls - carousels for styles, grid for controls
    */
   renderGrid() {
-    const { grid } = this.elements;
-    if (!grid) return;
-
-    let items, stackIds;
+    const { stylesContainer } = this.elements;
+    if (!stylesContainer) return;
 
     if (StyleyeSState.pickerMode === 'styles') {
-      const cat = StyleyeSState.activeCategory;
-      if (cat === 'favorites') {
-        items = StyleyeSData.styles.filter(s => StyleyeSState.favorites.includes(s.id));
-      } else {
-        items = StyleyeSData.getStylesByCategory(cat);
-      }
-      stackIds = StyleyeSState.stack;
+      this.renderCategoryCarousels();
     } else {
-      items = StyleyeSData.getControlsByCategory(StyleyeSState.controlActiveCategory);
-      stackIds = StyleyeSState.controlStack;
+      this.renderControlsGrid();
+    }
+  },
+
+  /**
+   * Render styles grouped by category with horizontal carousels
+   */
+  renderCategoryCarousels() {
+    const { stylesContainer } = this.elements;
+    if (!stylesContainer) return;
+
+    const activeCat = StyleyeSState.activeCategory;
+    const emojiMap = StyleyeSConfig.categoryEmojis;
+
+    let categories;
+    if (activeCat === 'all') {
+      categories = StyleyeSData.getStyleCategories();
+    } else if (activeCat === 'favorites') {
+      // For favorites, group by original category
+      const favStyles = StyleyeSData.styles.filter(s => StyleyeSState.favorites.includes(s.id));
+      if (favStyles.length === 0) {
+        stylesContainer.innerHTML = '<p style="color:var(--t3);text-align:center;padding:2rem;">No favorites yet. Tap the star on any style to add it.</p>';
+        return;
+      }
+      categories = [...new Set(favStyles.map(s => s.category))];
+    } else {
+      categories = [activeCat];
     }
 
-    if (items.length === 0) {
-      grid.innerHTML = '<p style="color:var(--t3);grid-column:1/-1;text-align:center;padding:2rem;">No items found.</p>';
-      return;
-    }
+    stylesContainer.innerHTML = categories.map(category => {
+      let styles;
+      if (activeCat === 'favorites') {
+        styles = StyleyeSData.styles.filter(s => s.category === category && StyleyeSState.favorites.includes(s.id));
+      } else {
+        styles = StyleyeSData.getStylesByCategory(category);
+      }
 
-    grid.innerHTML = items.map(item => {
-      const isFav = StyleyeSState.favorites.includes(item.id);
-      const isSelected = stackIds.includes(item.id);
+      if (styles.length === 0) return '';
 
-      const favBtn = StyleyeSState.pickerMode === 'styles' ? `
-        <button class="card-fav ${isFav ? 'active' : ''}" data-fav="${item.id}" aria-label="Toggle favorite">
+      const emoji = emojiMap[category] || '✨';
+      const sanitizedCat = this.sanitizeAttr(category);
+
+      return `
+        <section class="style-category-section" data-category="${sanitizedCat}">
+          <div class="category-header">
+            <h3 class="category-title"><span class="emoji">${emoji}</span> ${this.escapeHtml(category)}</h3>
+            <div class="carousel-nav">
+              <button class="carousel-arrow prev" data-carousel-prev="${sanitizedCat}" aria-label="Previous" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <button class="carousel-arrow next" data-carousel-next="${sanitizedCat}" aria-label="Next" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="carousel-track" data-carousel="${sanitizedCat}">
+            ${styles.map(style => this.renderStyleCard(style)).join('')}
+          </div>
+        </section>
+      `;
+    }).join('');
+
+    // Initialize carousel interactions
+    this.initCarouselControls();
+  },
+
+  /**
+   * Render individual style card for carousel
+   * @param {Object} style - Style data object
+   * @returns {string} HTML string
+   */
+  renderStyleCard(style) {
+    const isFav = StyleyeSState.favorites.includes(style.id);
+    const isSelected = StyleyeSState.stack.includes(style.id);
+    const preview = style.preview || { colors: ['#2a2a3e', '#3a3a4e'], effect: 'default' };
+    const gradient = this.generatePreviewGradient(preview.colors, preview.effect);
+    const pattern = this.generatePatternCSS(preview.pattern);
+    const sampleTags = style.tags ? style.tags.slice(0, 3).join(', ') : '';
+
+    return `
+      <div class="card-item ${isSelected ? 'selected' : ''}"
+           data-id="${this.sanitizeAttr(style.id)}"
+           data-effect="${preview.effect || 'default'}">
+        <div class="card-preview" style="background: ${gradient};">
+          <div class="card-preview-pattern" style="background: ${pattern};"></div>
+          <div class="card-preview-shine"></div>
+        </div>
+        <div class="card-preview-hover">
+          <div class="preview-sample" style="background: ${gradient};">
+            <div class="preview-sample-pattern" style="background: ${pattern};"></div>
+          </div>
+          <div class="preview-tags">${this.escapeHtml(sampleTags)}</div>
+        </div>
+        <button class="card-fav ${isFav ? 'active' : ''}" data-fav="${style.id}" aria-label="Toggle favorite">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
           </svg>
         </button>
-      ` : '';
+        <div class="card-content">
+          <div class="card-name">${this.escapeHtml(style.name)}</div>
+          <div class="card-sub">${this.escapeHtml(style.category)}</div>
+        </div>
+      </div>
+    `;
+  },
 
-      // Generate visual preview from item.preview data
+  /**
+   * Render controls as a traditional grid
+   */
+  renderControlsGrid() {
+    const { stylesContainer } = this.elements;
+    if (!stylesContainer) return;
+
+    const items = StyleyeSData.getControlsByCategory(StyleyeSState.controlActiveCategory);
+    const stackIds = StyleyeSState.controlStack;
+
+    if (items.length === 0) {
+      stylesContainer.innerHTML = '<p style="color:var(--t3);text-align:center;padding:2rem;">No items found.</p>';
+      return;
+    }
+
+    stylesContainer.innerHTML = `<div class="styles-grid">${items.map(item => {
+      const isSelected = stackIds.includes(item.id);
       const preview = item.preview || { colors: ['#2a2a3e', '#3a3a4e'], effect: 'default', pattern: 'none' };
       const gradient = this.generatePreviewGradient(preview.colors, preview.effect);
       const pattern = this.generatePatternCSS(preview.pattern);
-      const effectClass = preview.effect ? `effect-${preview.effect}` : '';
-
-      // Generate sample tags for hover tooltip
       const sampleTags = item.tags ? item.tags.slice(0, 3).join(', ') : '';
 
       return `
-        <div class="card-item ${isSelected ? 'selected' : ''} ${effectClass}" data-id="${item.id}" data-effect="${preview.effect || 'default'}">
+        <div class="card-item ${isSelected ? 'selected' : ''}" data-id="${item.id}" data-effect="${preview.effect || 'default'}">
           <div class="card-preview" style="background: ${gradient};">
             <div class="card-preview-pattern" style="background: ${pattern};"></div>
             <div class="card-preview-shine"></div>
@@ -709,14 +804,60 @@ const StyleyeSUI = {
             </div>
             <div class="preview-tags">${this.escapeHtml(sampleTags)}</div>
           </div>
-          ${favBtn}
           <div class="card-content">
-            <div class="card-name">${item.name}</div>
-            <div class="card-sub">${item.category}</div>
+            <div class="card-name">${this.escapeHtml(item.name)}</div>
+            <div class="card-sub">${this.escapeHtml(item.category)}</div>
           </div>
         </div>
       `;
-    }).join('');
+    }).join('')}</div>`;
+  },
+
+  /**
+   * Initialize carousel scroll controls
+   */
+  initCarouselControls() {
+    const carousels = document.querySelectorAll('.carousel-track');
+
+    carousels.forEach(track => {
+      const category = track.dataset.carousel;
+      const section = track.closest('.style-category-section');
+      const prevBtn = document.querySelector(`[data-carousel-prev="${category}"]`);
+      const nextBtn = document.querySelector(`[data-carousel-next="${category}"]`);
+      const scrollAmount = 200;
+
+      // Arrow navigation
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
+      }
+
+      // Update button states based on scroll position
+      const updateScrollState = () => {
+        const { scrollLeft, scrollWidth, clientWidth } = track;
+        const atStart = scrollLeft <= 10;
+        const atEnd = scrollLeft >= scrollWidth - clientWidth - 10;
+
+        if (prevBtn) prevBtn.disabled = atStart;
+        if (nextBtn) nextBtn.disabled = atEnd;
+
+        // Update fade indicators on section
+        if (section) {
+          section.classList.toggle('scroll-left', !atStart);
+          section.classList.toggle('scroll-right', !atEnd);
+        }
+      };
+
+      track.addEventListener('scroll', updateScrollState, { passive: true });
+      updateScrollState(); // Initial state
+    });
   },
   
   /**
@@ -955,7 +1096,7 @@ const StyleyeSUI = {
   },
   
   /**
-   * Handle image selection
+   * Handle image selection with aspect-ratio preservation
    * @param {File} file - Selected file
    */
   handleImageSelect(file) {
@@ -977,17 +1118,6 @@ const StyleyeSUI = {
 
     const { imgPreview, imageZone, removeImg } = this.elements;
 
-    // Cache zone elements to avoid multiple queries
-    if (!this.zoneElements) {
-      this.zoneElements = {
-        icon: document.querySelector('.zone-icon'),
-        text: document.querySelector('.zone-text'),
-        sub: document.querySelector('.zone-sub')
-      };
-    }
-
-    const { icon: zoneIcon, text: zoneText, sub: zoneSub } = this.zoneElements;
-
     const reader = new FileReader();
 
     // Add error handler for FileReader
@@ -996,21 +1126,67 @@ const StyleyeSUI = {
     };
 
     reader.onload = (e) => {
-      if (imgPreview) {
-        imgPreview.src = e.target.result;
-        imgPreview.style.display = 'block';
-      }
-      if (imageZone) imageZone.classList.add('has-image');
-      if (removeImg) removeImg.style.display = 'flex';
-      if (zoneIcon) zoneIcon.style.display = 'none';
-      if (zoneText) zoneText.style.display = 'none';
-      if (zoneSub) zoneSub.style.display = 'none';
+      // Create temporary image to get natural dimensions
+      const tempImg = new Image();
+      tempImg.onload = () => {
+        const aspectRatio = tempImg.naturalWidth / tempImg.naturalHeight;
 
-      StyleyeSState.hasImage = true;
-      this.updateOutput();
+        // Apply aspect ratio as CSS custom property for container sizing
+        if (imageZone) {
+          imageZone.style.setProperty('--img-aspect-ratio', aspectRatio.toFixed(4));
+          imageZone.classList.add('has-image');
+        }
+
+        if (imgPreview) {
+          imgPreview.src = e.target.result;
+          imgPreview.style.display = 'block';
+        }
+
+        // Hide placeholder elements
+        if (removeImg) removeImg.style.display = 'flex';
+        this.hideZonePlaceholders();
+
+        StyleyeSState.hasImage = true;
+        this.updateOutput();
+      };
+      tempImg.src = e.target.result;
     };
 
     reader.readAsDataURL(file);
+  },
+
+  /**
+   * Hide zone placeholder elements
+   */
+  hideZonePlaceholders() {
+    if (!this.zoneElements) {
+      this.zoneElements = {
+        icon: document.querySelector('.zone-icon'),
+        text: document.querySelector('.zone-text'),
+        sub: document.querySelector('.zone-sub')
+      };
+    }
+    const { icon, text, sub } = this.zoneElements;
+    if (icon) icon.style.display = 'none';
+    if (text) text.style.display = 'none';
+    if (sub) sub.style.display = 'none';
+  },
+
+  /**
+   * Show zone placeholder elements
+   */
+  showZonePlaceholders() {
+    if (!this.zoneElements) {
+      this.zoneElements = {
+        icon: document.querySelector('.zone-icon'),
+        text: document.querySelector('.zone-text'),
+        sub: document.querySelector('.zone-sub')
+      };
+    }
+    const { icon, text, sub } = this.zoneElements;
+    if (icon) icon.style.display = 'block';
+    if (text) text.style.display = 'block';
+    if (sub) sub.style.display = 'block';
   },
   
   /**
@@ -1022,27 +1198,19 @@ const StyleyeSUI = {
 
     const { imgInput, imgPreview, imageZone, removeImg } = this.elements;
 
-    // Cache zone elements to avoid multiple queries
-    if (!this.zoneElements) {
-      this.zoneElements = {
-        icon: document.querySelector('.zone-icon'),
-        text: document.querySelector('.zone-text'),
-        sub: document.querySelector('.zone-sub')
-      };
-    }
-
-    const { icon: zoneIcon, text: zoneText, sub: zoneSub } = this.zoneElements;
-
     if (imgInput) imgInput.value = '';
     if (imgPreview) {
       imgPreview.src = '';
       imgPreview.style.display = 'none';
     }
-    if (imageZone) imageZone.classList.remove('has-image');
+    if (imageZone) {
+      imageZone.classList.remove('has-image');
+      imageZone.style.removeProperty('--img-aspect-ratio');
+    }
     if (removeImg) removeImg.style.display = 'none';
-    if (zoneIcon) zoneIcon.style.display = 'block';
-    if (zoneText) zoneText.style.display = 'block';
-    if (zoneSub) zoneSub.style.display = 'block';
+
+    // Show placeholder elements
+    this.showZonePlaceholders();
 
     StyleyeSState.hasImage = false;
     this.updateOutput();

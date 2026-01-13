@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-01-13
+### Added
+- **Category Carousel Navigation**: Horizontal swipe-based style selection grouped by category with smooth scroll snap.
+- **Multi-line Subject Input**: Expanded textarea for complex prompt composition with adjustable height (80px-200px).
+- **Aspect-Ratio Preserving Image Display**: Uploaded images now display at their natural aspect ratio without cropping.
+- **Enhanced Effect-Specific CSS Treatments**: New visual effects for Film Noir (venetian blinds), Neon (glowing grid), Pastel, Golden Hour, Vintage/Analog, Chiaroscuro, Bokeh, Mist, and more.
+- Carousel arrow navigation for desktop users with scroll position indicators.
+- Dynamic fade indicators showing scroll state on category sections.
+
+### Changed
+- Restructured styles display from flat grid to category-grouped carousel layout.
+- Image upload zone now uses `object-fit: contain` instead of `cover` for full image visibility.
+- Improved style card visual previews with more accurate effect representations.
+- Updated subject input placeholder with more descriptive example prompt.
+
+### Improved
+- Better mobile experience with touch-optimized horizontal scrolling and scroll-snap alignment.
+- Enhanced visual coherence between style card previews and actual style effects.
+- Cleaner separation between styles mode (carousels) and controls mode (traditional grid).
+- Reduced context switching when browsing large style libraries.
+
 ## [2.0.1] - 2026-01-05
 ### Changed
 - Updated all 8 model icons to new white-line design on transparent backgrounds.

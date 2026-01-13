@@ -1,9 +1,9 @@
 /**
- * StyleyeS v2.0.0 — Event Handlers
+ * StyleyeS v2.1.0 — Event Handlers
  * User interaction and event binding
  *
- * @version 2.0.0
- * @updated 2026-01-05
+ * @version 2.1.0
+ * @updated 2026-01-13
  */
 
 const StyleyeSHandlers = {
@@ -210,13 +210,13 @@ const StyleyeSHandlers = {
   },
   
   /**
-   * Bind grid interactions (card selection, favorites)
+   * Bind grid/carousel interactions (card selection, favorites)
    */
   bindGrid() {
-    const { grid } = StyleyeSUI.elements;
-    
-    if (grid) {
-      grid.addEventListener('click', (e) => {
+    const { stylesContainer } = StyleyeSUI.elements;
+
+    if (stylesContainer) {
+      stylesContainer.addEventListener('click', (e) => {
         // Check for favorite button click
         const favBtn = e.target.closest('.card-fav');
         if (favBtn) {
@@ -226,12 +226,12 @@ const StyleyeSHandlers = {
           StyleyeSUI.renderGrid();
           return;
         }
-        
+
         // Check for card click
         const card = e.target.closest('.card-item');
         if (card) {
           const id = card.dataset.id;
-          
+
           if (StyleyeSState.pickerMode === 'styles') {
             const result = StyleyeSState.toggleStyle(id);
             if (!result.success) {
@@ -245,7 +245,7 @@ const StyleyeSHandlers = {
               return;
             }
           }
-          
+
           StyleyeSUI.renderGrid();
           StyleyeSUI.renderStack();
           StyleyeSUI.updateOutput();
