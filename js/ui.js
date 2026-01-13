@@ -1,10 +1,11 @@
 /**
- * StyleyeS v2.2.0 — UI Module
+ * StyleyeS v2.3.0 — UI Module
  * Rendering and DOM manipulation
  *
- * @version 2.2.0
+ * @version 2.3.0
  * @updated 2026-01-13
  * @changelog
+ *   - 2.3.0: Added destroyAll() call before re-render to prevent memory leaks
  *   - 2.2.0: Enhanced carousel with front-card focus indicator class
  *   - 2.1.0: Category carousels, multi-line input, aspect-ratio-preserving images
  *   - 2.0.1: Updated model icons to white-line design
@@ -663,6 +664,10 @@ const StyleyeSUI = {
   renderGrid() {
     const { stylesContainer } = this.elements;
     if (!stylesContainer) return;
+
+    // Cancel all active carousel animations before destroying DOM
+    // Prevents orphaned RAF callbacks and memory leaks
+    StyleyeSCarousel.destroyAll();
 
     if (StyleyeSState.pickerMode === 'styles') {
       this.renderCategoryCarousels();

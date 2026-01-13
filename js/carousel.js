@@ -1,10 +1,11 @@
 /**
- * StyleyeS v2.2.0 — Carousel Physics Engine
+ * StyleyeS v2.3.0 — Carousel Physics Engine
  * 3D cylindrical rotation with enhanced front-card focus
  *
- * @version 2.2.0
+ * @version 2.3.0
  * @updated 2026-01-13
  * @changelog
+ *   - 2.3.0: Memory leak fix - destroyAll() called before re-render
  *   - 2.2.0: Enhanced carousel interaction - front card pop-up, blur/dim edges,
  *            single-card selection, smoother motion
  */

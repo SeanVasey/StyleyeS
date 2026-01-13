@@ -1,12 +1,35 @@
 /**
- * StyleyeS v2.1.0 — Event Handlers
+ * StyleyeS v2.3.0 — Event Handlers
  * User interaction and event binding
  *
- * @version 2.1.0
+ * @version 2.3.0
  * @updated 2026-01-13
+ * @changelog
+ *   - 2.3.0: Added listener guards, debounced weight updates, memory leak fixes
+ *   - 2.2.0: Enhanced carousel interaction with front-card focus
  */
 
 const StyleyeSHandlers = {
+  // Guard flags to prevent duplicate global listeners
+  _globalListenersBound: false,
+
+  // Debounce timers for performance optimization
+  _outputDebounceTimer: null,
+
+  /**
+   * Debounced output update to prevent excessive re-renders
+   * @param {number} delay - Debounce delay in ms
+   */
+  _debouncedUpdateOutput(delay = 50) {
+    if (this._outputDebounceTimer) {
+      cancelAnimationFrame(this._outputDebounceTimer);
+    }
+    this._outputDebounceTimer = requestAnimationFrame(() => {
+      StyleyeSUI.updateOutput();
+      this._outputDebounceTimer = null;
+    });
+  },
+
   /**
    * Bind all event listeners
    */
@@ -157,17 +180,24 @@ const StyleyeSHandlers = {
       StyleyeSUI.closeModelDropdown();
     });
 
-    document.addEventListener('click', (e) => {
-      if (!modelDropdown.contains(e.target)) {
-        StyleyeSUI.closeModelDropdown();
-      }
-    });
+    // Add global listeners only once to prevent memory leaks
+    if (!this._globalListenersBound) {
+      document.addEventListener('click', (e) => {
+        // Close model dropdown when clicking outside
+        const { modelDropdown } = StyleyeSUI.elements;
+        if (modelDropdown && !modelDropdown.contains(e.target)) {
+          StyleyeSUI.closeModelDropdown();
+        }
+      });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        StyleyeSUI.closeModelDropdown();
-      }
-    });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          StyleyeSUI.closeModelDropdown();
+        }
+      });
+
+      this._globalListenersBound = true;
+    }
   },
   
   /**
@@ -299,24 +329,30 @@ const StyleyeSHandlers = {
       subject.addEventListener('input', () => StyleyeSUI.updateOutput());
     }
     
-    // Style weight slider
+    // Style weight slider - debounced for performance
     if (weight && weightValue) {
       weight.addEventListener('input', () => {
         weightValue.textContent = weight.value;
-        StyleyeSUI.updateOutput();
+        this._debouncedUpdateOutput();
       });
-      
-      weight.addEventListener('change', () => StyleyeSState.save());
+
+      weight.addEventListener('change', () => {
+        StyleyeSUI.updateOutput(); // Final update on release
+        StyleyeSState.save();
+      });
     }
-    
-    // Control weight slider
+
+    // Control weight slider - debounced for performance
     if (controlWeight && controlWeightValue) {
       controlWeight.addEventListener('input', () => {
         controlWeightValue.textContent = controlWeight.value;
-        StyleyeSUI.updateOutput();
+        this._debouncedUpdateOutput();
       });
-      
-      controlWeight.addEventListener('change', () => StyleyeSState.save());
+
+      controlWeight.addEventListener('change', () => {
+        StyleyeSUI.updateOutput(); // Final update on release
+        StyleyeSState.save();
+      });
     }
   },
   

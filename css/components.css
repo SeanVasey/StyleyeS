@@ -1,5 +1,5 @@
 /**
- * StyleyeS v1.8 — Component Styles
+ * StyleyeS v2.3.0 — Component Styles
  * UI Components and Interactive Elements
  */
 
@@ -1081,7 +1081,7 @@
   filter: blur(25px);
   pointer-events: none;
   z-index: 0;
-  transform: translateY(-8px); /* Align with lifted front card */
+  transform: translateY(-12px); /* Align with lifted front card (matches frontLiftY) */
 }
 
 /* 3D Carousel - disable scroll-based fade indicators (not applicable) */
