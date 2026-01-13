@@ -1,21 +1,24 @@
 /**
- * StyleyeS v2.1.0 — Carousel Physics Engine
- * Replaces linear scroll with 3D cylindrical rotation
+ * StyleyeS v2.2.0 — Carousel Physics Engine
+ * 3D cylindrical rotation with enhanced front-card focus
  *
- * @version 2.1.0
+ * @version 2.2.0
  * @updated 2026-01-13
+ * @changelog
+ *   - 2.2.0: Enhanced carousel interaction - front card pop-up, blur/dim edges,
+ *            single-card selection, smoother motion
  */
 
 const StyleyeSCarousel = {
 
   // Configuration
   config: {
-    radius: 220,                      // Cylinder radius (px) - tuned for card widths
+    radius: 280,                      // Cylinder radius (px) - increased for less overlap
     friction: 0.92,                   // Velocity decay per frame
-    snapThreshold: 0.12,              // Velocity below which snap begins
-    sensitivity: 0.4,                 // Degrees per pixel dragged
-    maxVelocity: 20,                  // Clamp throw speed
-    snapEasing: 0.1,                  // Lerp factor for snap
+    snapThreshold: 0.15,              // Velocity below which snap begins
+    sensitivity: 0.35,                // Degrees per pixel dragged - slightly reduced for smoother feel
+    maxVelocity: 18,                  // Clamp throw speed
+    snapEasing: 0.12,                 // Lerp factor for snap - slightly faster snap
 
     // Physics thresholds
     snapFinalizeThreshold: 0.05,      // Delta below which snap finalizes
@@ -24,11 +27,15 @@ const StyleyeSCarousel = {
     programmaticRotationFactor: 0.12, // Velocity factor for rotateTo()
 
     // Depth visual treatment
-    minScale: 0.65,                   // Scale at back
+    minScale: 0.55,                   // Scale at back - smaller for more depth
     maxScale: 1.0,                    // Scale at front
-    minOpacity: 0.35,                 // Opacity at back
-    maxBlur: 3,                       // Blur (px) at back
-    zThreshold: -0.2                  // Z below which pointer-events disabled
+    minOpacity: 0.25,                 // Opacity at back - more faded
+    maxBlur: 6,                       // Blur (px) at back - stronger blur
+    zThreshold: 0.7,                  // Z threshold for front card (only front card is interactive)
+
+    // Pop-up effect for front card
+    frontLiftY: -12,                  // Pixels to lift front card (negative = up)
+    frontThreshold: 0.85             // Z value above which card gets full lift
   },
 
   // Per-carousel state (keyed by category)
@@ -80,7 +87,7 @@ const StyleyeSCarousel = {
    * @returns {Object} CSS style properties
    */
   getStyleForAngle(angleDeg) {
-    const { radius, minScale, maxScale, minOpacity, maxBlur, zThreshold } = this.config;
+    const { radius, minScale, maxScale, minOpacity, maxBlur, zThreshold, frontLiftY, frontThreshold } = this.config;
     const rad = (angleDeg * Math.PI) / 180;
 
     // X = horizontal offset, Z = depth (-1 back to +1 front)
@@ -96,12 +103,27 @@ const StyleyeSCarousel = {
     const blur = maxBlur * (1 - zNorm);
     const zIndex = Math.round(zNorm * 100);
 
+    // Calculate Y lift for front card pop-up effect
+    // Cards above frontThreshold get progressively lifted
+    let liftY = 0;
+    if (z > frontThreshold) {
+      // Smooth easing: how far past threshold (0 to 1)
+      const liftProgress = (z - frontThreshold) / (1 - frontThreshold);
+      // Use easeOutCubic for smooth pop-up
+      const eased = 1 - Math.pow(1 - liftProgress, 3);
+      liftY = frontLiftY * eased;
+    }
+
+    // Determine if this is the "front" card (for special styling)
+    const isFront = z > zThreshold;
+
     return {
-      transform: `translateX(${x.toFixed(1)}px) scale(${scale.toFixed(3)})`,
+      transform: `translateX(${x.toFixed(1)}px) translateY(${liftY.toFixed(1)}px) scale(${scale.toFixed(3)})`,
       opacity: opacity.toFixed(3),
       filter: blur > 0.1 ? `blur(${blur.toFixed(1)}px)` : 'none',
       zIndex,
-      pointerEvents: z > zThreshold ? 'auto' : 'none'
+      pointerEvents: isFront ? 'auto' : 'none',
+      isFront
     };
   },
 

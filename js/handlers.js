@@ -217,6 +217,17 @@ const StyleyeSHandlers = {
 
     if (stylesContainer) {
       stylesContainer.addEventListener('click', (e) => {
+        // Get the card element
+        const card = e.target.closest('.card-item');
+        if (!card) return;
+
+        // Check if this is a carousel card - only allow interaction on front card
+        const isInCarousel = card.closest('.carousel-track');
+        if (isInCarousel && !card.classList.contains('carousel-front')) {
+          // Card is in carousel but not the front card - ignore click
+          return;
+        }
+
         // Check for favorite button click
         const favBtn = e.target.closest('.card-fav');
         if (favBtn) {
@@ -227,29 +238,26 @@ const StyleyeSHandlers = {
           return;
         }
 
-        // Check for card click
-        const card = e.target.closest('.card-item');
-        if (card) {
-          const id = card.dataset.id;
+        // Handle card selection
+        const id = card.dataset.id;
 
-          if (StyleyeSState.pickerMode === 'styles') {
-            const result = StyleyeSState.toggleStyle(id);
-            if (!result.success) {
-              StyleyeSUI.showToast(result.message, 'warn');
-              return;
-            }
-          } else {
-            const result = StyleyeSState.toggleControl(id);
-            if (!result.success) {
-              StyleyeSUI.showToast(result.message, 'warn');
-              return;
-            }
+        if (StyleyeSState.pickerMode === 'styles') {
+          const result = StyleyeSState.toggleStyle(id);
+          if (!result.success) {
+            StyleyeSUI.showToast(result.message, 'warn');
+            return;
           }
-
-          StyleyeSUI.renderGrid();
-          StyleyeSUI.renderStack();
-          StyleyeSUI.updateOutput();
+        } else {
+          const result = StyleyeSState.toggleControl(id);
+          if (!result.success) {
+            StyleyeSUI.showToast(result.message, 'warn');
+            return;
+          }
         }
+
+        StyleyeSUI.renderGrid();
+        StyleyeSUI.renderStack();
+        StyleyeSUI.updateOutput();
       });
     }
   },

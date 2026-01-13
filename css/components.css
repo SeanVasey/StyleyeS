@@ -950,18 +950,19 @@
 
 .carousel-track {
   position: relative;
-  height: 140px;                          /* Accommodate card height + padding */
+  height: 160px;                          /* Increased for pop-up effect + spacing */
   display: flex;
   align-items: center;
   justify-content: center;
-  perspective: 800px;
+  perspective: 1000px;                    /* Increased for better 3D depth */
   perspective-origin: center center;
   overflow: visible;                       /* Allow 3D overflow */
   cursor: grab;
   touch-action: pan-y;                     /* Allow vertical scroll, capture horizontal */
   user-select: none;
   -webkit-user-select: none;
-  margin: 0.5rem 0;
+  margin: 0.75rem 0;
+  padding-top: 0.5rem;                     /* Space for pop-up effect */
 }
 
 .carousel-track:active {
@@ -976,12 +977,79 @@
   will-change: transform, opacity, filter;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  transition: box-shadow 0.2s ease;        /* Only transition non-physics props */
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Non-front cards in carousel: disable hover/selection visual effects */
+.carousel-track .card-item:not(.carousel-front) {
+  cursor: default;
+}
+
+.carousel-track .card-item:not(.carousel-front):hover {
+  transform: none !important; /* Preserve carousel transform, don't add hover lift */
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+.carousel-track .card-item:not(.carousel-front):hover .card-content {
+  background: var(--bg-card);
+}
+
+.carousel-track .card-item:not(.carousel-front):hover .card-preview {
+  height: 50px;
+}
+
+.carousel-track .card-item:not(.carousel-front):hover .card-preview-shine {
+  opacity: 0;
+  animation: none;
+}
+
+.carousel-track .card-item:not(.carousel-front):hover .card-preview-hover {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Non-front selected cards: muted selection indicator */
+.carousel-track .card-item.selected:not(.carousel-front) {
+  border-color: rgba(255, 107, 53, 0.25);
+  box-shadow: none;
+}
+
+.carousel-track .card-item.selected:not(.carousel-front) .card-content {
+  background: rgba(255, 107, 53, 0.05);
+}
+
+.carousel-track .card-item.selected:not(.carousel-front) .card-preview {
+  box-shadow: none;
+}
+
+/* Front card in carousel: enhanced interactive styling */
+.carousel-track .card-item.carousel-front {
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.15s ease;
+}
+
+.carousel-track .card-item.carousel-front:hover {
+  border-color: rgba(255, 107, 53, 0.6);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 107, 53, 0.15);
+}
+
+.carousel-track .card-item.carousel-front.selected {
+  border-color: var(--c1);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.25), 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.carousel-track .card-item.carousel-front.selected .card-content {
+  background: rgba(255, 107, 53, 0.12);
+}
+
+.carousel-track .card-item.carousel-front.selected .card-preview {
+  box-shadow: inset 0 0 24px rgba(255, 107, 53, 0.35);
 }
 
 @media (min-width: 500px) {
   .carousel-track {
-    height: 160px;
+    height: 180px;
   }
   .carousel-track .card-item {
     width: 160px;
@@ -990,7 +1058,7 @@
 
 @media (min-width: 768px) {
   .carousel-track {
-    height: 180px;
+    height: 200px;
   }
   .carousel-track .card-item {
     width: 180px;
@@ -1001,17 +1069,19 @@
 .carousel-track::before {
   content: '';
   position: absolute;
-  width: 180px;
-  height: 120px;
+  width: 200px;
+  height: 140px;
   background: radial-gradient(
     ellipse at center,
-    rgba(255, 107, 53, 0.15) 0%,
+    rgba(255, 107, 53, 0.18) 0%,
+    rgba(255, 107, 53, 0.08) 40%,
     transparent 70%
   );
   border-radius: 50%;
-  filter: blur(20px);
+  filter: blur(25px);
   pointer-events: none;
   z-index: 0;
+  transform: translateY(-8px); /* Align with lifted front card */
 }
 
 /* 3D Carousel - disable scroll-based fade indicators (not applicable) */
