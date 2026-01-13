@@ -1,8 +1,8 @@
 /**
- * StyleyeS v2.1.0 — Icon System
+ * StyleyeS v2.3.0 — Icon System
  * Centralized SVG icons replacing emojis for professional UI
  *
- * @version 2.1.0
+ * @version 2.3.0
  * @updated 2026-01-13
  *
  * All icons are translucent white vectors for consistent visual language.

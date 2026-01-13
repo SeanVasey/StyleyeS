@@ -1,10 +1,12 @@
 /**
- * StyleyeS v2.1.0 — Main Application
+ * StyleyeS v2.3.0 — Main Application
  * Initialization and orchestration
  *
- * @version 2.1.0
+ * @version 2.3.0
  * @updated 2026-01-13
  * @changelog
+ *   - 2.3.0: Memory leak fixes, performance optimizations, version sync
+ *   - 2.2.0: Enhanced carousel interaction with front-card focus
  *   - 2.1.0: Icon system replacing emojis, 3D carousel
  *   - 2.0.0: Major release with enhanced branding
  */

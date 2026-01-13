@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-01-13
+### Fixed
+- **Critical Memory Leak**: Carousel RAF callbacks now properly cancelled via `destroyAll()` before re-rendering DOM.
+- **Duplicate Event Listeners**: Added guard flag to prevent multiple global document listeners from accumulating.
+- **CSS Transform Conflict**: Removed `transform: none !important` that broke carousel card positioning.
+- **CSS Transition Stutter**: Removed `transform` from front card transition to prevent physics engine conflict.
+- **Code Quality**: Refactored `classList.toggle()` to use boolean parameter.
+- **CSS Glow Alignment**: Fixed center glow translateY to match front card lift (-12px).
+
+### Improved
+- **Performance**: Added RAF-based debouncing for weight slider updates.
+- **Version Sync**: All 15+ files now consistently display v2.3.0.
+
+### Changed
+- Updated all JS modules, CSS files, HTML, and service worker to version 2.3.0.
+- Service worker cache name updated to trigger client refresh.
+
+## [2.2.0] - 2026-01-13
+### Added
+- **Front Card Pop-up Effect**: Active carousel card now lifts 12px with easeOutCubic animation.
+- **Carousel-Front Class**: Dynamic class applied to frontmost card for targeted styling.
+- **Enhanced Focus Glow**: Center glow effect aligned with lifted front card.
+
+### Changed
+- Increased carousel radius from 220px to 280px for better card spacing.
+- Raised z-threshold to 0.7 so only truly front card is interactive.
+- Increased edge card blur (3px → 6px) and reduced opacity (0.35 → 0.25).
+- Reduced card scale at back (0.65 → 0.55) for more dramatic depth effect.
+
+### Fixed
+- Selection now restricted to only the frontmost carousel card.
+- Hover/selection effects disabled on non-front carousel cards.
+- Muted selection indicator for non-front selected cards.
+
 ## [2.1.0] - 2026-01-13
 ### Added
 - **Category Carousel Navigation**: Horizontal swipe-based style selection grouped by category with smooth scroll snap.
