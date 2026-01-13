@@ -849,48 +849,54 @@ const StyleyeSUI = {
       this.updateCarouselCards(track, state);
       this.updateCarouselArrows(prevBtn, nextBtn, state);
 
-      // Mouse events
+      // Mouse events - attach document listeners dynamically to prevent memory leaks
       track.addEventListener('mousedown', (e) => {
         if (e.target.closest('.card-fav')) return; // Don't drag on fav button
         e.preventDefault();
         StyleyeSCarousel.startDrag(state, e.clientX);
         track.style.cursor = 'grabbing';
-      });
 
-      // Use bound handlers for document events to allow cleanup
-      const handleMouseMove = (e) => {
-        if (state.isDragging) {
-          StyleyeSCarousel.moveDrag(state, e.clientX, onUpdate);
-        }
-      };
+        // Define handlers scoped to this drag operation
+        const handleMouseMove = (moveEvent) => {
+          StyleyeSCarousel.moveDrag(state, moveEvent.clientX, onUpdate);
+        };
 
-      const handleMouseUp = () => {
-        if (state.isDragging) {
+        const handleMouseUp = () => {
           StyleyeSCarousel.endDrag(state, onUpdate);
           track.style.cursor = 'grab';
-        }
-      };
+          // Clean up listeners when drag ends
+          document.removeEventListener('mousemove', handleMouseMove);
+          document.removeEventListener('mouseup', handleMouseUp);
+        };
 
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+        // Attach listeners only during active drag
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+      });
 
-      // Touch events
+      // Touch events - same pattern for touch devices
       track.addEventListener('touchstart', (e) => {
         if (e.target.closest('.card-fav')) return;
         StyleyeSCarousel.startDrag(state, e.touches[0].clientX);
-      }, { passive: true });
 
-      track.addEventListener('touchmove', (e) => {
-        if (state.isDragging) {
-          StyleyeSCarousel.moveDrag(state, e.touches[0].clientX, onUpdate);
-        }
-      }, { passive: true });
+        const handleTouchMove = (moveEvent) => {
+          if (state.isDragging) {
+            StyleyeSCarousel.moveDrag(state, moveEvent.touches[0].clientX, onUpdate);
+          }
+        };
 
-      track.addEventListener('touchend', () => {
-        if (state.isDragging) {
-          StyleyeSCarousel.endDrag(state, onUpdate);
-        }
-      });
+        const handleTouchEnd = () => {
+          if (state.isDragging) {
+            StyleyeSCarousel.endDrag(state, onUpdate);
+          }
+          // Clean up listeners when touch ends
+          document.removeEventListener('touchmove', handleTouchMove);
+          document.removeEventListener('touchend', handleTouchEnd);
+        };
+
+        document.addEventListener('touchmove', handleTouchMove, { passive: true });
+        document.addEventListener('touchend', handleTouchEnd);
+      }, { passive: true });
 
       // Arrow buttons
       if (prevBtn) {
@@ -1148,13 +1154,16 @@ const StyleyeSUI = {
   showToast(message, type = 'ok') {
     const { toast } = this.elements;
     if (!toast) return;
-    
+
     toast.textContent = message;
-    toast.style.borderColor = type === 'ok' ? 'var(--success)' : 'var(--warn)';
-    toast.style.color = type === 'ok' ? 'var(--success)' : 'var(--warn)';
+    // Use CSS classes instead of inline styles for maintainability
+    toast.classList.remove('success', 'warn');
+    toast.classList.add(type === 'ok' ? 'success' : 'warn');
     toast.classList.add('show');
-    
-    setTimeout(() => toast.classList.remove('show'), 2000);
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2000);
   },
   
   /**

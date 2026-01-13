@@ -123,6 +123,7 @@ const StyleyeSIcons = {
   }
 };
 
-// Freeze the icons object to prevent modifications
+// Freeze the icons object and nested maps to prevent modifications
 Object.freeze(StyleyeSIcons.categoryMap);
 Object.freeze(StyleyeSIcons.controlCategoryMap);
+Object.freeze(StyleyeSIcons);

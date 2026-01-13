@@ -10,19 +10,25 @@ const StyleyeSCarousel = {
 
   // Configuration
   config: {
-    radius: 220,              // Cylinder radius (px) - tuned for card widths
-    friction: 0.92,           // Velocity decay per frame
-    snapThreshold: 0.12,      // Velocity below which snap begins
-    sensitivity: 0.4,         // Degrees per pixel dragged
-    maxVelocity: 20,          // Clamp throw speed
-    snapEasing: 0.1,          // Lerp factor for snap
+    radius: 220,                      // Cylinder radius (px) - tuned for card widths
+    friction: 0.92,                   // Velocity decay per frame
+    snapThreshold: 0.12,              // Velocity below which snap begins
+    sensitivity: 0.4,                 // Degrees per pixel dragged
+    maxVelocity: 20,                  // Clamp throw speed
+    snapEasing: 0.1,                  // Lerp factor for snap
+
+    // Physics thresholds
+    snapFinalizeThreshold: 0.05,      // Delta below which snap finalizes
+    minAnimationVelocity: 0.01,       // Velocity below which animation stops
+    velocityFrameMultiplier: 16,      // Normalizes velocity to ~60fps (1000ms/60fps ≈ 16ms)
+    programmaticRotationFactor: 0.12, // Velocity factor for rotateTo()
 
     // Depth visual treatment
-    minScale: 0.65,           // Scale at back
-    maxScale: 1.0,            // Scale at front
-    minOpacity: 0.35,         // Opacity at back
-    maxBlur: 3,               // Blur (px) at back
-    zThreshold: -0.2          // Z below which pointer-events disabled
+    minScale: 0.65,                   // Scale at back
+    maxScale: 1.0,                    // Scale at front
+    minOpacity: 0.35,                 // Opacity at back
+    maxBlur: 3,                       // Blur (px) at back
+    zThreshold: -0.2                  // Z below which pointer-events disabled
   },
 
   // Per-carousel state (keyed by category)
@@ -118,7 +124,7 @@ const StyleyeSCarousel = {
    * @param {Function} onUpdate - Update callback
    */
   runPhysics(state, onUpdate) {
-    const { friction, snapThreshold, snapEasing } = this.config;
+    const { friction, snapThreshold, snapEasing, snapFinalizeThreshold, minAnimationVelocity } = this.config;
 
     // Apply friction
     state.velocity *= friction;
@@ -131,7 +137,7 @@ const StyleyeSCarousel = {
       const delta = target - state.rotation;
 
       // Close enough? Finalize.
-      if (Math.abs(delta) < 0.05) {
+      if (Math.abs(delta) < snapFinalizeThreshold) {
         state.rotation = target;
         state.velocity = 0;
         state.isAnimating = false;
@@ -147,7 +153,7 @@ const StyleyeSCarousel = {
     onUpdate(state, false);
 
     // Continue if still moving
-    if (Math.abs(state.velocity) > 0.01 || state.isAnimating) {
+    if (Math.abs(state.velocity) > minAnimationVelocity || state.isAnimating) {
       const rafId = requestAnimationFrame(() => this.runPhysics(state, onUpdate));
       this.rafIds.set(state.categoryId, rafId);
     }
@@ -190,16 +196,16 @@ const StyleyeSCarousel = {
   moveDrag(state, clientX, onUpdate) {
     if (!state.isDragging) return;
 
-    const { sensitivity } = this.config;
+    const { sensitivity, velocityFrameMultiplier } = this.config;
     const deltaX = clientX - state.dragStartX;
     state.rotation = state.dragStartRotation + (deltaX * sensitivity);
 
-    // Calculate velocity
+    // Calculate velocity (normalized to ~60fps using velocityFrameMultiplier)
     const now = performance.now();
     const dt = now - state.lastTime;
     if (dt > 0) {
       const dx = clientX - state.lastX;
-      state.velocity = (dx * sensitivity) * (16 / dt);
+      state.velocity = (dx * sensitivity) * (velocityFrameMultiplier / dt);
     }
 
     state.lastX = clientX;
@@ -233,6 +239,7 @@ const StyleyeSCarousel = {
    * @param {Function} onUpdate - Update callback
    */
   rotateTo(state, targetIndex, onUpdate) {
+    const { programmaticRotationFactor } = this.config;
     targetIndex = ((targetIndex % state.itemCount) + state.itemCount) % state.itemCount;
     const targetRot = -targetIndex * state.anglePerItem;
 
@@ -242,7 +249,7 @@ const StyleyeSCarousel = {
     while (delta > 180) delta -= 360;
     while (delta < -180) delta += 360;
 
-    state.velocity = delta * 0.12;
+    state.velocity = delta * programmaticRotationFactor;
     state.isAnimating = true;
 
     this.cancelAnimation(state.categoryId);
