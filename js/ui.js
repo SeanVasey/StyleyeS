@@ -933,12 +933,8 @@ const StyleyeSUI = {
       card.style.zIndex = styles.zIndex;
       card.style.pointerEvents = styles.pointerEvents;
 
-      // Add/remove active-front class for the frontmost card
-      if (styles.isFront) {
-        card.classList.add('carousel-front');
-      } else {
-        card.classList.remove('carousel-front');
-      }
+      // Toggle carousel-front class based on position
+      card.classList.toggle('carousel-front', styles.isFront);
     });
   },
 

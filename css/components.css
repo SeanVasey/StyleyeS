@@ -986,7 +986,7 @@
 }
 
 .carousel-track .card-item:not(.carousel-front):hover {
-  transform: none !important; /* Preserve carousel transform, don't add hover lift */
+  /* No transform override - JS inline styles control positioning */
   border-color: var(--border);
   box-shadow: none;
 }
@@ -1026,7 +1026,7 @@
 /* Front card in carousel: enhanced interactive styling */
 .carousel-track .card-item.carousel-front {
   cursor: pointer;
-  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.15s ease;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .carousel-track .card-item.carousel-front:hover {
