@@ -1,6 +1,16 @@
 /**
- * StyleyeS v2.3.0 — Component Styles
+ * StyleyeS v2.4.0 — Component Styles
  * UI Components and Interactive Elements
+ *
+ * @version 2.4.0
+ * @updated 2026-01-14
+ * @changelog
+ *   - 2.4.0: Enhanced carousel card styling:
+ *            - Front card only shows selection border (orange)
+ *            - Non-front cards have transparent borders with subtle dot indicator
+ *            - Enhanced hover pop-up with CSS custom properties
+ *            - Improved focus glow responsive to hover state
+ *            - Better visual hierarchy with edge blur/dim
  */
 
 /* ============================================
@@ -950,11 +960,11 @@
 
 .carousel-track {
   position: relative;
-  height: 160px;                          /* Increased for pop-up effect + spacing */
+  height: 175px;                          /* Increased for enhanced pop-up effect */
   display: flex;
   align-items: center;
   justify-content: center;
-  perspective: 1000px;                    /* Increased for better 3D depth */
+  perspective: 1200px;                    /* Enhanced 3D depth perception */
   perspective-origin: center center;
   overflow: visible;                       /* Allow 3D overflow */
   cursor: grab;
@@ -962,7 +972,7 @@
   user-select: none;
   -webkit-user-select: none;
   margin: 0.75rem 0;
-  padding-top: 0.5rem;                     /* Space for pop-up effect */
+  padding-top: 0.75rem;                   /* Space for pop-up effect */
 }
 
 .carousel-track:active {
@@ -972,23 +982,30 @@
 /* Cards in 3D carousel - absolutely positioned */
 .carousel-track .card-item {
   position: absolute;
-  width: 140px;                            /* Keep existing width */
+  width: 140px;
   flex: none;
   will-change: transform, opacity, filter;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  /* Smooth transitions for visual properties only - position handled by JS */
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  /* CSS custom properties set by JS for dynamic effects */
+  --focus-intensity: 0;
+  --base-lift: 0px;
 }
 
-/* Non-front cards in carousel: disable hover/selection visual effects */
+/* Non-front cards in carousel: completely disable hover/selection visual effects */
 .carousel-track .card-item:not(.carousel-front) {
   cursor: default;
+  /* Hide selection border entirely on non-front cards */
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
 .carousel-track .card-item:not(.carousel-front):hover {
-  /* No transform override - JS inline styles control positioning */
-  border-color: var(--border);
-  box-shadow: none;
+  /* No visual feedback - card is not interactive */
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
 .carousel-track .card-item:not(.carousel-front):hover .card-content {
@@ -1009,47 +1026,115 @@
   pointer-events: none;
 }
 
-/* Non-front selected cards: muted selection indicator */
+/* Non-front selected cards: very subtle indicator only (small dot or none) */
 .carousel-track .card-item.selected:not(.carousel-front) {
-  border-color: rgba(255, 107, 53, 0.25);
-  box-shadow: none;
+  /* No border on non-front selected cards to avoid confusion */
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
 .carousel-track .card-item.selected:not(.carousel-front) .card-content {
-  background: rgba(255, 107, 53, 0.05);
+  /* Very subtle background tint to show it's selected somewhere in carousel */
+  background: rgba(255, 107, 53, 0.03);
 }
 
 .carousel-track .card-item.selected:not(.carousel-front) .card-preview {
   box-shadow: none;
 }
 
-/* Front card in carousel: enhanced interactive styling */
+/* Subtle selection indicator dot for non-front selected cards */
+.carousel-track .card-item.selected:not(.carousel-front)::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 6px;
+  height: 6px;
+  background: var(--c1);
+  border-radius: 50%;
+  opacity: 0.7;
+  z-index: 10;
+}
+
+/* Front card in carousel: full interactive styling with pop-up effect */
 .carousel-track .card-item.carousel-front {
   cursor: pointer;
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  /* Smooth transitions for hover pop-up effect */
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  /* Restore default border for front card */
+  border-color: var(--border) !important;
 }
 
+/* Front card hover: enhanced pop-up effect */
 .carousel-track .card-item.carousel-front:hover {
-  border-color: rgba(255, 107, 53, 0.6);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 107, 53, 0.15);
+  /* Build complete transform from CSS custom properties with hover enhancements */
+  transform:
+    translateX(var(--carousel-x, 0px))
+    translateY(calc(var(--base-lift, 0px) - 8px))
+    scale(calc(var(--carousel-scale, 1) + 0.04)) !important;
+  border-color: rgba(255, 107, 53, 0.7) !important;
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.5),
+    0 0 35px rgba(255, 107, 53, 0.22),
+    0 0 0 2px rgba(255, 107, 53, 0.18);
+  /* Ensure front card is always fully visible on hover */
+  opacity: 1 !important;
+  filter: none !important;
 }
 
+.carousel-track .card-item.carousel-front:hover .card-preview {
+  height: 56px;
+}
+
+.carousel-track .card-item.carousel-front:hover .card-preview-shine {
+  opacity: 1;
+  animation: shimmerSlide 1.5s ease-in-out infinite;
+}
+
+.carousel-track .card-item.carousel-front:hover .card-content {
+  background: var(--bg-elevated);
+}
+
+/* Front card selected state: prominent selection indicator */
 .carousel-track .card-item.carousel-front.selected {
-  border-color: var(--c1);
-  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.25), 0 12px 32px rgba(0, 0, 0, 0.35);
+  border-color: var(--c1) !important;
+  box-shadow:
+    0 0 0 3px rgba(255, 107, 53, 0.3),
+    0 16px 36px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(255, 107, 53, 0.1);
+}
+
+.carousel-track .card-item.carousel-front.selected:hover {
+  box-shadow:
+    0 0 0 3px rgba(255, 107, 53, 0.4),
+    0 20px 44px rgba(0, 0, 0, 0.5),
+    0 0 35px rgba(255, 107, 53, 0.25),
+    inset 0 0 0 1px rgba(255, 107, 53, 0.15);
 }
 
 .carousel-track .card-item.carousel-front.selected .card-content {
-  background: rgba(255, 107, 53, 0.12);
+  background: rgba(255, 107, 53, 0.14);
 }
 
 .carousel-track .card-item.carousel-front.selected .card-preview {
-  box-shadow: inset 0 0 24px rgba(255, 107, 53, 0.35);
+  box-shadow: inset 0 0 28px rgba(255, 107, 53, 0.4);
+}
+
+/* Active/pressed state for front card */
+.carousel-track .card-item.carousel-front:active {
+  transform:
+    translateX(var(--carousel-x, 0px))
+    translateY(calc(var(--base-lift, 0px) - 2px))
+    scale(calc(var(--carousel-scale, 1) - 0.02)) !important;
+  transition: transform 0.1s ease;
 }
 
 @media (min-width: 500px) {
   .carousel-track {
-    height: 180px;
+    height: 195px;
   }
   .carousel-track .card-item {
     width: 160px;
@@ -1058,30 +1143,43 @@
 
 @media (min-width: 768px) {
   .carousel-track {
-    height: 200px;
+    height: 215px;
   }
   .carousel-track .card-item {
     width: 180px;
   }
 }
 
-/* Focus glow behind center card */
+/* Focus glow behind center card - enhanced for pop-up effect */
 .carousel-track::before {
   content: '';
   position: absolute;
-  width: 200px;
-  height: 140px;
+  width: 220px;
+  height: 160px;
   background: radial-gradient(
     ellipse at center,
-    rgba(255, 107, 53, 0.18) 0%,
-    rgba(255, 107, 53, 0.08) 40%,
-    transparent 70%
+    rgba(255, 107, 53, 0.22) 0%,
+    rgba(255, 107, 53, 0.1) 35%,
+    rgba(255, 107, 53, 0.03) 60%,
+    transparent 75%
   );
   border-radius: 50%;
-  filter: blur(25px);
+  filter: blur(30px);
   pointer-events: none;
   z-index: 0;
-  transform: translateY(-12px); /* Align with lifted front card (matches frontLiftY) */
+  transform: translateY(-16px); /* Align with lifted front card (matches frontLiftY) */
+  transition: opacity 0.3s ease;
+}
+
+/* Enhance glow when front card is hovered */
+.carousel-track:has(.carousel-front:hover)::before {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 107, 53, 0.28) 0%,
+    rgba(255, 107, 53, 0.14) 35%,
+    rgba(255, 107, 53, 0.05) 60%,
+    transparent 75%
+  );
 }
 
 /* 3D Carousel - disable scroll-based fade indicators (not applicable) */
