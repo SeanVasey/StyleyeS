@@ -95,7 +95,7 @@
           <div class="image-upload-zone" id="imageZone">
             <button class="remove-img" id="removeImg">✕</button>
             <img src="" class="zone-preview" id="imgPreview" alt="Preview">
-            <div class="zone-icon">📷</div>
+            <div class="zone-icon"><span data-ui-icon="camera"></span></div>
             <div class="zone-text">Drop reference image here</div>
             <div class="zone-sub">or click to upload</div>
             <input type="file" id="imgInput" accept="image/*" style="display:none">
@@ -166,19 +166,19 @@
       
       <div class="utility-bar">
         <div class="util-group">
-          <button class="util-btn" id="btnHistory">📜 History</button>
-          <button class="util-btn" id="btnFavorites">⭐ Favorites</button>
+          <button class="util-btn" id="btnHistory"><span class="btn-icon" data-ui-icon="history"></span> History</button>
+          <button class="util-btn" id="btnFavorites"><span class="btn-icon" data-ui-icon="favorites"></span> Favorites</button>
         </div>
         <div class="util-group">
-          <button class="util-btn" id="btnExport">📤 Export</button>
-          <button class="util-btn" id="btnImport">📥 Import</button>
+          <button class="util-btn" id="btnExport"><span class="btn-icon" data-ui-icon="export"></span> Export</button>
+          <button class="util-btn" id="btnImport"><span class="btn-icon" data-ui-icon="import"></span> Import</button>
         </div>
       </div>
 
       <div class="picker-container">
         <div class="tab-group">
-          <button class="tab-btn active" id="tabStyles">🎨 Art Styles</button>
-          <button class="tab-btn" id="tabControls">💡 Lighting & WB</button>
+          <button class="tab-btn active" id="tabStyles"><span class="btn-icon" data-ui-icon="art-styles"></span> Art Styles</button>
+          <button class="tab-btn" id="tabControls"><span class="btn-icon" data-ui-icon="lighting"></span> Lighting & WB</button>
         </div>
         
         <div class="categories" id="categories"></div>
@@ -187,7 +187,7 @@
 
       <div class="stack-section">
         <div class="stack-header">
-          <h3>🥞 Recipe Stack</h3>
+          <h3><span class="header-icon" data-ui-icon="recipe-stack"></span> Recipe Stack</h3>
           <span class="stack-count" id="totalCount">0 / 8</span>
         </div>
         <div class="stack-list" id="stackList">
@@ -209,11 +209,11 @@
       </div>
 
       <div class="output-section">
-        <div class="output-header"><h3>✨ Generated Prompt</h3></div>
+        <div class="output-header"><h3><span class="header-icon" data-ui-icon="sparkles"></span> Generated Prompt</h3></div>
         <div class="prompt-output" id="promptOutput">Your vivid prompt will appear here...</div>
         <div class="actions">
-          <button class="btn btn-primary" id="btnCopy">📋 Copy</button>
-          <button class="btn btn-secondary" id="btnClear">🗑️ Clear</button>
+          <button class="btn btn-primary" id="btnCopy"><span class="btn-icon" data-ui-icon="copy"></span> Copy</button>
+          <button class="btn btn-secondary" id="btnClear"><span class="btn-icon" data-ui-icon="clear"></span> Clear</button>
         </div>
       </div>
     </main>
@@ -226,7 +226,7 @@
   <div class="modal" id="historyModal">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>📜 Prompt History</h3>
+        <h3><span class="header-icon" data-ui-icon="history"></span> Prompt History</h3>
         <button class="modal-close" id="closeHistory">✕</button>
       </div>
       <div class="history-list" id="historyList">
