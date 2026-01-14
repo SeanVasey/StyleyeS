@@ -1,8 +1,8 @@
 /**
- * StyleyeS v2.1.0 — Main Application
+ * StyleyeS v2.1.1 — Main Application
  * Initialization and orchestration
  *
- * @version 2.1.0
+ * @version 2.1.1
  * @updated 2026-01-14
  */
 

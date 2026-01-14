@@ -1,8 +1,8 @@
 /**
- * StyleyeS v2.1.0 — State Management
+ * StyleyeS v2.1.1 — State Management
  * Application state and persistence
  *
- * @version 2.1.0
+ * @version 2.1.1
  * @updated 2026-01-14
  */
 
