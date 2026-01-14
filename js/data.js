@@ -1,9 +1,9 @@
 /**
- * StyleyeS v2.0.0 — Data
+ * StyleyeS v2.1.0 — Data
  * Styles and Controls Definitions with Visual Previews
  *
- * @version 2.0.0
- * @updated 2026-01-05
+ * @version 2.1.0
+ * @updated 2026-01-14
  */
 
 const StyleyeSData = {
