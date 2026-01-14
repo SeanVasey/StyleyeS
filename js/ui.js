@@ -56,14 +56,36 @@ const StyleyeSUI = {
   },
 
   /**
-   * Preload all model icons for better performance
+   * Preload all model and category icons for better performance
    * @returns {Promise<void>}
    */
   async preloadIcons() {
-    const iconPromises = StyleyeSConfig.models.map(model =>
+    // Preload model icons
+    const modelIconPromises = StyleyeSConfig.models.map(model =>
       this.loadIcon(model.iconPath)
     );
-    await Promise.all(iconPromises);
+
+    // Preload category icons
+    const categoryIconPromises = Object.values(StyleyeSConfig.categoryIcons).map(iconPath =>
+      this.loadCategoryIcon(iconPath)
+    );
+
+    // Preload control category icons
+    const controlIconPromises = Object.values(StyleyeSConfig.controlCategoryIcons).map(iconPath =>
+      this.loadCategoryIcon(iconPath)
+    );
+
+    // Preload stack icons
+    const stackIconPromises = Object.values(StyleyeSConfig.stackIcons).map(iconPath =>
+      this.loadCategoryIcon(iconPath)
+    );
+
+    await Promise.all([
+      ...modelIconPromises,
+      ...categoryIconPromises,
+      ...controlIconPromises,
+      ...stackIconPromises
+    ]);
   },
 
   /**
@@ -74,6 +96,48 @@ const StyleyeSUI = {
   getIconSync(iconPath) {
     if (!iconPath) return '';
     const fullPath = StyleyeSConfig.ICON_BASE_PATH + iconPath;
+    return this.iconCache[fullPath] || '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor" opacity="0.3"/></svg>';
+  },
+
+  /**
+   * Load external category SVG icon content
+   * @param {string} iconPath - Relative path to icon file
+   * @returns {Promise<string>} SVG content
+   */
+  async loadCategoryIcon(iconPath) {
+    if (!iconPath) return '';
+
+    const fullPath = StyleyeSConfig.CATEGORY_ICON_PATH + iconPath;
+
+    // Return cached icon if available
+    if (this.iconCache[fullPath]) {
+      return this.iconCache[fullPath];
+    }
+
+    try {
+      const response = await fetch(fullPath);
+      if (!response.ok) {
+        console.warn(`Failed to load category icon: ${fullPath}`);
+        return '';
+      }
+      const svgContent = await response.text();
+      // Cache the loaded icon
+      this.iconCache[fullPath] = svgContent;
+      return svgContent;
+    } catch (error) {
+      console.warn(`Error loading category icon ${fullPath}:`, error);
+      return '';
+    }
+  },
+
+  /**
+   * Get cached category icon or placeholder
+   * @param {string} iconPath - Relative path to icon file
+   * @returns {string} SVG content or placeholder
+   */
+  getCategoryIconSync(iconPath) {
+    if (!iconPath) return '';
+    const fullPath = StyleyeSConfig.CATEGORY_ICON_PATH + iconPath;
     return this.iconCache[fullPath] || '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor" opacity="0.3"/></svg>';
   },
   
@@ -562,25 +626,24 @@ const StyleyeSUI = {
   renderCategories() {
     const { categories } = this.elements;
     if (!categories) return;
-    
-    let cats, activeCat, emojiMap;
-    
+
+    let cats, activeCat, iconMap;
+
     if (StyleyeSState.pickerMode === 'styles') {
       cats = ['all', ...StyleyeSData.getStyleCategories()];
       activeCat = StyleyeSState.activeCategory;
-      emojiMap = StyleyeSConfig.categoryEmojis;
+      iconMap = StyleyeSConfig.categoryIcons;
     } else {
       cats = ['all', ...StyleyeSData.getControlCategories()];
       activeCat = StyleyeSState.controlActiveCategory;
-      emojiMap = StyleyeSConfig.controlCategoryEmojis;
+      iconMap = StyleyeSConfig.controlCategoryIcons;
     }
-    
+
     categories.innerHTML = cats.map(cat => {
-      const emoji = cat === 'all' 
-        ? (StyleyeSState.pickerMode === 'styles' ? '✨' : '🧩') 
-        : emojiMap[cat] || '';
+      const iconPath = iconMap[cat] || iconMap['all'];
+      const iconContent = this.getCategoryIconSync(iconPath);
       const label = cat === 'all' ? 'All' : cat;
-      return `<button class="cat-btn ${cat === activeCat ? 'active' : ''}" data-cat="${cat}">${emoji} ${label}</button>`;
+      return `<button class="cat-btn ${cat === activeCat ? 'active' : ''}" data-cat="${cat}"><span class="cat-icon">${iconContent}</span> ${label}</button>`;
     }).join('');
   },
   
@@ -672,7 +735,7 @@ const StyleyeSUI = {
     if (!stylesContainer) return;
 
     const activeCat = StyleyeSState.activeCategory;
-    const emojiMap = StyleyeSConfig.categoryEmojis;
+    const iconMap = StyleyeSConfig.categoryIcons;
 
     let categories;
     if (activeCat === 'all') {
@@ -699,13 +762,14 @@ const StyleyeSUI = {
 
       if (styles.length === 0) return '';
 
-      const emoji = emojiMap[category] || '✨';
+      const iconPath = iconMap[category] || iconMap['all'];
+      const iconContent = this.getCategoryIconSync(iconPath);
       const sanitizedCat = this.sanitizeAttr(category);
 
       return `
         <section class="style-category-section" data-category="${sanitizedCat}">
           <div class="category-header">
-            <h3 class="category-title"><span class="emoji">${emoji}</span> ${this.escapeHtml(category)}</h3>
+            <h3 class="category-title"><span class="category-icon">${iconContent}</span> ${this.escapeHtml(category)}</h3>
             <div class="carousel-nav">
               <button class="carousel-arrow prev" data-carousel-prev="${sanitizedCat}" aria-label="Previous" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -866,17 +930,20 @@ const StyleyeSUI = {
   renderStack() {
     const { stackList, totalCount } = this.elements;
     if (!stackList || !totalCount) return;
-    
+
     const total = StyleyeSState.getTotalCount();
     totalCount.textContent = `${total} / 8`;
-    
+
     if (total === 0) {
       stackList.innerHTML = '<span class="stack-empty">Tap styles or lighting to build your recipe</span>';
       return;
     }
-    
+
+    const controlIcon = this.getCategoryIconSync(StyleyeSConfig.stackIcons.control);
+    const styleIcon = this.getCategoryIconSync(StyleyeSConfig.stackIcons.style);
+
     let html = '';
-    
+
     // Render controls first
     StyleyeSState.controlStack.forEach(id => {
       const item = StyleyeSData.getControlById(id);
@@ -884,7 +951,7 @@ const StyleyeSUI = {
         html += `
           <div class="stack-row type-control">
             <div class="row-info">
-              <span class="row-icon">💡</span>
+              <span class="row-icon">${controlIcon}</span>
               <span class="row-name">${item.name}</span>
             </div>
             <button class="row-remove" data-remove-ctrl="${id}" aria-label="Remove ${item.name}">×</button>
@@ -892,7 +959,7 @@ const StyleyeSUI = {
         `;
       }
     });
-    
+
     // Render styles
     StyleyeSState.stack.forEach(id => {
       const item = StyleyeSData.getStyleById(id);
@@ -900,7 +967,7 @@ const StyleyeSUI = {
         html += `
           <div class="stack-row type-style">
             <div class="row-info">
-              <span class="row-icon">🎨</span>
+              <span class="row-icon">${styleIcon}</span>
               <span class="row-name">${item.name}</span>
             </div>
             <button class="row-remove" data-remove-style="${id}" aria-label="Remove ${item.name}">×</button>
@@ -908,7 +975,7 @@ const StyleyeSUI = {
         `;
       }
     });
-    
+
     stackList.innerHTML = html;
   },
   

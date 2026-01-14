@@ -37,6 +37,7 @@ const StyleyeSConfig = {
 
   // Icon Configuration
   ICON_BASE_PATH: 'icons/models/',
+  CATEGORY_ICON_PATH: 'icons/categories/',
 
   // Aspect Ratios
   aspectRatios: [
@@ -220,22 +221,30 @@ const StyleyeSConfig = {
     }
   },
 
-  // Category Emojis
-  categoryEmojis: {
-    'Photo': '📷',
-    'Cinematic': '🎬',
-    'Art': '🖼️',
-    'Digital': '💻',
-    'Mood': '🌙',
-    'Texture': '🧱',
-    'Color': '🎨',
-    'Era': '⏳'
+  // Category Icons (SVG paths)
+  categoryIcons: {
+    'all': 'all-styles.svg',
+    'Photo': 'photo.svg',
+    'Cinematic': 'cinematic.svg',
+    'Art': 'art.svg',
+    'Digital': 'digital.svg',
+    'Mood': 'mood.svg',
+    'Texture': 'texture.svg',
+    'Color': 'color.svg',
+    'Era': 'era.svg'
   },
 
-  controlCategoryEmojis: {
-    'Lighting': '💡',
-    'White Balance': '⚪️',
-    'Anti-Cast': '🧼'
+  controlCategoryIcons: {
+    'all': 'all-controls.svg',
+    'Lighting': 'lighting.svg',
+    'White Balance': 'white-balance.svg',
+    'Anti-Cast': 'anti-cast.svg'
+  },
+
+  // Stack row icons
+  stackIcons: {
+    'style': 'style.svg',
+    'control': 'control.svg'
   }
 };
 
@@ -250,5 +259,6 @@ StyleyeSConfig.models.forEach(model => {
 });
 Object.freeze(StyleyeSConfig.models);
 Object.freeze(StyleyeSConfig.modelConfig);
-Object.freeze(StyleyeSConfig.categoryEmojis);
-Object.freeze(StyleyeSConfig.controlCategoryEmojis);
+Object.freeze(StyleyeSConfig.categoryIcons);
+Object.freeze(StyleyeSConfig.controlCategoryIcons);
+Object.freeze(StyleyeSConfig.stackIcons);
