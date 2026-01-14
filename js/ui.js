@@ -932,11 +932,27 @@ const StyleyeSUI = {
       const currentAngle = state.rotation + itemAngle;
       const styles = StyleyeSCarousel.getStyleForAngle(currentAngle);
 
-      card.style.transform = styles.transform;
+      // For non-front cards, apply full inline styles
+      // For front card, use CSS custom properties so CSS can add hover effects
+      if (!styles.isFront) {
+        card.style.transform = styles.transform;
+      } else {
+        // Set base values as CSS custom properties for front card
+        // This allows CSS :hover to build on these values
+        card.style.setProperty('--carousel-x', `${styles.x.toFixed(1)}px`);
+        card.style.setProperty('--carousel-scale', styles.scale.toFixed(3));
+        // Set base transform for when not hovering
+        card.style.transform = styles.transform;
+      }
+
       card.style.opacity = styles.opacity;
       card.style.filter = styles.filter;
       card.style.zIndex = styles.zIndex;
       card.style.pointerEvents = styles.pointerEvents;
+
+      // Set focus intensity as CSS custom property for hover/selection effects
+      card.style.setProperty('--focus-intensity', styles.focusIntensity.toFixed(3));
+      card.style.setProperty('--base-lift', `${styles.liftY.toFixed(1)}px`);
 
       // Toggle carousel-front class based on position
       card.classList.toggle('carousel-front', styles.isFront);

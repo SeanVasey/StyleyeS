@@ -1,10 +1,16 @@
 /**
- * StyleyeS v2.3.0 — Carousel Physics Engine
+ * StyleyeS v2.4.0 — Carousel Physics Engine
  * 3D cylindrical rotation with enhanced front-card focus
  *
- * @version 2.3.0
- * @updated 2026-01-13
+ * @version 2.4.0
+ * @updated 2026-01-14
  * @changelog
+ *   - 2.4.0: Enhanced carousel interaction refinements:
+ *            - Increased radius for clearer card separation
+ *            - Smoother physics with refined friction/snap values
+ *            - Enhanced edge blur/dim effect with progressive falloff
+ *            - Pop-up effect with hover lift bonus
+ *            - Focus intensity CSS custom property for dynamic styling
  *   - 2.3.0: Memory leak fix - destroyAll() called before re-render
  *   - 2.2.0: Enhanced carousel interaction - front card pop-up, blur/dim edges,
  *            single-card selection, smoother motion
@@ -14,29 +20,33 @@ const StyleyeSCarousel = {
 
   // Configuration
   config: {
-    radius: 280,                      // Cylinder radius (px) - increased for less overlap
-    friction: 0.92,                   // Velocity decay per frame
-    snapThreshold: 0.15,              // Velocity below which snap begins
-    sensitivity: 0.35,                // Degrees per pixel dragged - slightly reduced for smoother feel
-    maxVelocity: 18,                  // Clamp throw speed
-    snapEasing: 0.12,                 // Lerp factor for snap - slightly faster snap
+    radius: 320,                      // Cylinder radius (px) - increased for less overlap and clearer separation
+    friction: 0.94,                   // Velocity decay per frame - smoother deceleration
+    snapThreshold: 0.12,              // Velocity below which snap begins - earlier snap for precision
+    sensitivity: 0.32,                // Degrees per pixel dragged - refined for smooth feel
+    maxVelocity: 16,                  // Clamp throw speed - slightly lower for controlled motion
+    snapEasing: 0.14,                 // Lerp factor for snap - slightly faster snap
 
     // Physics thresholds
-    snapFinalizeThreshold: 0.05,      // Delta below which snap finalizes
-    minAnimationVelocity: 0.01,       // Velocity below which animation stops
+    snapFinalizeThreshold: 0.03,      // Delta below which snap finalizes - tighter precision
+    minAnimationVelocity: 0.008,      // Velocity below which animation stops
     velocityFrameMultiplier: 16,      // Normalizes velocity to ~60fps (1000ms/60fps ≈ 16ms)
-    programmaticRotationFactor: 0.12, // Velocity factor for rotateTo()
+    programmaticRotationFactor: 0.14, // Velocity factor for rotateTo()
 
-    // Depth visual treatment
-    minScale: 0.55,                   // Scale at back - smaller for more depth
+    // Depth visual treatment - enhanced for better hierarchy
+    minScale: 0.5,                    // Scale at back - smaller for stronger depth effect
     maxScale: 1.0,                    // Scale at front
-    minOpacity: 0.25,                 // Opacity at back - more faded
-    maxBlur: 6,                       // Blur (px) at back - stronger blur
-    zThreshold: 0.7,                  // Z threshold for front card (only front card is interactive)
+    minOpacity: 0.18,                 // Opacity at back - more faded for focus on center
+    maxBlur: 8,                       // Blur (px) at back - stronger blur for edge cards
+    zThreshold: 0.85,                 // Z threshold for front card - tighter zone for single card focus
 
     // Pop-up effect for front card
-    frontLiftY: -12,                  // Pixels to lift front card (negative = up)
-    frontThreshold: 0.85             // Z value above which card gets full lift
+    frontLiftY: -16,                  // Pixels to lift front card (negative = up) - more prominent
+    frontThreshold: 0.88,             // Z value above which card gets full lift - tighter threshold
+
+    // Hover enhancement for front card
+    hoverLiftBonus: -6,               // Additional lift on hover (negative = up)
+    hoverScaleBonus: 0.04             // Additional scale on hover
   },
 
   // Per-carousel state (keyed by category)
@@ -98,10 +108,24 @@ const StyleyeSCarousel = {
     // Normalize z from [-1, +1] to [0, 1]
     const zNorm = (z + 1) / 2;
 
-    // Interpolate visual properties
+    // Calculate edge factor for progressive blur/dim at carousel edges
+    // 0 = center, 1 = far edge (based on X position)
+    const normalizedX = Math.abs(x) / radius;
+    const edgeFactor = Math.pow(normalizedX, 1.5); // Non-linear for stronger edge effect
+
+    // Enhanced opacity calculation - stronger falloff for non-center cards
+    // Combine depth-based and edge-based opacity
+    const depthOpacity = minOpacity + (1 - minOpacity) * zNorm;
+    const edgeOpacityPenalty = edgeFactor * 0.35; // Up to 35% additional fade at edges
+    const opacity = Math.max(minOpacity, depthOpacity - edgeOpacityPenalty);
+
+    // Enhanced blur - combine depth blur with edge blur
+    const depthBlur = maxBlur * (1 - zNorm);
+    const edgeBlur = edgeFactor * 3; // Additional 3px blur at edges
+    const blur = depthBlur + edgeBlur;
+
+    // Scale with depth
     const scale = minScale + (maxScale - minScale) * zNorm;
-    const opacity = minOpacity + (1 - minOpacity) * zNorm;
-    const blur = maxBlur * (1 - zNorm);
     const zIndex = Math.round(zNorm * 100);
 
     // Calculate Y lift for front card pop-up effect
@@ -118,13 +142,21 @@ const StyleyeSCarousel = {
     // Determine if this is the "front" card (for special styling)
     const isFront = z > zThreshold;
 
+    // Calculate focus intensity (0-1) for front card - used for CSS custom property
+    const focusIntensity = isFront ? Math.min(1, (z - zThreshold) / (1 - zThreshold)) : 0;
+
     return {
       transform: `translateX(${x.toFixed(1)}px) translateY(${liftY.toFixed(1)}px) scale(${scale.toFixed(3)})`,
       opacity: opacity.toFixed(3),
       filter: blur > 0.1 ? `blur(${blur.toFixed(1)}px)` : 'none',
       zIndex,
       pointerEvents: isFront ? 'auto' : 'none',
-      isFront
+      isFront,
+      focusIntensity,
+      liftY,
+      // Raw values for CSS custom properties
+      x,
+      scale
     };
   },
 
