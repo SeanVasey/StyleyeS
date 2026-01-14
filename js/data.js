@@ -1,8 +1,8 @@
 /**
- * StyleyeS v2.1.0 — Data
+ * StyleyeS v2.1.1 — Data
  * Styles and Controls Definitions with Visual Previews
  *
- * @version 2.1.0
+ * @version 2.1.1
  * @updated 2026-01-14
  */
 

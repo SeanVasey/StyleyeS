@@ -781,6 +781,24 @@
   border-radius: 10px;
   transition: all 0.2s ease;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.tab-btn .btn-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tab-btn .btn-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 .tab-btn.active {
@@ -948,7 +966,7 @@
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
   padding: 0.5rem 0.25rem;
   margin: 0 -0.25rem;
@@ -956,6 +974,11 @@
   /* Hide scrollbar but keep functionality */
   scrollbar-width: none;
   -ms-overflow-style: none;
+
+  /* Performance optimizations */
+  will-change: scroll-position;
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
 }
 
 .carousel-track::-webkit-scrollbar {
@@ -967,6 +990,8 @@
   flex: 0 0 auto;
   width: 140px;
   scroll-snap-align: start;
+  /* Prevent layout shift during scroll */
+  contain: layout style paint;
 }
 
 @media (min-width: 500px) {
@@ -1052,12 +1077,16 @@
   border-radius: var(--radius-md);
   padding: 0;
   cursor: pointer;
-  transition: all 0.3s var(--ease-out);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
   overflow: hidden;
   min-height: 110px;
   display: flex;
   flex-direction: column;
+  /* Performance optimizations */
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Visual Preview Layer */
@@ -1101,9 +1130,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1111,10 +1138,21 @@
   gap: 0.5rem;
   opacity: 0;
   transform: scale(0.95);
-  transition: all 0.3s var(--ease-out);
+  transition: opacity 0.2s ease, transform 0.2s ease;
   z-index: 5;
   padding: 0.75rem;
   pointer-events: none;
+  /* Only use backdrop-filter on devices that can handle it */
+  will-change: opacity, transform;
+}
+
+/* Enable backdrop blur only on hover-capable devices with good performance */
+@media (hover: hover) and (min-width: 768px) {
+  .card-preview-hover {
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 }
 
 .preview-sample {

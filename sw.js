@@ -1,12 +1,12 @@
 /**
- * StyleyeS v2.1.0 — Service Worker
+ * StyleyeS v2.1.1 — Service Worker
  * Offline support and caching
  *
- * @version 2.1.0
+ * @version 2.1.1
  * @updated 2026-01-14
  */
 
-const CACHE_NAME = 'styleyes-v2.1.0';
+const CACHE_NAME = 'styleyes-v2.1.1';
 
 // Assets to cache on install
 const STATIC_ASSETS = [

@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.1] - 2026-01-14
+### Fixed
+- **Carousel Performance**: Resolved sluggish scrolling and choppy interactions in style card carousels, especially on mobile devices.
+- **Tab Icon Alignment**: Fixed icon and text alignment in "Art Styles" and "Lighting & WB" tab buttons using proper flexbox centering.
+- **Duplicate Event Listeners**: Fixed memory leak caused by duplicate event listeners being added on each carousel re-render.
+
+### Improved
+- **Touch Scrolling**: Added momentum-based touch scrolling with velocity tracking for smoother swipe interactions.
+- **Scroll Performance**: Changed `scroll-snap-type` from `mandatory` to `proximity` for less jarring scroll behavior.
+- **Rendering Performance**: Added `contain: layout style paint` to carousel cards to prevent layout thrashing during scroll.
+- **Hover Effects**: Optimized card hover preview to only use backdrop-filter on capable desktop devices, improving mobile performance.
+- **Event Handling**: Implemented throttled scroll handlers (50ms) to reduce scroll event overhead.
+- Added `will-change`, `backface-visibility`, and `touch-action` CSS hints for GPU-accelerated scrolling.
+- Carousels now properly track initialization state to prevent duplicate listener binding.
+
 ## [2.1.0] - 2026-01-14
 ### Added
 - **Category Carousel Navigation**: Horizontal swipe-based style selection grouped by category with smooth scroll snap.

@@ -1,10 +1,11 @@
 /**
- * StyleyeS v2.1.0 — UI Module
+ * StyleyeS v2.1.1 — UI Module
  * Rendering and DOM manipulation
  *
- * @version 2.1.0
- * @updated 2026-01-13
+ * @version 2.1.1
+ * @updated 2026-01-14
  * @changelog
+ *   - 2.1.1: Carousel performance fixes, throttled scroll handlers, touch momentum scrolling
  *   - 2.1.0: Category carousels, multi-line input, aspect-ratio-preserving images
  *   - 2.0.1: Updated model icons to white-line design
  *   - 2.0.0: Major release with enhanced branding and documentation
@@ -782,6 +783,9 @@ const StyleyeSUI = {
     const { stylesContainer } = this.elements;
     if (!stylesContainer) return;
 
+    // Clear carousel tracking since we're re-rendering
+    this.clearCarouselTracking();
+
     const activeCat = StyleyeSState.activeCategory;
     const iconMap = StyleyeSConfig.categoryIcons;
 
@@ -925,20 +929,57 @@ const StyleyeSUI = {
     }).join('')}</div>`;
   },
 
+  // Track initialized carousels to prevent duplicate event listeners
+  initializedCarousels: new Set(),
+
+  // Throttle utility for scroll performance
+  throttle(fn, delay) {
+    let lastCall = 0;
+    let timeoutId = null;
+    return function(...args) {
+      const now = Date.now();
+      const remaining = delay - (now - lastCall);
+
+      if (remaining <= 0) {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+        lastCall = now;
+        fn.apply(this, args);
+      } else if (!timeoutId) {
+        timeoutId = setTimeout(() => {
+          lastCall = Date.now();
+          timeoutId = null;
+          fn.apply(this, args);
+        }, remaining);
+      }
+    };
+  },
+
   /**
    * Initialize carousel scroll controls
+   * Uses tracking to prevent duplicate event listeners
    */
   initCarouselControls() {
     const carousels = document.querySelectorAll('.carousel-track');
+    const scrollAmount = 200;
 
     carousels.forEach(track => {
       const category = track.dataset.carousel;
-      const section = track.closest('.style-category-section');
-      const prevBtn = document.querySelector(`[data-carousel-prev="${category}"]`);
-      const nextBtn = document.querySelector(`[data-carousel-next="${category}"]`);
-      const scrollAmount = 200;
 
-      // Arrow navigation
+      // Skip if already initialized
+      if (this.initializedCarousels.has(category)) {
+        // Just update the initial state for existing carousels
+        this.updateCarouselScrollState(track);
+        return;
+      }
+
+      const section = track.closest('.style-category-section');
+      const prevBtn = section?.querySelector(`[data-carousel-prev="${category}"]`);
+      const nextBtn = section?.querySelector(`[data-carousel-next="${category}"]`);
+
+      // Arrow navigation with event delegation
       if (prevBtn) {
         prevBtn.addEventListener('click', () => {
           track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
@@ -951,25 +992,118 @@ const StyleyeSUI = {
         });
       }
 
-      // Update button states based on scroll position
-      const updateScrollState = () => {
-        const { scrollLeft, scrollWidth, clientWidth } = track;
-        const atStart = scrollLeft <= 10;
-        const atEnd = scrollLeft >= scrollWidth - clientWidth - 10;
+      // Throttled scroll handler for performance
+      const throttledScrollHandler = this.throttle(() => {
+        this.updateCarouselScrollState(track);
+      }, 50);
 
-        if (prevBtn) prevBtn.disabled = atStart;
-        if (nextBtn) nextBtn.disabled = atEnd;
+      track.addEventListener('scroll', throttledScrollHandler, { passive: true });
 
-        // Update fade indicators on section
-        if (section) {
-          section.classList.toggle('scroll-left', !atStart);
-          section.classList.toggle('scroll-right', !atEnd);
-        }
-      };
+      // Initialize touch support for better mobile scrolling
+      this.initCarouselTouchSupport(track);
 
-      track.addEventListener('scroll', updateScrollState, { passive: true });
-      updateScrollState(); // Initial state
+      // Mark as initialized
+      this.initializedCarousels.add(category);
+
+      // Initial state update
+      this.updateCarouselScrollState(track);
     });
+  },
+
+  /**
+   * Update carousel scroll state (button states and fade indicators)
+   * @param {HTMLElement} track - The carousel track element
+   */
+  updateCarouselScrollState(track) {
+    const category = track.dataset.carousel;
+    const section = track.closest('.style-category-section');
+    const prevBtn = section?.querySelector(`[data-carousel-prev="${category}"]`);
+    const nextBtn = section?.querySelector(`[data-carousel-next="${category}"]`);
+
+    const { scrollLeft, scrollWidth, clientWidth } = track;
+    const atStart = scrollLeft <= 10;
+    const atEnd = scrollLeft >= scrollWidth - clientWidth - 10;
+
+    if (prevBtn) prevBtn.disabled = atStart;
+    if (nextBtn) nextBtn.disabled = atEnd;
+
+    // Update fade indicators on section
+    if (section) {
+      section.classList.toggle('scroll-left', !atStart);
+      section.classList.toggle('scroll-right', !atEnd);
+    }
+  },
+
+  /**
+   * Clear carousel tracking (call when categories change)
+   */
+  clearCarouselTracking() {
+    this.initializedCarousels.clear();
+  },
+
+  /**
+   * Initialize touch/swipe support for carousels
+   * Improves scroll feel on mobile devices
+   * @param {HTMLElement} track - The carousel track element
+   */
+  initCarouselTouchSupport(track) {
+    let startX = 0;
+    let startScrollLeft = 0;
+    let isDragging = false;
+    let velocity = 0;
+    let lastX = 0;
+    let lastTime = 0;
+
+    const handleTouchStart = (e) => {
+      isDragging = true;
+      startX = e.touches[0].pageX;
+      startScrollLeft = track.scrollLeft;
+      lastX = startX;
+      lastTime = Date.now();
+      velocity = 0;
+      track.style.scrollBehavior = 'auto';
+      track.style.scrollSnapType = 'none';
+    };
+
+    const handleTouchMove = (e) => {
+      if (!isDragging) return;
+
+      const x = e.touches[0].pageX;
+      const now = Date.now();
+      const dt = now - lastTime;
+
+      if (dt > 0) {
+        velocity = (x - lastX) / dt;
+      }
+
+      lastX = x;
+      lastTime = now;
+
+      const walk = startX - x;
+      track.scrollLeft = startScrollLeft + walk;
+    };
+
+    const handleTouchEnd = () => {
+      if (!isDragging) return;
+      isDragging = false;
+
+      // Apply momentum scrolling
+      const momentumDistance = velocity * 150;
+      const targetScroll = track.scrollLeft - momentumDistance;
+
+      track.style.scrollBehavior = 'smooth';
+      track.scrollLeft = targetScroll;
+
+      // Re-enable scroll snap after momentum
+      setTimeout(() => {
+        track.style.scrollSnapType = 'x proximity';
+      }, 300);
+    };
+
+    track.addEventListener('touchstart', handleTouchStart, { passive: true });
+    track.addEventListener('touchmove', handleTouchMove, { passive: true });
+    track.addEventListener('touchend', handleTouchEnd, { passive: true });
+    track.addEventListener('touchcancel', handleTouchEnd, { passive: true });
   },
   
   /**
