@@ -38,6 +38,7 @@ const StyleyeSConfig = {
   // Icon Configuration
   ICON_BASE_PATH: 'icons/models/',
   CATEGORY_ICON_PATH: 'icons/categories/',
+  UI_ICON_PATH: 'icons/ui/',
 
   // Aspect Ratios
   aspectRatios: [
@@ -245,6 +246,21 @@ const StyleyeSConfig = {
   stackIcons: {
     'style': 'style.svg',
     'control': 'control.svg'
+  },
+
+  // UI Icons (buttons, tabs, sections)
+  uiIcons: {
+    'history': 'history.svg',
+    'favorites': 'favorites.svg',
+    'export': 'export.svg',
+    'import': 'import.svg',
+    'art-styles': 'art-styles.svg',
+    'lighting': 'lighting.svg',
+    'recipe-stack': 'recipe-stack.svg',
+    'sparkles': 'sparkles.svg',
+    'copy': 'copy.svg',
+    'clear': 'clear.svg',
+    'camera': 'camera.svg'
   }
 };
 
@@ -262,3 +278,4 @@ Object.freeze(StyleyeSConfig.modelConfig);
 Object.freeze(StyleyeSConfig.categoryIcons);
 Object.freeze(StyleyeSConfig.controlCategoryIcons);
 Object.freeze(StyleyeSConfig.stackIcons);
+Object.freeze(StyleyeSConfig.uiIcons);

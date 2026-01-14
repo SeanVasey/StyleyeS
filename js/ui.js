@@ -56,7 +56,7 @@ const StyleyeSUI = {
   },
 
   /**
-   * Preload all model and category icons for better performance
+   * Preload all model, category, and UI icons for better performance
    * @returns {Promise<void>}
    */
   async preloadIcons() {
@@ -80,11 +80,17 @@ const StyleyeSUI = {
       this.loadCategoryIcon(iconPath)
     );
 
+    // Preload UI icons
+    const uiIconPromises = Object.values(StyleyeSConfig.uiIcons).map(iconPath =>
+      this.loadUIIcon(iconPath)
+    );
+
     await Promise.all([
       ...modelIconPromises,
       ...categoryIconPromises,
       ...controlIconPromises,
-      ...stackIconPromises
+      ...stackIconPromises,
+      ...uiIconPromises
     ]);
   },
 
@@ -138,6 +144,48 @@ const StyleyeSUI = {
   getCategoryIconSync(iconPath) {
     if (!iconPath) return '';
     const fullPath = StyleyeSConfig.CATEGORY_ICON_PATH + iconPath;
+    return this.iconCache[fullPath] || '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor" opacity="0.3"/></svg>';
+  },
+
+  /**
+   * Load external UI SVG icon content
+   * @param {string} iconPath - Relative path to icon file
+   * @returns {Promise<string>} SVG content
+   */
+  async loadUIIcon(iconPath) {
+    if (!iconPath) return '';
+
+    const fullPath = StyleyeSConfig.UI_ICON_PATH + iconPath;
+
+    // Return cached icon if available
+    if (this.iconCache[fullPath]) {
+      return this.iconCache[fullPath];
+    }
+
+    try {
+      const response = await fetch(fullPath);
+      if (!response.ok) {
+        console.warn(`Failed to load UI icon: ${fullPath}`);
+        return '';
+      }
+      const svgContent = await response.text();
+      // Cache the loaded icon
+      this.iconCache[fullPath] = svgContent;
+      return svgContent;
+    } catch (error) {
+      console.warn(`Error loading UI icon ${fullPath}:`, error);
+      return '';
+    }
+  },
+
+  /**
+   * Get cached UI icon or placeholder
+   * @param {string} iconPath - Relative path to icon file
+   * @returns {string} SVG content or placeholder
+   */
+  getUIIconSync(iconPath) {
+    if (!iconPath) return '';
+    const fullPath = StyleyeSConfig.UI_ICON_PATH + iconPath;
     return this.iconCache[fullPath] || '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor" opacity="0.3"/></svg>';
   },
   
@@ -991,6 +1039,9 @@ const StyleyeSUI = {
       return;
     }
     
+    const copyIcon = this.getUIIconSync(StyleyeSConfig.uiIcons.copy);
+    const clearIcon = this.getUIIconSync(StyleyeSConfig.uiIcons.clear);
+
     historyList.innerHTML = StyleyeSState.history.map((h, i) => `
       <div class="history-item">
         <div class="history-meta">
@@ -999,8 +1050,8 @@ const StyleyeSUI = {
         </div>
         <div class="history-prompt">${this.escapeHtml(h.prompt)}</div>
         <div class="history-actions">
-          <button data-action="copy" data-index="${i}">📋 Copy</button>
-          <button data-action="delete" data-index="${i}">🗑️ Delete</button>
+          <button data-action="copy" data-index="${i}"><span class="btn-icon">${copyIcon}</span> Copy</button>
+          <button data-action="delete" data-index="${i}"><span class="btn-icon">${clearIcon}</span> Delete</button>
         </div>
       </div>
     `).join('');
@@ -1284,12 +1335,29 @@ const StyleyeSUI = {
   },
   
   /**
+   * Initialize UI icons by injecting SVG content into icon containers
+   */
+  initUIIcons() {
+    const iconElements = document.querySelectorAll('[data-ui-icon]');
+    iconElements.forEach(el => {
+      const iconName = el.dataset.uiIcon;
+      const iconPath = StyleyeSConfig.uiIcons[iconName];
+      if (iconPath) {
+        el.innerHTML = this.getUIIconSync(iconPath);
+      }
+    });
+  },
+
+  /**
    * Render all UI components
    * Preloads icons before rendering for optimal performance
    */
   async renderAll() {
     // Preload icons first for smooth rendering
     await this.preloadIcons();
+
+    // Initialize UI icons
+    this.initUIIcons();
 
     this.renderAspectRatios();
     this.renderModelDropdown();
