@@ -1,10 +1,13 @@
 /**
- * StyleyeS v2.4.0 — Carousel Physics Engine
+ * StyleyeS v2.4.1 — Carousel Physics Engine
  * 3D cylindrical rotation with enhanced front-card focus
  *
- * @version 2.4.0
+ * @version 2.4.1
  * @updated 2026-01-14
  * @changelog
+ *   - 2.4.1: Fix swipe-during-motion and card spacing:
+ *            - Reset isAnimating flag on drag start to allow interrupting momentum
+ *            - Increased radius to 440px for much better card separation
  *   - 2.4.0: Enhanced carousel interaction refinements:
  *            - Increased radius for clearer card separation
  *            - Smoother physics with refined friction/snap values
@@ -20,7 +23,7 @@ const StyleyeSCarousel = {
 
   // Configuration
   config: {
-    radius: 320,                      // Cylinder radius (px) - increased for less overlap and clearer separation
+    radius: 440,                      // Cylinder radius (px) - significantly increased for much clearer card separation
     friction: 0.94,                   // Velocity decay per frame - smoother deceleration
     snapThreshold: 0.12,              // Velocity below which snap begins - earlier snap for precision
     sensitivity: 0.32,                // Degrees per pixel dragged - refined for smooth feel
@@ -234,6 +237,8 @@ const StyleyeSCarousel = {
   startDrag(state, clientX) {
     this.cancelAnimation(state.categoryId);
 
+    // Reset animation flag - allows interrupting momentum with a new drag
+    state.isAnimating = false;
     state.isDragging = true;
     state.dragStartX = clientX;
     state.dragStartRotation = state.rotation;
