@@ -1,9 +1,9 @@
 /**
- * StyleyeS v2.0.0 — Main Application
+ * StyleyeS v2.1.0 — Main Application
  * Initialization and orchestration
  *
- * @version 2.0.0
- * @updated 2026-01-05
+ * @version 2.1.0
+ * @updated 2026-01-14
  */
 
 const StyleyeS = {

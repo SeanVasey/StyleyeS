@@ -7,14 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.1.0] - 2026-01-13
+## [2.1.0] - 2026-01-14
 ### Added
 - **Category Carousel Navigation**: Horizontal swipe-based style selection grouped by category with smooth scroll snap.
+- **Vector Icons for Categories**: Replaced emoji icons with custom SVG vector icons for style categories, control categories, and stack row indicators.
 - **Multi-line Subject Input**: Expanded textarea for complex prompt composition with adjustable height (80px-200px).
 - **Aspect-Ratio Preserving Image Display**: Uploaded images now display at their natural aspect ratio without cropping.
 - **Enhanced Effect-Specific CSS Treatments**: New visual effects for Film Noir (venetian blinds), Neon (glowing grid), Pastel, Golden Hour, Vintage/Analog, Chiaroscuro, Bokeh, Mist, and more.
 - Carousel arrow navigation for desktop users with scroll position indicators.
 - Dynamic fade indicators showing scroll state on category sections.
+- New `icons/categories/` directory with 15 custom SVG icons (photo, cinematic, art, digital, mood, texture, color, era, lighting, white-balance, anti-cast, style, control, all-styles, all-controls).
 
 ### Changed
 - Restructured styles display from flat grid to category-grouped carousel layout.
