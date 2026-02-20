@@ -1088,7 +1088,7 @@ const StyleyeSUI = {
       isDragging = false;
 
       // Apply momentum scrolling
-      const momentumDistance = velocity * 150;
+      const momentumDistance = velocity * StyleyeSConfig.CAROUSEL_MOMENTUM_MULTIPLIER;
       const targetScroll = track.scrollLeft - momentumDistance;
 
       track.style.scrollBehavior = 'smooth';
@@ -1097,7 +1097,7 @@ const StyleyeSUI = {
       // Re-enable scroll snap after momentum
       setTimeout(() => {
         track.style.scrollSnapType = 'x proximity';
-      }, 300);
+      }, StyleyeSConfig.CAROUSEL_SNAP_REENABLE_DELAY_MS);
     };
 
     track.addEventListener('touchstart', handleTouchStart, { passive: true });

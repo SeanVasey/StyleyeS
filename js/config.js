@@ -36,6 +36,10 @@ const StyleyeSConfig = {
   AR_MAGNET_THRESHOLD: 2.5,
   AR_HAPTIC_DURATION_MS: 12,
 
+  // Carousel Touch Scrolling
+  CAROUSEL_MOMENTUM_MULTIPLIER: 150,
+  CAROUSEL_SNAP_REENABLE_DELAY_MS: 300,
+
   // Icon Configuration
   ICON_BASE_PATH: 'icons/models/',
   CATEGORY_ICON_PATH: 'icons/categories/',
