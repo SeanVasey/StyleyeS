@@ -13,7 +13,8 @@ Craft rich, descriptive prompts for AI image generators with curated art styles,
 [![PWA](https://img.shields.io/badge/PWA-Ready-9B4DCA?style=for-the-badge)](manifest.json)
 [![Version](https://img.shields.io/badge/Version-2.1.1-00D4AA?style=for-the-badge)](CHANGELOG.md)
 [![CI](https://img.shields.io/github/actions/workflow/status/SeanVasey/StyleyeS/ci.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/SeanVasey/StyleyeS/actions/workflows/ci.yml)
-[![Deploy](https://img.shields.io/github/actions/workflow/status/SeanVasey/StyleyeS/deploy-pages.yml?branch=main&style=for-the-badge&label=Pages)](https://github.com/SeanVasey/StyleyeS/actions/workflows/deploy-pages.yml)
+[![Pages](https://img.shields.io/github/actions/workflow/status/SeanVasey/StyleyeS/deploy-pages.yml?branch=main&style=for-the-badge&label=Pages)](https://github.com/SeanVasey/StyleyeS/actions/workflows/deploy-pages.yml)
+[![Vercel](https://img.shields.io/github/actions/workflow/status/SeanVasey/StyleyeS/deploy-vercel.yml?branch=main&style=for-the-badge&label=Vercel)](https://github.com/SeanVasey/StyleyeS/actions/workflows/deploy-vercel.yml)
 
 [Features](#-features) • [Getting Started](#-getting-started) • [Usage](#-usage) • [Project Structure](#-project-structure) • [Contributing](#-contributing)
 
@@ -144,17 +145,25 @@ open index.html
 
 ### CI/CD Workflows
 
-All workflows run validation (`npm test`) before proceeding.
+All workflows run validation (`npm test`) before deploying. Validation checks version consistency across `package.json`, `js/config.js`, `index.html`, and `README.md`, and verifies required files exist.
 
-| Workflow | Trigger | Purpose |
-|----------|---------|---------|
-| `ci.yml` | Push to `main`, all PRs | Validation checks |
-| `deploy-pages.yml` | Push to `main`, manual | Deploy to GitHub Pages |
-| `deploy-vercel.yml` | Push to `main`, all PRs | Preview on PR, production on `main` |
+| Workflow | File | Trigger | Purpose |
+|----------|------|---------|---------|
+| CI | `ci.yml` | Push to `main`, all PRs | Version sync and file validation |
+| GitHub Pages | `deploy-pages.yml` | Push to `main`, manual dispatch | Validate then deploy static files via `actions/deploy-pages@v4` |
+| Vercel | `deploy-vercel.yml` | Push to `main`, all PRs | Preview deploys on PRs, production deploy on `main` push |
 
 ### Environment Variables
 
-StyleyeS does not require any environment variables to run.
+StyleyeS does not require any environment variables to run locally. Deployment workflows require the following GitHub repository secrets:
+
+| Secret | Required By | Description |
+|--------|-------------|-------------|
+| `VERCEL_TOKEN` | `deploy-vercel.yml` | Vercel API token ([create here](https://vercel.com/account/tokens)) |
+| `VERCEL_ORG_ID` | `deploy-vercel.yml` | Vercel org/team ID (from `.vercel/project.json` after `vercel link`) |
+| `VERCEL_PROJECT_ID` | `deploy-vercel.yml` | Vercel project ID (from `.vercel/project.json` after `vercel link`) |
+
+GitHub Pages deployment uses the built-in `GITHUB_TOKEN` and requires Pages to be enabled in repository settings with source set to **GitHub Actions**.
 
 ### Progressive Web App Installation
 
@@ -180,20 +189,13 @@ StyleyeS does not require any environment variables to run.
 StyleyeS is deployed automatically via GitHub Actions on every push to `main`.
 
 **Active Deployments:**
-- **GitHub Pages** — Automated via `deploy-pages.yml`. Enable Pages in repo settings (Source: GitHub Actions).
-- **Vercel** — Automated via `deploy-vercel.yml`. Preview deploys on PRs, production on `main`.
-
-**Vercel Setup (required secrets in GitHub repo settings):**
-| Secret | Description |
-|--------|-------------|
-| `VERCEL_TOKEN` | Vercel API token ([create here](https://vercel.com/account/tokens)) |
-| `VERCEL_ORG_ID` | Your Vercel org/team ID (from `.vercel/project.json` after `vercel link`) |
-| `VERCEL_PROJECT_ID` | Your Vercel project ID (from `.vercel/project.json` after `vercel link`) |
+- **GitHub Pages** — Automated via `deploy-pages.yml` on every push to `main`. Enable Pages in repo settings (Source: GitHub Actions).
+- **Vercel** — Automated via `deploy-vercel.yml`. Preview deploys on PRs, production on `main`. Requires `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` secrets (see [Environment Variables](#environment-variables) above).
 
 **Manual Deployment:**
-Deploy to any static hosting platform — no build process required:
-- **Netlify:** Drag & drop the folder
-- **Cloudflare Pages:** Connect and deploy
+Deploy to any static hosting platform — no build step required:
+- **Netlify:** Drag & drop the project folder
+- **Cloudflare Pages:** Connect the repository and deploy
 
 ## 💡 Usage
 
@@ -375,8 +377,9 @@ StyleyeS uses a **modular vanilla JavaScript architecture** with clear separatio
 ### PWA Features
 
 - **Manifest** - Installable app with custom icons and theme
-- **Service Worker** - Offline caching of all assets
-- **iOS Standalone** - Full-screen mode on iOS devices
+- **Service Worker** - Offline caching with stale-while-revalidate strategy for same-origin assets, cache-first for fonts, network-first for external resources
+- **Safe Area Support** - `viewport-fit=cover` with `env(safe-area-inset-*)` CSS variables ensure content is never clipped by notches, rounded corners, or dynamic islands while the background extends edge-to-edge
+- **iOS Standalone** - Full-screen mode on iOS devices with `black-translucent` status bar
 - **Splash Screens** - Custom splash screens for various iPhone models
 - **Shortcuts** - Quick actions for "New Prompt" and "History"
 - **Screenshots** - App store-ready screenshots for wide and narrow displays

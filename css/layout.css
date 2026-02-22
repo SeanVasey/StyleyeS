@@ -131,6 +131,7 @@ main {
 footer {
   margin-top: auto;
   padding-top: 1.5rem;
+  padding-bottom: var(--safe-bottom);
   text-align: center;
   font-size: 0.75rem;
   color: var(--t3);
@@ -166,17 +167,19 @@ footer {
   .app {
     padding-top: calc(var(--safe-top) + 0.5rem);
     padding-bottom: calc(var(--safe-bottom) + 0.75rem);
+    padding-left: max(1rem, var(--safe-left));
+    padding-right: max(1rem, var(--safe-right));
   }
-  
+
   header {
     margin-bottom: 1rem;
   }
-  
+
   .logo {
     width: 60px;
     height: 60px;
   }
-  
+
   .title-group h1 {
     font-size: 1.75rem;
   }

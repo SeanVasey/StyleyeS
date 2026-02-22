@@ -75,5 +75,7 @@
   .app {
     min-width: unset;
     width: 100%;
+    padding-left: max(1rem, var(--safe-left));
+    padding-right: max(1rem, var(--safe-right));
   }
 }
