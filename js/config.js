@@ -276,6 +276,7 @@ StyleyeSConfig.models.forEach(model => {
 });
 Object.freeze(StyleyeSConfig.models);
 Object.freeze(StyleyeSConfig.modelConfig);
+Object.values(StyleyeSConfig.modelConfig).forEach(cfg => Object.freeze(cfg));
 Object.freeze(StyleyeSConfig.categoryIcons);
 Object.freeze(StyleyeSConfig.controlCategoryIcons);
 Object.freeze(StyleyeSConfig.stackIcons);

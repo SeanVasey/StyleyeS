@@ -2,7 +2,7 @@
 
 ![StyleyeS Hero v2.0](images/styleyes-hero-v2.png)
 
-# StyleyeS v2.1.0
+# StyleyeS v2.1.1
 
 **Vivid prompt engineering for AI image generation**
 
