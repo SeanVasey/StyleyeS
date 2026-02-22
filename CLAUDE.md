@@ -4,7 +4,7 @@
 
 StyleyeS is a Progressive Web App (PWA) for vivid prompt engineering — helping users craft rich, descriptive prompts optimized for AI image generation models. Built by VASEY/AI as a zero-dependency vanilla JavaScript application.
 
-**Live at:** Static PWA — deploy to Netlify, Vercel, GitHub Pages, or Cloudflare Pages.
+**Deployed to:** GitHub Pages and Vercel (automated via GitHub Actions).
 
 ## Tech Stack
 
@@ -42,7 +42,9 @@ StyleyeS/
 ├── scripts/
 │   └── validate.js         # Repository validation checks
 └── .github/workflows/
-    └── ci.yml              # GitHub Actions CI
+    ├── ci.yml              # CI — validation on push/PR
+    ├── deploy-pages.yml    # Deploy to GitHub Pages on push to main
+    └── deploy-vercel.yml   # Deploy to Vercel (preview on PR, production on main)
 ```
 
 ## Commands
@@ -92,6 +94,21 @@ Version string appears in multiple files and must stay in sync:
 - `sw.js` → `CACHE_NAME` (includes version for cache busting)
 
 The `npm test` validation script checks version consistency across these files.
+
+## CI/CD Workflows
+
+| Workflow | File | Trigger | Purpose |
+|----------|------|---------|---------|
+| CI | `ci.yml` | Push to `main`, all PRs | Runs `npm test` validation |
+| GitHub Pages | `deploy-pages.yml` | Push to `main`, manual | Validates then deploys static files to GitHub Pages |
+| Vercel | `deploy-vercel.yml` | Push to `main`, all PRs | Preview deploys on PRs, production deploy on `main` |
+
+**Vercel secrets required** (set in GitHub repo settings):
+- `VERCEL_TOKEN` — Vercel API token
+- `VERCEL_ORG_ID` — Vercel organization/team ID
+- `VERCEL_PROJECT_ID` — Vercel project ID
+
+All deployment workflows run validation (`npm test`) before deploying.
 
 ## Important Patterns
 
