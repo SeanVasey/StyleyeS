@@ -48,10 +48,13 @@ const StyleyeSState = {
       }
 
       // Restore arrays with validation
-      this.favorites = Array.isArray(data.favorites) ? data.favorites.filter(id => typeof id === 'string') : [];
+      const validStyleIds = new Set(StyleyeSData.styles.map(s => s.id));
+      const validControlIds = new Set(StyleyeSData.controls.map(c => c.id));
+
+      this.favorites = Array.isArray(data.favorites) ? data.favorites.filter(id => typeof id === 'string' && validStyleIds.has(id)) : [];
       this.history = Array.isArray(data.history) ? data.history.filter(h => h && typeof h === 'object') : [];
-      this.stack = Array.isArray(data.stack) ? data.stack.filter(id => typeof id === 'string') : [];
-      this.controlStack = Array.isArray(data.controlStack) ? data.controlStack.filter(id => typeof id === 'string') : [];
+      this.stack = Array.isArray(data.stack) ? data.stack.filter(id => typeof id === 'string' && validStyleIds.has(id)) : [];
+      this.controlStack = Array.isArray(data.controlStack) ? data.controlStack.filter(id => typeof id === 'string' && validControlIds.has(id)) : [];
 
       // Validate aspect ratio
       const validARs = StyleyeSConfig.aspectRatios.map(ar => ar.id);

@@ -25,17 +25,20 @@ const StyleyeSUI = {
   // Icon cache for loaded SVG content
   iconCache: {},
 
+  // Placeholder SVG for icons that haven't loaded yet
+  ICON_PLACEHOLDER: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor" opacity="0.3"/></svg>',
+
   /**
-   * Load external SVG icon content
+   * Load an SVG icon from a given base path and cache it
+   * @param {string} basePath - Base directory path
    * @param {string} iconPath - Relative path to icon file
    * @returns {Promise<string>} SVG content
    */
-  async loadIcon(iconPath) {
+  async _loadIconFromPath(basePath, iconPath) {
     if (!iconPath) return '';
 
-    const fullPath = StyleyeSConfig.ICON_BASE_PATH + iconPath;
+    const fullPath = basePath + iconPath;
 
-    // Return cached icon if available
     if (this.iconCache[fullPath]) {
       return this.iconCache[fullPath];
     }
@@ -47,7 +50,6 @@ const StyleyeSUI = {
         return '';
       }
       const svgContent = await response.text();
-      // Cache the loaded icon
       this.iconCache[fullPath] = svgContent;
       return svgContent;
     } catch (error) {
@@ -57,137 +59,39 @@ const StyleyeSUI = {
   },
 
   /**
+   * Get a cached icon or return placeholder
+   * @param {string} basePath - Base directory path
+   * @param {string} iconPath - Relative path to icon file
+   * @returns {string} SVG content or placeholder
+   */
+  _getIconFromPath(basePath, iconPath) {
+    if (!iconPath) return '';
+    return this.iconCache[basePath + iconPath] || this.ICON_PLACEHOLDER;
+  },
+
+  // Convenience loaders for each icon type
+  async loadIcon(iconPath) { return this._loadIconFromPath(StyleyeSConfig.ICON_BASE_PATH, iconPath); },
+  async loadCategoryIcon(iconPath) { return this._loadIconFromPath(StyleyeSConfig.CATEGORY_ICON_PATH, iconPath); },
+  async loadUIIcon(iconPath) { return this._loadIconFromPath(StyleyeSConfig.UI_ICON_PATH, iconPath); },
+
+  // Convenience sync getters for each icon type
+  getIconSync(iconPath) { return this._getIconFromPath(StyleyeSConfig.ICON_BASE_PATH, iconPath); },
+  getCategoryIconSync(iconPath) { return this._getIconFromPath(StyleyeSConfig.CATEGORY_ICON_PATH, iconPath); },
+  getUIIconSync(iconPath) { return this._getIconFromPath(StyleyeSConfig.UI_ICON_PATH, iconPath); },
+
+  /**
    * Preload all model, category, and UI icons for better performance
    * @returns {Promise<void>}
    */
   async preloadIcons() {
-    // Preload model icons
-    const modelIconPromises = StyleyeSConfig.models.map(model =>
-      this.loadIcon(model.iconPath)
-    );
-
-    // Preload category icons
-    const categoryIconPromises = Object.values(StyleyeSConfig.categoryIcons).map(iconPath =>
-      this.loadCategoryIcon(iconPath)
-    );
-
-    // Preload control category icons
-    const controlIconPromises = Object.values(StyleyeSConfig.controlCategoryIcons).map(iconPath =>
-      this.loadCategoryIcon(iconPath)
-    );
-
-    // Preload stack icons
-    const stackIconPromises = Object.values(StyleyeSConfig.stackIcons).map(iconPath =>
-      this.loadCategoryIcon(iconPath)
-    );
-
-    // Preload UI icons
-    const uiIconPromises = Object.values(StyleyeSConfig.uiIcons).map(iconPath =>
-      this.loadUIIcon(iconPath)
-    );
-
-    await Promise.all([
-      ...modelIconPromises,
-      ...categoryIconPromises,
-      ...controlIconPromises,
-      ...stackIconPromises,
-      ...uiIconPromises
-    ]);
-  },
-
-  /**
-   * Get cached icon or placeholder
-   * @param {string} iconPath - Relative path to icon file
-   * @returns {string} SVG content or placeholder
-   */
-  getIconSync(iconPath) {
-    if (!iconPath) return '';
-    const fullPath = StyleyeSConfig.ICON_BASE_PATH + iconPath;
-    return this.iconCache[fullPath] || '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor" opacity="0.3"/></svg>';
-  },
-
-  /**
-   * Load external category SVG icon content
-   * @param {string} iconPath - Relative path to icon file
-   * @returns {Promise<string>} SVG content
-   */
-  async loadCategoryIcon(iconPath) {
-    if (!iconPath) return '';
-
-    const fullPath = StyleyeSConfig.CATEGORY_ICON_PATH + iconPath;
-
-    // Return cached icon if available
-    if (this.iconCache[fullPath]) {
-      return this.iconCache[fullPath];
-    }
-
-    try {
-      const response = await fetch(fullPath);
-      if (!response.ok) {
-        console.warn(`Failed to load category icon: ${fullPath}`);
-        return '';
-      }
-      const svgContent = await response.text();
-      // Cache the loaded icon
-      this.iconCache[fullPath] = svgContent;
-      return svgContent;
-    } catch (error) {
-      console.warn(`Error loading category icon ${fullPath}:`, error);
-      return '';
-    }
-  },
-
-  /**
-   * Get cached category icon or placeholder
-   * @param {string} iconPath - Relative path to icon file
-   * @returns {string} SVG content or placeholder
-   */
-  getCategoryIconSync(iconPath) {
-    if (!iconPath) return '';
-    const fullPath = StyleyeSConfig.CATEGORY_ICON_PATH + iconPath;
-    return this.iconCache[fullPath] || '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor" opacity="0.3"/></svg>';
-  },
-
-  /**
-   * Load external UI SVG icon content
-   * @param {string} iconPath - Relative path to icon file
-   * @returns {Promise<string>} SVG content
-   */
-  async loadUIIcon(iconPath) {
-    if (!iconPath) return '';
-
-    const fullPath = StyleyeSConfig.UI_ICON_PATH + iconPath;
-
-    // Return cached icon if available
-    if (this.iconCache[fullPath]) {
-      return this.iconCache[fullPath];
-    }
-
-    try {
-      const response = await fetch(fullPath);
-      if (!response.ok) {
-        console.warn(`Failed to load UI icon: ${fullPath}`);
-        return '';
-      }
-      const svgContent = await response.text();
-      // Cache the loaded icon
-      this.iconCache[fullPath] = svgContent;
-      return svgContent;
-    } catch (error) {
-      console.warn(`Error loading UI icon ${fullPath}:`, error);
-      return '';
-    }
-  },
-
-  /**
-   * Get cached UI icon or placeholder
-   * @param {string} iconPath - Relative path to icon file
-   * @returns {string} SVG content or placeholder
-   */
-  getUIIconSync(iconPath) {
-    if (!iconPath) return '';
-    const fullPath = StyleyeSConfig.UI_ICON_PATH + iconPath;
-    return this.iconCache[fullPath] || '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor" opacity="0.3"/></svg>';
+    const promises = [
+      ...StyleyeSConfig.models.map(model => this.loadIcon(model.iconPath)),
+      ...Object.values(StyleyeSConfig.categoryIcons).map(p => this.loadCategoryIcon(p)),
+      ...Object.values(StyleyeSConfig.controlCategoryIcons).map(p => this.loadCategoryIcon(p)),
+      ...Object.values(StyleyeSConfig.stackIcons).map(p => this.loadCategoryIcon(p)),
+      ...Object.values(StyleyeSConfig.uiIcons).map(p => this.loadUIIcon(p))
+    ];
+    await Promise.all(promises);
   },
   
   /**
@@ -909,7 +813,7 @@ const StyleyeSUI = {
       const sampleTags = item.tags ? item.tags.slice(0, 3).join(', ') : '';
 
       return `
-        <div class="card-item ${isSelected ? 'selected' : ''}" data-id="${item.id}" data-effect="${preview.effect || 'default'}">
+        <div class="card-item ${isSelected ? 'selected' : ''}" data-id="${this.sanitizeAttr(item.id)}" data-effect="${preview.effect || 'default'}">
           <div class="card-preview" style="background: ${gradient};">
             <div class="card-preview-pattern" style="background: ${pattern};"></div>
             <div class="card-preview-shine"></div>
@@ -1312,6 +1216,9 @@ const StyleyeSUI = {
     this.renderGrid();
   },
   
+  // Toast timer reference
+  _toastTimer: null,
+
   /**
    * Show toast notification
    * @param {string} message - Message to display
@@ -1320,13 +1227,22 @@ const StyleyeSUI = {
   showToast(message, type = 'ok') {
     const { toast } = this.elements;
     if (!toast) return;
-    
+
+    // Clear any pending toast timer to prevent stacking
+    if (this._toastTimer) {
+      clearTimeout(this._toastTimer);
+      this._toastTimer = null;
+    }
+
     toast.textContent = message;
     toast.style.borderColor = type === 'ok' ? 'var(--success)' : 'var(--warn)';
     toast.style.color = type === 'ok' ? 'var(--success)' : 'var(--warn)';
     toast.classList.add('show');
-    
-    setTimeout(() => toast.classList.remove('show'), 2000);
+
+    this._toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+      this._toastTimer = null;
+    }, 2000);
   },
   
   /**
@@ -1508,9 +1424,12 @@ const StyleyeSUI = {
    */
   escapeHtml(str) {
     if (typeof str !== 'string') return '';
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   },
 
   /**

@@ -193,18 +193,18 @@ const StyleyeSHandlers = {
     
     if (categories) {
       categories.addEventListener('click', (e) => {
-        if (e.target.classList.contains('cat-btn')) {
-          const cat = e.target.dataset.cat;
-          
-          if (StyleyeSState.pickerMode === 'styles') {
-            StyleyeSState.activeCategory = cat;
-          } else {
-            StyleyeSState.controlActiveCategory = cat;
-          }
-          
-          StyleyeSUI.renderCategories();
-          StyleyeSUI.renderGrid();
+        const btn = e.target.closest('.cat-btn');
+        if (!btn) return;
+        const cat = btn.dataset.cat;
+
+        if (StyleyeSState.pickerMode === 'styles') {
+          StyleyeSState.activeCategory = cat;
+        } else {
+          StyleyeSState.controlActiveCategory = cat;
         }
+
+        StyleyeSUI.renderCategories();
+        StyleyeSUI.renderGrid();
       });
     }
   },
@@ -262,9 +262,12 @@ const StyleyeSHandlers = {
     
     if (stackList) {
       stackList.addEventListener('click', (e) => {
-        const styleId = e.target.dataset.removeStyle;
-        const ctrlId = e.target.dataset.removeCtrl;
-        
+        const removeBtn = e.target.closest('[data-remove-style], [data-remove-ctrl]');
+        if (!removeBtn) return;
+
+        const styleId = removeBtn.dataset.removeStyle;
+        const ctrlId = removeBtn.dataset.removeCtrl;
+
         if (styleId) {
           StyleyeSState.removeStyle(styleId);
         } else if (ctrlId) {
@@ -272,7 +275,7 @@ const StyleyeSHandlers = {
         } else {
           return;
         }
-        
+
         StyleyeSUI.renderGrid();
         StyleyeSUI.renderStack();
         StyleyeSUI.updateOutput();
@@ -286,9 +289,13 @@ const StyleyeSHandlers = {
   bindInputs() {
     const { subject, weight, weightValue, controlWeight, controlWeightValue } = StyleyeSUI.elements;
     
-    // Subject input
+    // Subject input (debounced for smoother typing)
     if (subject) {
-      subject.addEventListener('input', () => StyleyeSUI.updateOutput());
+      let subjectTimer = null;
+      subject.addEventListener('input', () => {
+        if (subjectTimer) clearTimeout(subjectTimer);
+        subjectTimer = setTimeout(() => StyleyeSUI.updateOutput(), 120);
+      });
     }
     
     // Style weight slider
@@ -375,27 +382,27 @@ const StyleyeSHandlers = {
   /**
    * Handle clear action
    */
-  handleClear() {
+  async handleClear() {
     // Reset state
     StyleyeSState.stack = [];
     StyleyeSState.controlStack = [];
     StyleyeSState.currentAR = StyleyeSConfig.DEFAULT_AR;
-    
+
     // Reset inputs
     const { subject, weight, weightValue, controlWeight, controlWeightValue } = StyleyeSUI.elements;
-    
+
     if (subject) subject.value = '';
     if (weight) weight.value = StyleyeSConfig.DEFAULT_STYLE_WEIGHT;
     if (weightValue) weightValue.textContent = StyleyeSConfig.DEFAULT_STYLE_WEIGHT;
     if (controlWeight) controlWeight.value = StyleyeSConfig.DEFAULT_CONTROL_WEIGHT;
     if (controlWeightValue) controlWeightValue.textContent = StyleyeSConfig.DEFAULT_CONTROL_WEIGHT;
-    
+
     // Remove image
     StyleyeSUI.removeImage();
-    
+
     // Save and re-render
     StyleyeSState.save();
-    StyleyeSUI.renderAll();
+    await StyleyeSUI.renderAll();
   },
   
   /**
@@ -420,6 +427,13 @@ const StyleyeSHandlers = {
         }
       });
     }
+
+    // Escape key to close modal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && historyModal && historyModal.classList.contains('show')) {
+        StyleyeSUI.hideModal('historyModal');
+      }
+    });
     
     // History actions
     if (historyList) {

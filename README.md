@@ -2,7 +2,7 @@
 
 ![StyleyeS Hero v2.0](images/styleyes-hero-v2.png)
 
-# StyleyeS v2.1.0
+# StyleyeS v2.1.1
 
 **Vivid prompt engineering for AI image generation**
 
@@ -11,7 +11,9 @@ Craft rich, descriptive prompts for AI image generators with curated art styles,
 [![GitHub](https://img.shields.io/badge/GitHub-StyleyeS-FF6B35?style=for-the-badge&logo=github)](https://github.com/SeanVasey/StyleyeS)
 [![License](https://img.shields.io/badge/License-Apache%202.0-DC2F5A?style=for-the-badge)](LICENSE)
 [![PWA](https://img.shields.io/badge/PWA-Ready-9B4DCA?style=for-the-badge)](manifest.json)
-[![Version](https://img.shields.io/badge/Version-2.1.0-00D4AA?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-2.1.1-00D4AA?style=for-the-badge)](CHANGELOG.md)
+[![CI](https://img.shields.io/github/actions/workflow/status/SeanVasey/StyleyeS/ci.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/SeanVasey/StyleyeS/actions/workflows/ci.yml)
+[![Deploy](https://img.shields.io/github/actions/workflow/status/SeanVasey/StyleyeS/deploy-pages.yml?branch=main&style=for-the-badge&label=Pages)](https://github.com/SeanVasey/StyleyeS/actions/workflows/deploy-pages.yml)
 
 [Features](#-features) • [Getting Started](#-getting-started) • [Usage](#-usage) • [Project Structure](#-project-structure) • [Contributing](#-contributing)
 
@@ -49,9 +51,12 @@ Craft rich, descriptive prompts for AI image generators with curated art styles,
 StyleyeS/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml           # Continuous integration workflow
+│       ├── ci.yml              # CI — validation on push/PR
+│       ├── deploy-pages.yml    # Deploy to GitHub Pages on push to main
+│       └── deploy-vercel.yml   # Deploy to Vercel (preview on PR, production on main)
 ├── .editorconfig           # Editor formatting defaults
 ├── .gitignore              # Git ignore rules
+├── CLAUDE.md               # Claude Code project context
 ├── index.html              # Main application entry point
 ├── manifest.json           # PWA manifest for installable app
 ├── sw.js                   # Service worker for offline support
@@ -128,7 +133,7 @@ Or simply **double-click** `index.html` to launch instantly.
 # Install validation tooling (no production dependencies)
 npm install
 
-# Run repository validation checks
+# Run repository validation checks (version sync, required files)
 npm test
 
 # Open the app locally
@@ -136,6 +141,16 @@ open index.html
 ```
 
 > **Build:** No build step is required. StyleyeS ships as a static PWA.
+
+### CI/CD Workflows
+
+All workflows run validation (`npm test`) before proceeding.
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| `ci.yml` | Push to `main`, all PRs | Validation checks |
+| `deploy-pages.yml` | Push to `main`, manual | Deploy to GitHub Pages |
+| `deploy-vercel.yml` | Push to `main`, all PRs | Preview on PR, production on `main` |
 
 ### Environment Variables
 
@@ -162,13 +177,23 @@ StyleyeS does not require any environment variables to run.
 
 ### Web Deployment
 
-Deploy to any static hosting platform:
-- **Netlify:** Drag & drop the folder
-- **Vercel:** Connect GitHub repo
-- **GitHub Pages:** Enable in repository settings
-- **Cloudflare Pages:** Connect and deploy
+StyleyeS is deployed automatically via GitHub Actions on every push to `main`.
 
-No build process required - it's ready to deploy as-is!
+**Active Deployments:**
+- **GitHub Pages** — Automated via `deploy-pages.yml`. Enable Pages in repo settings (Source: GitHub Actions).
+- **Vercel** — Automated via `deploy-vercel.yml`. Preview deploys on PRs, production on `main`.
+
+**Vercel Setup (required secrets in GitHub repo settings):**
+| Secret | Description |
+|--------|-------------|
+| `VERCEL_TOKEN` | Vercel API token ([create here](https://vercel.com/account/tokens)) |
+| `VERCEL_ORG_ID` | Your Vercel org/team ID (from `.vercel/project.json` after `vercel link`) |
+| `VERCEL_PROJECT_ID` | Your Vercel project ID (from `.vercel/project.json` after `vercel link`) |
+
+**Manual Deployment:**
+Deploy to any static hosting platform — no build process required:
+- **Netlify:** Drag & drop the folder
+- **Cloudflare Pages:** Connect and deploy
 
 ## 💡 Usage
 
