@@ -1,7 +1,7 @@
 {
-  "name": "StyleyeS — Vivid Prompt Engineering",
+  "name": "StyleyeS \u2014 Vivid Prompt Engineering",
   "short_name": "StyleyeS",
-  "description": "StyleyeS by VASEY/AI — Vivid prompt engineering for AI image generation.",
+  "description": "StyleyeS by VASEY/AI \u2014 Vivid prompt engineering for AI image generation.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
@@ -9,67 +9,17 @@
   "theme_color": "#0f1419",
   "scope": "/",
   "lang": "en-US",
-  "categories": ["productivity", "utilities", "graphics"],
+  "categories": [
+    "productivity",
+    "utilities",
+    "graphics"
+  ],
   "icons": [
     {
-      "src": "icons/icon-72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-maskable-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icons/icon-maskable-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "src": "icons/StyleyeS_icon_optimized.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
   "shortcuts": [
@@ -78,14 +28,26 @@
       "short_name": "New",
       "description": "Start a new prompt",
       "url": "/?action=new",
-      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "icons/StyleyeS_icon_optimized.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
     },
     {
       "name": "History",
       "short_name": "History",
       "description": "View prompt history",
       "url": "/?action=history",
-      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "icons/StyleyeS_icon_optimized.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
     }
   ],
   "related_applications": [],

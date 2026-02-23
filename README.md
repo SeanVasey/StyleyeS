@@ -84,8 +84,8 @@ StyleyeS/
 │   ├── handlers.js         # Event binding & user interactions
 │   └── app.js              # Application initialization
 ├── icons/
-│   ├── favicon.svg         # Vector favicon
-│   ├── icon-*.png          # PWA icons (72px - 512px)
+│   ├── StyleyeS_icon_optimized.svg # Primary app icon (SVG)
+│   ├── icon-*.png          # Legacy PNG icons (kept for compatibility)
 │   ├── icon-maskable-*.png # Maskable icons for Android
 │   ├── apple-touch-icon-*.png # iOS home screen icons
 │   └── models/             # Model-specific icons (white-line SVGs)
