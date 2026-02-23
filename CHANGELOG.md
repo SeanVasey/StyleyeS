@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Updated the header brand icon to use the new `StyleyeS_icon_optimized.svg` asset so the top-of-page logo now matches the latest icon update.
+- Hardened Vercel deployment workflow conditions to skip deploy jobs when required Vercel secrets are unavailable, preventing false-fail CI runs on PRs.
+
 ### Changed
 - Replaced app favicon and manifest icon references with the new `StyleyeS_icon_optimized.svg` asset.
 - Updated PWA shortcut icons to use the optimized SVG icon for consistency across install surfaces.

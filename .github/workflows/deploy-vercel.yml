@@ -28,8 +28,19 @@ jobs:
       - name: Validate
         run: npm test
 
+
+  vercel-config-warning:
+    if: github.event_name == 'pull_request' && (secrets.VERCEL_TOKEN == '' || secrets.VERCEL_ORG_ID == '' || secrets.VERCEL_PROJECT_ID == '')
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vercel secrets missing
+        run: |
+          echo 'Skipping Vercel preview deployment because one or more required secrets are not configured.'
+          echo 'Set VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID to enable PR preview deployments.'
+
   deploy-preview:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_PROJECT_ID != ''
     needs: validate
     runs-on: ubuntu-latest
     environment:
@@ -52,7 +63,7 @@ jobs:
           echo "url=$URL" >> "$GITHUB_OUTPUT"
 
   deploy-production:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_PROJECT_ID != ''
     needs: validate
     runs-on: ubuntu-latest
     environment:
