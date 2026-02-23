@@ -7,7 +7,7 @@ This inventory highlights the primary artifacts shipped with the project.
 - `css/` — Styling layers (tokens, base styles, components, layout, animations, responsive overrides).
 - `js/` — Application logic (config, data, state, UI rendering, handlers, app bootstrap).
 - `images/` — Product imagery for documentation and marketing.
-- `icons/` — PWA icons, favicons, and model-specific SVG icons (`icons/models/`).
+- `icons/` — PWA icons, including the primary `StyleyeS_icon_optimized.svg`, plus model-specific SVG icons (`icons/models/`).
 - `manifest.json` — Progressive Web App manifest.
 - `sw.js` — Service worker for offline caching.
 

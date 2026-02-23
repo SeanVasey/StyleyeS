@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Replaced app favicon and manifest icon references with the new `StyleyeS_icon_optimized.svg` asset.
+- Updated PWA shortcut icons to use the optimized SVG icon for consistency across install surfaces.
+
 ## [2.1.1] - 2026-01-14
 ### Fixed
 - **Carousel Performance**: Resolved sluggish scrolling and choppy interactions in style card carousels, especially on mobile devices.
