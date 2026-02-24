@@ -84,7 +84,7 @@ Each module is a global object (`StyleyeSConfig`, `StyleyeSData`, `StyleyeSState
 
 ## Guiding Principles
 
-- **Best-practices first.** Proactively compare decisions against current industry standards for web apps, UI/UX, and infrastructure.
+- **Best-practices first.** Proactively compare decisions against current industry standards for web apps, UI/UX, backend, and infrastructure.
 - **Ship-ready at all times.** Every commit must leave the repo deployable. No broken builds on `main`.
 - **Demand elegance, but stay practical.** For non-trivial changes, pause and ask "is there a more elegant way?" If a fix feels hacky, implement the elegant solution. Skip this for simple, obvious fixes — don't over-engineer. Challenge your own work before presenting it.
 - **Verify before you push.** Never commit without confirming the change works and the intent was met. Ask yourself: "Would a staff engineer approve this?"
@@ -140,7 +140,7 @@ Each module is a global object (`StyleyeSConfig`, `StyleyeSData`, `StyleyeSState
 - Existing: CSP meta tag in `index.html`, input validation on all localStorage loads/imports, `escapeHtml()` and `sanitizeAttr()` used for all dynamic HTML.
 
 ### Maintainability
-- Clear structure, consistent patterns.
+- Clear structure, types where appropriate, consistent patterns.
 - Comments only where they add clarity — avoid noise.
 - Keep diffs focused. Explain and contain refactors.
 - No `TODO` without an issue link and rationale.
@@ -162,14 +162,21 @@ Each module is a global object (`StyleyeSConfig`, `StyleyeSData`, `StyleyeSState
 ## Verification Protocol
 
 Run the best available checks **before every commit**:
+
 1. **Format / lint / typecheck** (when applicable)
 2. **Unit tests** — `npm test`
 3. **Integration / e2e tests** (when present)
 4. **Build step** (if a build exists)
 
-For static-file-only changes: verify version consistency, asset paths, and that `npm test` passes.
+For static-file-only changes: markdown lint, link checks, build/docs generation, verify version consistency, asset paths referenced in README, and that `npm test` passes.
 
-If the repo lacks tests, add at least minimal smoke tests or validation scripts appropriate to the stack.
+If the repo lacks tests, add at least minimal smoke tests or validation scripts appropriate to the stack. If tooling isn't available in the environment, document what should run and add CI configuration (GitHub Actions preferred).
+
+## CI Requirements
+
+- Maintain GitHub Actions so lint / typecheck / test / build run on every PR and `main` push.
+- Do not merge if CI fails.
+- If CI is missing, create it as part of the first meaningful change.
 
 ## Commit & PR Hygiene
 
@@ -203,14 +210,16 @@ Keep these files accurate and current. Update them alongside code changes — no
 - Product name + short description
 - Features list
 - Tech stack (languages / frameworks / tools)
-- Setup / Install / Run / Test commands
-- Architecture / folder structure overview
-- Deployment notes
-- Usage examples / product imagery with alt text
+- Setup / Install / Run / Build / Test commands
+- Environment variables documented (via `.env.example`)
+- Architecture / folder structure overview (when non-trivial)
+- Deployment notes (if relevant)
+- Usage examples (CLI / API / UI)
+- Product imagery with alt text (when applicable)
 
 ### Required Repo Files
 - `LICENSE` (or explicit "All Rights Reserved" documentation)
-- `CHANGELOG.md` — [Keep a Changelog](https://keepachangelog.com/) style. Every meaningful change gets an entry.
+- `CHANGELOG.md` — [Keep a Changelog](https://keepachangelog.com/) style. Every meaningful change gets an entry. Include upgrade notes for breaking changes.
 - `SECURITY.md` — How to report vulnerabilities.
 - `.editorconfig`, `.gitignore`
 - `.env.example` (if env vars exist)
@@ -219,10 +228,12 @@ Keep these files accurate and current. Update them alongside code changes — no
 ### Task Tracking Directory
 - `tasks/todo.md` — Active task plan with checkable items. Updated per session.
 - `tasks/lessons.md` — Accumulated patterns from corrections and mistakes. Reviewed at session start.
+- Create the `tasks/` directory as part of repo scaffolding if it does not exist.
 
 ### Dependency & Asset Management
-- Keep lockfiles up to date (`package-lock.json`).
-- If assets carry different licenses, document them in README or `ASSETS_LICENSE.md`.
+- Keep lockfiles up to date (`package-lock.json` / `yarn.lock` / `pnpm-lock.yaml` / `requirements.lock`, etc.)
+- If assets carry different licenses, document them (`ASSETS_LICENSE.md` or in README).
+- Maintain a file manifest (`/docs/MANIFEST.md`) when useful for describing major artifacts and generated files.
 
 ---
 
@@ -251,8 +262,10 @@ The `npm test` validation script checks version consistency across these files.
 ## Quality Gates
 
 - Keep dependencies minimal. This project intentionally has zero runtime dependencies.
+- Prefer strict types and strict linting where feasible.
 - Prefer consistent patterns over cleverness.
 - Every meaningful change gets a CHANGELOG entry.
+- When working with AI tool-use patterns (Skills, MCP servers, etc.), align with the platform's best-practice guidance: tool boundaries, safety, reliability, evals, prompt/tool separation.
 - A `tasks/lessons.md` that grows smarter with every session.
 
 ## What Good Looks Like

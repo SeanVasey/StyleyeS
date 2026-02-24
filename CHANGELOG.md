@@ -15,10 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Concurrency controls on Vercel deployment workflow to prevent overlapping preview/production deploys.
 - `vercel.json` with explicit static site configuration and PWA-safe headers for `sw.js` and `manifest.json`.
+- Created `tasks/` directory with `todo.md` and `lessons.md` for session-based task tracking and self-improvement, as specified by CLAUDE.md protocol.
 
 ### Changed
 - Replaced app favicon and manifest icon references with the new `StyleyeS_icon_optimized.svg` asset.
 - Updated PWA shortcut icons to use the optimized SVG icon for consistency across install surfaces.
+- Updated `CLAUDE.md` with expanded guidance: CI requirements section, enhanced verification protocol (markdown lint, link checks, build/docs generation), broader dependency/asset management (multi-lockfile support, file manifest), quality gates for strict typing/linting and AI tool-use patterns, and scaffolding instructions for `tasks/` directory.
 
 ## [2.1.1] - 2026-01-14
 ### Fixed
