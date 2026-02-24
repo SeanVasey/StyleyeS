@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
 
+concurrency:
+  group: vercel-${{ github.event_name == 'push' && 'production' || format('preview-{0}', github.event.number) }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -34,11 +38,12 @@ jobs:
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - name: Check Vercel secrets
         id: check
         run: |
-          if [ -z "${{ secrets.VERCEL_TOKEN }}" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
             echo "::notice::Skipping Vercel preview — set VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID to enable deployments."
           else
@@ -55,13 +60,13 @@ jobs:
 
       - name: Pull Vercel environment
         if: steps.check.outputs.configured == 'true'
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=preview --token="$VERCEL_TOKEN"
 
       - name: Deploy preview
         if: steps.check.outputs.configured == 'true'
         id: deploy
         run: |
-          URL=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }})
+          URL=$(vercel deploy --token="$VERCEL_TOKEN")
           echo "url=$URL" >> "$GITHUB_OUTPUT"
 
   deploy-production:
@@ -74,11 +79,12 @@ jobs:
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - name: Check Vercel secrets
         id: check
         run: |
-          if [ -z "${{ secrets.VERCEL_TOKEN }}" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
             echo "::notice::Skipping Vercel production deploy — set VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID to enable deployments."
           else
@@ -95,11 +101,11 @@ jobs:
 
       - name: Pull Vercel environment
         if: steps.check.outputs.configured == 'true'
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
 
       - name: Deploy production
         if: steps.check.outputs.configured == 'true'
         id: deploy
         run: |
-          URL=$(vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }})
+          URL=$(vercel deploy --prod --token="$VERCEL_TOKEN")
           echo "url=$URL" >> "$GITHUB_OUTPUT"
