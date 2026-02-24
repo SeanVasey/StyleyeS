@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Updated the header brand icon to use the new `StyleyeS_icon_optimized.svg` asset so the top-of-page logo now matches the latest icon update.
 - Hardened Vercel deployment workflow conditions to skip deploy jobs when required Vercel secrets are unavailable, preventing false-fail CI runs on PRs.
+- Fixed script injection vulnerability in Vercel workflow — secrets are now passed via environment variables instead of direct `${{ }}` interpolation in shell commands.
+
+### Added
+- Concurrency controls on Vercel deployment workflow to prevent overlapping preview/production deploys.
+- `vercel.json` with explicit static site configuration and PWA-safe headers for `sw.js` and `manifest.json`.
 
 ### Changed
 - Replaced app favicon and manifest icon references with the new `StyleyeS_icon_optimized.svg` asset.
