@@ -25,7 +25,10 @@ const STATIC_ASSETS = [
   '/js/ui.js',
   '/js/handlers.js',
   '/js/app.js',
-  '/icons/StyleyeS_icon_optimized.svg'
+  '/icons/StyleyeS_icon_optimized.svg',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/apple-touch-icon-180.png'
 ];
 
 // External resources to cache
