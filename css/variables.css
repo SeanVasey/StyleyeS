@@ -66,6 +66,16 @@
   --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
   
+  /* Footer Brand Aliases (VASEY/AI Universal Footer) */
+  --border-subtle: var(--border);
+  --border-glow: rgba(255, 107, 53, 0.15);
+  --accent-deep: var(--c2);
+  --accent-dim: rgba(255, 107, 53, 0.6);
+  --accent-primary: var(--c1);
+  --accent-glow-strong: rgba(255, 107, 53, 0.4);
+  --text-secondary: var(--t2);
+  --text-muted: var(--t3);
+
   /* Z-Index Scale */
   --z-base: 1;
   --z-elevated: 10;
