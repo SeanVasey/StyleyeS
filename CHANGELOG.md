@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.2.0] - 2026-07-12
 
 ### Added
-- **Subject Persistence**: The subject text now survives page reloads — it is saved to localStorage (length-capped at 2,000 characters) and included in Export/Import backups.
+- **Subject Persistence**: The subject text now survives page reloads — it is saved to localStorage (length-capped at 2,000 characters, with a matching `maxLength` on the input so nothing is silently truncated) and included in Export/Import backups.
 - **Copy Keyboard Shortcut**: Press `Ctrl+Enter` (or `Cmd+Enter` on macOS) anywhere to copy the generated prompt.
 - **Copy Button Feedback**: The Copy button briefly turns green and reads "Copied ✓" after a successful copy.
 - Concurrency controls on Vercel deployment workflow to prevent overlapping preview/production deploys.

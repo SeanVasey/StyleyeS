@@ -292,6 +292,9 @@ const StyleyeSHandlers = {
     
     // Subject input (debounced for smoother typing, persisted across reloads)
     if (subject) {
+      // Cap input at the persistence limit so nothing is silently truncated on reload
+      subject.maxLength = StyleyeSConfig.MAX_SUBJECT_LENGTH;
+
       let subjectTimer = null;
       subject.addEventListener('input', () => {
         if (subjectTimer) clearTimeout(subjectTimer);
@@ -377,6 +380,19 @@ const StyleyeSHandlers = {
   _copyResetTimer: null,
 
   /**
+   * Write text to the clipboard, rejecting gracefully when the
+   * Clipboard API is unavailable (e.g. non-secure HTTP contexts)
+   * @param {string} text - Text to copy
+   * @returns {Promise<void>}
+   */
+  copyToClipboard(text) {
+    if (!navigator.clipboard || !navigator.clipboard.writeText) {
+      return Promise.reject(new Error('Clipboard API unavailable'));
+    }
+    return navigator.clipboard.writeText(text);
+  },
+
+  /**
    * Handle copy action
    */
   handleCopy() {
@@ -386,7 +402,7 @@ const StyleyeSHandlers = {
     const prompt = promptOutput.textContent;
     if (prompt.includes('Your vivid prompt')) return;
 
-    navigator.clipboard.writeText(prompt).then(() => {
+    this.copyToClipboard(prompt).then(() => {
       // Add to history
       StyleyeSState.addHistory({
         prompt,
@@ -491,7 +507,7 @@ const StyleyeSHandlers = {
         if (action === 'copy') {
           const historyItem = StyleyeSState.history[index];
           if (historyItem && historyItem.prompt) {
-            navigator.clipboard.writeText(historyItem.prompt).then(() => {
+            this.copyToClipboard(historyItem.prompt).then(() => {
               StyleyeSUI.showToast('✅ Copied!');
             }).catch(() => {
               StyleyeSUI.showToast('⚠️ Copy failed', 'warn');
