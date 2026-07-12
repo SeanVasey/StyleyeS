@@ -1,9 +1,9 @@
 /**
- * StyleyeS v2.1.1 — State Management
+ * StyleyeS v2.2.0 — State Management
  * Application state and persistence
  *
- * @version 2.1.1
- * @updated 2026-01-14
+ * @version 2.2.0
+ * @updated 2026-07-12
  */
 
 const StyleyeSState = {
@@ -78,6 +78,12 @@ const StyleyeSState = {
         if (controlWeightEl) controlWeightEl.value = data.controlWeight;
         if (controlWeightValueEl) controlWeightValueEl.textContent = data.controlWeight;
       }
+
+      // Restore subject text (length-capped)
+      if (typeof data.subject === 'string') {
+        const subjectEl = document.getElementById('subject');
+        if (subjectEl) subjectEl.value = data.subject.slice(0, StyleyeSConfig.MAX_SUBJECT_LENGTH);
+      }
     } catch (e) {
       console.warn('Failed to load StyleyeS state:', e);
       // Clear potentially corrupted data
@@ -92,6 +98,7 @@ const StyleyeSState = {
     try {
       const weightEl = document.getElementById('weight');
       const controlWeightEl = document.getElementById('controlWeight');
+      const subjectEl = document.getElementById('subject');
 
       localStorage.setItem(StyleyeSConfig.STORAGE_KEY, JSON.stringify({
         favorites: this.favorites,
@@ -101,7 +108,8 @@ const StyleyeSState = {
         weight: weightEl ? parseInt(weightEl.value, 10) : StyleyeSConfig.DEFAULT_STYLE_WEIGHT,
         controlWeight: controlWeightEl ? parseInt(controlWeightEl.value, 10) : StyleyeSConfig.DEFAULT_CONTROL_WEIGHT,
         currentAR: this.currentAR,
-        currentModel: this.currentModel
+        currentModel: this.currentModel,
+        subject: subjectEl ? subjectEl.value.slice(0, StyleyeSConfig.MAX_SUBJECT_LENGTH) : ''
       }));
     } catch (e) {
       console.warn('Failed to save StyleyeS state:', e);
@@ -295,6 +303,7 @@ const StyleyeSState = {
   export() {
     const weightEl = document.getElementById('weight');
     const controlWeightEl = document.getElementById('controlWeight');
+    const subjectEl = document.getElementById('subject');
 
     return {
       version: StyleyeSConfig.VERSION,
@@ -305,7 +314,8 @@ const StyleyeSState = {
       currentAR: this.currentAR,
       currentModel: this.currentModel,
       weight: weightEl ? parseInt(weightEl.value, 10) : StyleyeSConfig.DEFAULT_STYLE_WEIGHT,
-      controlWeight: controlWeightEl ? parseInt(controlWeightEl.value, 10) : StyleyeSConfig.DEFAULT_CONTROL_WEIGHT
+      controlWeight: controlWeightEl ? parseInt(controlWeightEl.value, 10) : StyleyeSConfig.DEFAULT_CONTROL_WEIGHT,
+      subject: subjectEl ? subjectEl.value.slice(0, StyleyeSConfig.MAX_SUBJECT_LENGTH) : ''
     };
   },
   
@@ -368,6 +378,11 @@ const StyleyeSState = {
       const controlWeightValueEl = document.getElementById('controlWeightValue');
       if (controlWeightEl) controlWeightEl.value = data.controlWeight;
       if (controlWeightValueEl) controlWeightValueEl.textContent = data.controlWeight;
+    }
+
+    if (typeof data.subject === 'string') {
+      const subjectEl = document.getElementById('subject');
+      if (subjectEl) subjectEl.value = data.subject.slice(0, StyleyeSConfig.MAX_SUBJECT_LENGTH);
     }
 
     this.save();

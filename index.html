@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>StyleyeS v2.1.1 — Vivid Prompt Engineering</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>StyleyeS v2.2.0 — Vivid Prompt Engineering</title>
   <meta name="description" content="StyleyeS by VASEY/AI — Vivid prompt engineering for AI image generation.">
   <meta name="theme-color" content="#0f1419">
 
@@ -55,7 +55,7 @@
         </div>
         <div class="title-group">
           <h1>StyleyeS</h1>
-          <span class="ver">v2.1.1</span>
+          <span class="ver">v2.2.0</span>
         </div>
       </div>
       <p class="tag">The vivid prompt engineering studio.</p>
@@ -81,7 +81,7 @@
           ></textarea>
           
           <div class="image-upload-zone" id="imageZone">
-            <button class="remove-img" id="removeImg">✕</button>
+            <button class="remove-img" id="removeImg" aria-label="Remove image">✕</button>
             <img src="" class="zone-preview" id="imgPreview" alt="Preview">
             <div class="zone-icon"><span data-ui-icon="camera"></span></div>
             <div class="zone-text">Drop reference image here</div>
@@ -200,7 +200,7 @@
         <div class="output-header"><h3><span class="header-icon" data-ui-icon="sparkles"></span> Generated Prompt</h3></div>
         <div class="prompt-output" id="promptOutput">Your vivid prompt will appear here...</div>
         <div class="actions">
-          <button class="btn btn-primary" id="btnCopy"><span class="btn-icon" data-ui-icon="copy"></span> Copy</button>
+          <button class="btn btn-primary" id="btnCopy" title="Copy prompt (Ctrl+Enter)"><span class="btn-icon" data-ui-icon="copy"></span> <span class="btn-label">Copy</span></button>
           <button class="btn btn-secondary" id="btnClear"><span class="btn-icon" data-ui-icon="clear"></span> Clear</button>
         </div>
       </div>
@@ -229,7 +229,7 @@
         </a>
       </div>
       <div class="footer-suite-tag">A VASEY/AI Production</div>
-      <div class="footer-app-tag">StyleyeS v2.1.1 · Vivid Prompt Engineering Studio</div>
+      <div class="footer-app-tag">StyleyeS v2.2.0 · Vivid Prompt Engineering Studio</div>
       <div class="footer-copyright">
         &copy; 2026 <a href="https://vaseymultimedia.com" target="_blank" rel="noopener">VASEY Multimedia</a>. All rights reserved.<br>
         Designed &amp; engineered by <a href="https://vasey.ai" target="_blank" rel="noopener">VASEY/AI</a>
@@ -237,13 +237,13 @@
     </footer>
   </div>
   
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
   
   <div class="modal" id="historyModal">
     <div class="modal-box">
       <div class="modal-header">
         <h3><span class="header-icon" data-ui-icon="history"></span> Prompt History</h3>
-        <button class="modal-close" id="closeHistory">✕</button>
+        <button class="modal-close" id="closeHistory" aria-label="Close history">✕</button>
       </div>
       <div class="history-list" id="historyList">
         <p class="history-empty">No history yet</p>

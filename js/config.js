@@ -1,10 +1,11 @@
 /**
- * StyleyeS v2.1.1 — Configuration
+ * StyleyeS v2.2.0 — Configuration
  * Model configs, aspect ratios, and constants
  *
- * @version 2.1.1
- * @updated 2026-01-14
+ * @version 2.2.0
+ * @updated 2026-07-12
  * @changelog
+ *   - 2.2.0: Subject persistence, copy shortcut, accessibility improvements
  *   - 2.1.1: Carousel performance fixes, tab icon alignment, touch scrolling improvements
  *   - 2.1.0: Category carousel navigation, multi-line input, aspect-ratio-preserving images
  *   - 2.0.1: Updated model icons to white-line design, cleanup for Vercel deployment
@@ -15,7 +16,7 @@
 
 const StyleyeSConfig = {
   // Application Version
-  VERSION: '2.1.1',
+  VERSION: '2.2.0',
 
   // Storage Keys
   STORAGE_KEY: 'styleyes_v1_state',
@@ -24,6 +25,7 @@ const StyleyeSConfig = {
   MAX_STYLES: 5,
   MAX_CONTROLS: 3,
   MAX_HISTORY: 50,
+  MAX_SUBJECT_LENGTH: 2000,
 
   // Default Values
   DEFAULT_AR: '1:1',
