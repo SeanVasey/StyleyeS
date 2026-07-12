@@ -1871,6 +1871,11 @@
   box-shadow: var(--shadow-glow-hover);
 }
 
+.btn-primary.copied {
+  background: var(--success);
+  box-shadow: none;
+}
+
 .btn-secondary {
   background: var(--bg-elevated);
   border: 1px solid var(--border);

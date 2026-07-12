@@ -1,9 +1,9 @@
 /**
- * StyleyeS v2.1.1 — Event Handlers
+ * StyleyeS v2.2.0 — Event Handlers
  * User interaction and event binding
  *
- * @version 2.1.1
- * @updated 2026-01-14
+ * @version 2.2.0
+ * @updated 2026-07-12
  */
 
 const StyleyeSHandlers = {
@@ -23,6 +23,7 @@ const StyleyeSHandlers = {
     this.bindUtilityButtons();
     this.bindModal();
     this.bindExportImport();
+    this.bindKeyboardShortcuts();
   },
   
   /**
@@ -289,12 +290,18 @@ const StyleyeSHandlers = {
   bindInputs() {
     const { subject, weight, weightValue, controlWeight, controlWeightValue } = StyleyeSUI.elements;
     
-    // Subject input (debounced for smoother typing)
+    // Subject input (debounced for smoother typing, persisted across reloads)
     if (subject) {
+      // Cap input at the persistence limit so nothing is silently truncated on reload
+      subject.maxLength = StyleyeSConfig.MAX_SUBJECT_LENGTH;
+
       let subjectTimer = null;
       subject.addEventListener('input', () => {
         if (subjectTimer) clearTimeout(subjectTimer);
-        subjectTimer = setTimeout(() => StyleyeSUI.updateOutput(), 120);
+        subjectTimer = setTimeout(() => {
+          StyleyeSUI.updateOutput();
+          StyleyeSState.save();
+        }, 120);
       });
     }
     
@@ -357,26 +364,77 @@ const StyleyeSHandlers = {
   },
   
   /**
+   * Bind global keyboard shortcuts
+   */
+  bindKeyboardShortcuts() {
+    document.addEventListener('keydown', (e) => {
+      // Ctrl/Cmd + Enter copies the generated prompt
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        this.handleCopy();
+      }
+    });
+  },
+
+  // Copy button success-state timer reference
+  _copyResetTimer: null,
+
+  /**
+   * Write text to the clipboard, rejecting gracefully when the
+   * Clipboard API is unavailable (e.g. non-secure HTTP contexts)
+   * @param {string} text - Text to copy
+   * @returns {Promise<void>}
+   */
+  copyToClipboard(text) {
+    if (!navigator.clipboard || !navigator.clipboard.writeText) {
+      return Promise.reject(new Error('Clipboard API unavailable'));
+    }
+    return navigator.clipboard.writeText(text);
+  },
+
+  /**
    * Handle copy action
    */
   handleCopy() {
     const { promptOutput } = StyleyeSUI.elements;
     if (!promptOutput) return;
-    
+
     const prompt = promptOutput.textContent;
     if (prompt.includes('Your vivid prompt')) return;
-    
-    navigator.clipboard.writeText(prompt).then(() => {
+
+    this.copyToClipboard(prompt).then(() => {
       // Add to history
       StyleyeSState.addHistory({
         prompt,
         model: StyleyeSState.currentModel || StyleyeSConfig.DEFAULT_MODEL
       });
-      
+
       StyleyeSUI.showToast('✅ Copied!');
+      this.flashCopySuccess();
     }).catch(() => {
       StyleyeSUI.showToast('⚠️ Copy failed', 'warn');
     });
+  },
+
+  /**
+   * Briefly show a success state on the copy button
+   */
+  flashCopySuccess() {
+    const btnCopy = document.getElementById('btnCopy');
+    if (!btnCopy) return;
+
+    const label = btnCopy.querySelector('.btn-label');
+
+    if (this._copyResetTimer) clearTimeout(this._copyResetTimer);
+
+    btnCopy.classList.add('copied');
+    if (label) label.textContent = 'Copied ✓';
+
+    this._copyResetTimer = setTimeout(() => {
+      btnCopy.classList.remove('copied');
+      if (label) label.textContent = 'Copy';
+      this._copyResetTimer = null;
+    }, 1500);
   },
   
   /**
@@ -449,7 +507,7 @@ const StyleyeSHandlers = {
         if (action === 'copy') {
           const historyItem = StyleyeSState.history[index];
           if (historyItem && historyItem.prompt) {
-            navigator.clipboard.writeText(historyItem.prompt).then(() => {
+            this.copyToClipboard(historyItem.prompt).then(() => {
               StyleyeSUI.showToast('✅ Copied!');
             }).catch(() => {
               StyleyeSUI.showToast('⚠️ Copy failed', 'warn');

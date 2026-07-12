@@ -1,10 +1,11 @@
 /**
- * StyleyeS v2.1.1 — UI Module
+ * StyleyeS v2.2.0 — UI Module
  * Rendering and DOM manipulation
  *
- * @version 2.1.1
- * @updated 2026-01-14
+ * @version 2.2.0
+ * @updated 2026-07-12
  * @changelog
+ *   - 2.2.0: Stack count derived from config limits, copy button success state support
  *   - 2.1.1: Carousel performance fixes, throttled scroll handlers, touch momentum scrolling
  *   - 2.1.0: Category carousels, multi-line input, aspect-ratio-preserving images
  *   - 2.0.1: Updated model icons to white-line design
@@ -1018,7 +1019,8 @@ const StyleyeSUI = {
     if (!stackList || !totalCount) return;
 
     const total = StyleyeSState.getTotalCount();
-    totalCount.textContent = `${total} / 8`;
+    const maxTotal = StyleyeSConfig.MAX_STYLES + StyleyeSConfig.MAX_CONTROLS;
+    totalCount.textContent = `${total} / ${maxTotal}`;
 
     if (total === 0) {
       stackList.innerHTML = '<span class="stack-empty">Tap styles or lighting to build your recipe</span>';

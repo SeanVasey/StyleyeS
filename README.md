@@ -2,7 +2,7 @@
 
 ![StyleyeS Hero v2.0](images/styleyes-hero-v2.png)
 
-# StyleyeS v2.1.1
+# StyleyeS v2.2.0
 
 **Vivid prompt engineering for AI image generation**
 
@@ -11,7 +11,7 @@ Craft rich, descriptive prompts for AI image generators with curated art styles,
 [![CI](https://img.shields.io/github/actions/workflow/status/SeanVasey/StyleyeS/ci.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/SeanVasey/StyleyeS/actions/workflows/ci.yml)
 [![Pages](https://img.shields.io/github/actions/workflow/status/SeanVasey/StyleyeS/deploy-pages.yml?branch=main&style=for-the-badge&label=Pages)](https://seanvasey.github.io/StyleyeS)
 [![Vercel](https://img.shields.io/github/actions/workflow/status/SeanVasey/StyleyeS/deploy-vercel.yml?branch=main&style=for-the-badge&label=Vercel)](https://github.com/SeanVasey/StyleyeS/actions/workflows/deploy-vercel.yml)
-[![Version](https://img.shields.io/badge/Version-2.1.1-00D4AA?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-2.2.0-00D4AA?style=for-the-badge)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-Apache%202.0-DC2F5A?style=for-the-badge)](LICENSE)
 [![PWA](https://img.shields.io/badge/PWA-Ready-9B4DCA?style=for-the-badge)](manifest.json)
 [![Zero Dependencies](https://img.shields.io/badge/Dependencies-0-FF6B35?style=for-the-badge)](package.json)

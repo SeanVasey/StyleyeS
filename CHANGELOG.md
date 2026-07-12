@@ -7,16 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-- Updated the header brand icon to use the new `StyleyeS_icon_optimized.svg` asset so the top-of-page logo now matches the latest icon update.
-- Hardened Vercel deployment workflow conditions to skip deploy jobs when required Vercel secrets are unavailable, preventing false-fail CI runs on PRs.
-- Fixed script injection vulnerability in Vercel workflow — secrets are now passed via environment variables instead of direct `${{ }}` interpolation in shell commands.
+## [2.2.0] - 2026-07-12
 
 ### Added
+- **Subject Persistence**: The subject text now survives page reloads — it is saved to localStorage (length-capped at 2,000 characters, with a matching `maxLength` on the input so nothing is silently truncated) and included in Export/Import backups.
+- **Copy Keyboard Shortcut**: Press `Ctrl+Enter` (or `Cmd+Enter` on macOS) anywhere to copy the generated prompt.
+- **Copy Button Feedback**: The Copy button briefly turns green and reads "Copied ✓" after a successful copy.
 - Concurrency controls on Vercel deployment workflow to prevent overlapping preview/production deploys.
 - `vercel.json` with explicit static site configuration and PWA-safe headers for `sw.js` and `manifest.json`.
 - Created `tasks/` directory with `todo.md` and `lessons.md` for session-based task tracking and self-improvement, as specified by CLAUDE.md protocol.
 - README: Added live demo link, zero-dependencies badge, and reordered badges to lead with CI/deploy status.
+
+### Improved
+- **Accessibility — Pinch Zoom**: Removed `maximum-scale=1.0, user-scalable=no` from the viewport meta tag so users can zoom the page (WCAG 1.4.4 Resize Text).
+- **Accessibility — Live Toasts**: Toast notifications are now announced to screen readers via `role="status"` and `aria-live="polite"`.
+- **Accessibility — Labels**: Added `aria-label`s to the image-remove and history-close icon buttons.
+- Recipe Stack counter now derives its maximum from `StyleyeSConfig` limits instead of a hardcoded "/ 8".
+
+### Fixed
+- Updated the header brand icon to use the new `StyleyeS_icon_optimized.svg` asset so the top-of-page logo now matches the latest icon update.
+- Hardened Vercel deployment workflow conditions to skip deploy jobs when required Vercel secrets are unavailable, preventing false-fail CI runs on PRs.
+- Fixed script injection vulnerability in Vercel workflow — secrets are now passed via environment variables instead of direct `${{ }}` interpolation in shell commands.
 
 ### Changed
 - Replaced app favicon and manifest icon references with the new `StyleyeS_icon_optimized.svg` asset.
