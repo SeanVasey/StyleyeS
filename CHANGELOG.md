@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.2] - 2026-07-16
+
+### Fixed
+- **Home-screen / favicon icons now match the updated tile.** The `styleyes-icon-ios.svg` source was updated to a full-bleed border-plate design (opaque edge-to-edge, so iOS's own squircle mask never lets light/dark mode show through), but the raster PNGs were still rendered from the previous tile. Re-rendered the complete raster set — 16/32 px favicons, 72–512 px PWA icons (`any`), 152/167/180 px `apple-touch-icon`s, and 192/512 px maskable icons — from the current SVG so the installed app, browser tab, and Add-to-Home-Screen icons all reflect the new branding.
+- Bumped service worker `CACHE_NAME` to `styleyes-v2.2.2` so returning users and installed PWAs re-fetch the regenerated icons instead of serving stale cached copies.
+
+### Notes
+- The in-app header logo continues to use the transparent `StyleyeS_icon_optimized.svg`, which remains the preferred asset wherever a transparent background is ideal.
+
 ## [2.2.1] - 2026-07-16
 
 ### Added

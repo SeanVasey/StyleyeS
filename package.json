@@ -1,6 +1,6 @@
 {
   "name": "styleyes",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Vivid prompt engineering for AI image generation.",
   "private": true,
   "scripts": {
