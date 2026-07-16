@@ -16,16 +16,16 @@
     <filter id="glowblur" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
       <feGaussianBlur stdDeviation="14"/>
     </filter>
-  </defs>
+  <linearGradient id="fb_border" x1="0" y1="0" x2="0" y2="1024" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#f96088"/><stop offset=".45" stop-color="#f84675"/><stop offset="1" stop-color="#bc3559"/></linearGradient></defs>
+<!-- Full-bleed border plate: opaque edge-to-edge; iOS applies its own squircle mask, so light/dark mode never shows through -->
+<rect x="0" y="0" width="1024" height="1024" fill="url(#fb_border)"/>
 
-  <!-- 1. Outer glow (unclipped, bleeds outward) -->
-  <rect x="18" y="18" width="988" height="988" rx="216" ry="216"
-        fill="none" stroke="#f84675" stroke-width="16" opacity="0.85" filter="url(#glowblur)"/>
-
+  
   <!-- 2-4. Body + sheen + mark (clipped to body) -->
   <g clip-path="url(#bodyclip)">
     <rect x="22" y="22" width="980" height="980" rx="212" ry="212" fill="url(#body)"/>
     <rect x="22" y="22" width="980" height="980" rx="212" ry="212" fill="url(#sheen)"/>
+    <rect x="22" y="22" width="980" height="980" rx="212" ry="212" fill="none" stroke="#f84675" stroke-width="36" opacity="0.5" filter="url(#glowblur)"/>
     <svg x="142.0" y="142.0" width="740" height="740" viewBox="34 79 448 330.5" preserveAspectRatio="xMidYMid meet">
       
 <g id="Layer-1">
