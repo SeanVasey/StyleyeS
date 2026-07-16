@@ -1,12 +1,12 @@
 /**
- * StyleyeS v2.2.0 — Service Worker
+ * StyleyeS v2.2.1 — Service Worker
  * Offline support and caching
  *
- * @version 2.2.0
- * @updated 2026-07-12
+ * @version 2.2.1
+ * @updated 2026-07-16
  */
 
-const CACHE_NAME = 'styleyes-v2.2.0';
+const CACHE_NAME = 'styleyes-v2.2.1';
 
 // Assets to cache on install
 const STATIC_ASSETS = [
@@ -25,9 +25,16 @@ const STATIC_ASSETS = [
   '/js/ui.js',
   '/js/handlers.js',
   '/js/app.js',
+  '/styleyes-icon-ios.svg',
   '/icons/StyleyeS_icon_optimized.svg',
+  '/icons/icon-16.png',
+  '/icons/icon-32.png',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
+  '/icons/icon-maskable-192.png',
+  '/icons/icon-maskable-512.png',
+  '/icons/apple-touch-icon-152.png',
+  '/icons/apple-touch-icon-167.png',
   '/icons/apple-touch-icon-180.png'
 ];
 

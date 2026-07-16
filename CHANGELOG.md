@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-07-16
+
+### Added
+- **Branded iOS / PWA app icon**: New `styleyes-icon-ios.svg` — an opaque, rounded "squircle" tile — is now the favicon and the iOS/Android "Add to Home Screen" icon, so the installed app shows the proper StyleyeS branding on the home screen.
+- Rendered a full raster icon set from the new tile: 16/32 px favicons, 152/167/180 px `apple-touch-icon`s (opaque), 192/384/512 px PWA icons (`any`), and 192/512 px full-bleed maskable icons for Android adaptive shapes.
+
+### Changed
+- `index.html`: favicon now references the branded SVG tile with 16/32 px PNG fallbacks, and declares sized `apple-touch-icon` links (152/167/180) for iOS.
+- `manifest.json`: replaced the single SVG entry with a proper icon array — separate `any` (SVG + 192/512 PNG) and `maskable` (192/512 PNG) purposes so Android no longer masks a transparent icon; shortcut icons now use a sized PNG.
+- The in-app header logo continues to use the transparent `StyleyeS_icon_optimized.svg`, which remains the preferred asset wherever a transparent background is ideal.
+- Bumped service worker `CACHE_NAME` to `styleyes-v2.2.1` so returning users receive the updated icons.
+
 ## [2.2.0] - 2026-07-12
 
 ### Added
