@@ -1,10 +1,11 @@
 /**
- * StyleyeS v2.2.2 — Configuration
+ * StyleyeS v2.2.3 — Configuration
  * Model configs, aspect ratios, and constants
  *
- * @version 2.2.2
+ * @version 2.2.3
  * @updated 2026-07-16
  * @changelog
+ *   - 2.2.3: Fix favicon/PWA icons clipped at the bottom (full-bleed re-render)
  *   - 2.2.2: Re-render favicon/PWA/home-screen raster icons from updated branded tile
  *   - 2.2.1: Branded iOS/PWA app icon for favicon and Add to Home Screen
  *   - 2.2.0: Subject persistence, copy shortcut, accessibility improvements
@@ -18,7 +19,7 @@
 
 const StyleyeSConfig = {
   // Application Version
-  VERSION: '2.2.2',
+  VERSION: '2.2.3',
 
   // Storage Keys
   STORAGE_KEY: 'styleyes_v1_state',
