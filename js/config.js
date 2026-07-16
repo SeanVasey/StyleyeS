@@ -1,10 +1,11 @@
 /**
- * StyleyeS v2.2.0 — Configuration
+ * StyleyeS v2.2.1 — Configuration
  * Model configs, aspect ratios, and constants
  *
- * @version 2.2.0
- * @updated 2026-07-12
+ * @version 2.2.1
+ * @updated 2026-07-16
  * @changelog
+ *   - 2.2.1: Branded iOS/PWA app icon for favicon and Add to Home Screen
  *   - 2.2.0: Subject persistence, copy shortcut, accessibility improvements
  *   - 2.1.1: Carousel performance fixes, tab icon alignment, touch scrolling improvements
  *   - 2.1.0: Category carousel navigation, multi-line input, aspect-ratio-preserving images
@@ -16,7 +17,7 @@
 
 const StyleyeSConfig = {
   // Application Version
-  VERSION: '2.2.0',
+  VERSION: '2.2.1',
 
   // Storage Keys
   STORAGE_KEY: 'styleyes_v1_state',
