@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.3] - 2026-07-16
+
+### Fixed
+- **Home-screen / favicon icons were clipped at the bottom.** The v2.2.2 raster icons were rendered through headless Chromium, which letterboxed the `styleyes-icon-ios.svg` and left the bottom ~8% of every PNG transparent — on iOS that transparent band composites to white, so the installed Home Screen icon and browser favicon showed a blank strip below the tile. Re-rendered the entire raster set (16/32 px favicons, 72–512 px PWA icons, 152/167/180 px `apple-touch-icon`s, 192/512 px maskable) with a geometry-accurate rasterizer so the border-plate tile now fills edge-to-edge on all four sides. Every generated PNG is verified fully opaque with zero transparent rows.
+- Bumped service worker `CACHE_NAME` to `styleyes-v2.2.3` so returning users and installed PWAs re-fetch the corrected icons.
+
 ## [2.2.2] - 2026-07-16
 
 ### Fixed
